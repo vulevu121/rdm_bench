@@ -7,6 +7,8 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import QTimer
 import sys,os
 
+import RPi.GPIO as GPIO
+
 # system import
 import threading
 import re
@@ -69,6 +71,10 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         
         # Create RDM object
         self.rdm = RDM()
+        # WUP Control
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(21,GPIO.OUT)
+        GPIO.setwarnings(False)
 
         # Event handlers
         self.startStopBtn.clicked.connect       (lambda:self.start_CAN_thread())
@@ -434,6 +440,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global EnableFlag 
         global logger
         global Tx_Rx_Timestamp_offset
+
+        # WUP HIGH
+        GPIO.output(21, True)
         
         epoch = time.time()
         
@@ -566,7 +575,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # reset GUI
         self.reset_gui()
 
-        
+        # WUP LOW
+        GPIO.output(21, False)        
 
                                   
     #######################################        
@@ -653,7 +663,10 @@ def numberFromString(string):
 def power_supply_control(output , voltage , current):
     try:
         rm = visa.ResourceManager('@py')
-        inst = rm.open_resource('USB0::2391::43271::US17M5344R::0::INSTR') 
+        # PS number 1
+        inst = rm.open_resource('USB0::2391::43271::US17M5344R::0::INSTR')
+        # PS number 2
+        #inst = rm.open_resource('USB0::2391::43271::US17N6729R::0::INSTR') 
 
         ## Print for debug ##
         PSwrite(inst,'VSET', voltage)

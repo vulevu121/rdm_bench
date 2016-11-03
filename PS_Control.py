@@ -96,6 +96,10 @@ if __name__ == '__main__':
 
     rm = visa.ResourceManager('@py')
     print(rm.list_resources())
-    inst = rm.open_resource('USB0::2391::43271::US17M5344R::0::INSTR')
+    # ps NUMBER 1 
+##    inst = rm.open_resource('USB0::2391::43271::US17M5344R::0::INSTR')
+    # ps NUMBER 2 ON rdm CART
+    inst = rm.open_resource('USB0::2391::43271::US17N6729R::0::INSTR')
     print(inst.query("*IDN?"))      
-    #PSwrite(inst, 'ON')
+    PSwrite(inst,'VSET', 400)
+    PSwrite(inst,'CSET', 2.5)
