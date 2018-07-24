@@ -120,28 +120,22 @@ class RDM:
         #    counter2 += 1
 
     def decode_inv_status(self,status):                                     # Pass status signal in as argument
-       inv_status_string = 'Not Available'
+        status2str = {0x1: 'INIT_ECU',
+                      0x2: 'INIT_SYS',
+                      0x3: 'NORMAL_ENABLE',
+                      0x4: 'NORMAL_DISABLE',
+                      0x5: 'SHUTDWN',
+                      0x6: 'SHUTDWN_ACTIVE_CAP_DISCHARGE',
+                      0x7: 'PWR_DWN',
+                      0x8: 'FAULT',
+                      0x9: 'PCM_ENABLE_TEST',
+                      }
 
-       if status == 0x1:
-           inv_status_string = 'INIT_ECU'
-       elif status == 0x2:
-           inv_status_string = 'INIT_SYS'
-       elif status == 0x3:
-           inv_status_string = 'NORMAL_ENABLE'
-       elif status == 0x4:
-           inv_status_string = 'NORMAL_DISABLE'
-       elif status == 0x5:
-           inv_status_string = 'SHUTDWN'
-       elif status == 0x6:
-           inv_status_string = 'SHUTDWN_ACTIVE_CAP_DISCHARGE'
-       elif status == 0x7:
-           inv_status_string = 'PWR_DWN'
-       elif status == 0x8:
-           inv_status_string = 'FAULT'
-       elif status == 0x9:
-           inv_status_string = 'PCM_ENABLE_TEST'
-       return inv_status_string
-
+        try:
+            return status2str[status]
+        except:
+            return 'Not Available'
+            
 
     def printAll(self):                                # Use for while/for loop only
         global counter
@@ -163,7 +157,26 @@ class RDM:
         else:
             counter += 1
 
+
+
     def update_CAN_msg(self):
+        cmd2hex = {'R_TM1': 0x5,
+                   'R_TM2': 0xA,
+                   'D_TM1': 0x0A,
+                   'D_TM2': 0x05,
+                   # legacy commands
+                   'not_enabled': 0x05,
+                   'enabled': 0x0A,
+                   'no_shutdown_requested': 0x00,
+                   'inverter_shutdown_requested': 0x01,
+                   # 2.0 commands
+                   'prop_ready': 0x03,
+                   'off': 0x0,
+                   'no_cmd': 0x0,
+                   'shutdown_w_discharge': 0x2,
+                   }
+
+        
         # Convert input to hex
         if self.direction == 'R':
             self.TM1_direction_hex =  0x5             # CCW
@@ -172,27 +185,14 @@ class RDM:
             self.TM1_direction_hex =  0x0A            # CW
             self.TM2_direction_hex =  0x05            # CCW
 
-        # LEGACY COMMAND
-        if self.legacy_enable_cmd == "not_enabled":
-            self.legacy_enable_cmd_hex = 0x05
-        elif self.legacy_enable_cmd == "enabled":
-            self.legacy_enable_cmd_hex = 0x0A
+        # legacy commands
+        self.legacy_enable_cmd_hex = cmd2hex[self.legacy_enable_cmd]
+        self.legacy_shutdown_cmd_hex = cmd2hex[self.legacy_shutdown_cmd]
 
-        if self.legacy_shutdown_cmd == "no_shutdown_requested":
-            self.legacy_shutdown_cmd_hex = 0x00
-        elif self.legacy_shutdown_cmd == "inverter_shutdown_requested":
-            self.legacy_shutdown_cmd_hex = 0x01
-
-        # 2.0 COMMAND
-        if self.enable_cmd == "prop_ready":
-            self.enable_cmd_hex = 0x03
-        elif self.enable_cmd == "off":
-            self.enable_cmd_hex = 0x0
-
-        if self.shutdown_cmd == "no_cmd":
-            self.shutdown_cmd_hex = 0x0
-        elif self.shutdown_cmd == "shutdown_w_discharge":
-            self.shutdown_cmd_hex = 0x2
+        # 2.0 commands
+        self.enable_cmd_hex = cmd2hex[self.enable_cmd]
+        self.shutdown_cmd_hex = cmd2hex[self.shutdown_cmd]
+        
 
         self.arc                    = (self.arc + 1) % 4                                   # rolling counter 0 - 3
         self.torque_cmd_hex         = limit(self.torque_cmd + 1024,0x0,0x7FF)              # torque command
