@@ -27,7 +27,16 @@ counter1 = 0
 counter2 = 0
 ##################################### RDM Class definition ############################################
 class RDM:
-    def __init__(self,  AccPedalPos = 0x50, arc = 0, crc = 0, direction = 'D', legacy_enable_cmd = 'not_enabled', legacy_shutdown_cmd = 'no_shutdown_requested', torque_cmd = 0, torque_protect_val = 1024):
+    def __init__(self,
+                 AccPedalPos = 0x50,
+                 arc = 0,
+                 crc = 0,
+                 direction = 'D',
+                 legacy_enable_cmd = 'not_enabled',
+                 legacy_shutdown_cmd = 'no_shutdown_requested',
+                 torque_cmd = 0,
+                 torque_protect_val = 1024):
+        
         # Initilize signals
         self.direction           = direction
         self.legacy_enable_cmd   = legacy_enable_cmd
@@ -131,6 +140,7 @@ class RDM:
                       0x9: 'PCM_ENABLE_TEST',
                       }
 
+
         try:
             return status2str[status]
         except:
@@ -197,31 +207,87 @@ class RDM:
         self.arc                    = (self.arc + 1) % 4                                   # rolling counter 0 - 3
         self.torque_cmd_hex         = limit(self.torque_cmd + 1024,0x0,0x7FF)              # torque command
         self.torque_protect_val_hex = self.torque_cmd_hex                                  # torque protect = torque command
-        self.torque_env_high_hex    = limit( (self.torque_cmd_hex + 0xfa),0x0,0x7FF)
+        self.torque_env_high_hex    = limit((self.torque_cmd_hex + 0xfa),0x0,0x7FF)
         self.torque_env_low_hex     = limit((self.torque_cmd_hex - 0xfa),0x0,0x7FF)
 
 	############## TM Torque Command bytes ###############
         # Update all messages. Only CRC and Direction signals are different between TM torque_cmd messages. The rest of the signals are exactly the same for both
         # a0: ARC (bit 6-7), shutdown_legacy (bit 3), torque_cmd (MSB bit 0-2)
-        self.a0 =  (self.arc << 6) | (self.legacy_shutdown_cmd_hex << 3) |  ((self.torque_cmd_hex & 0x700) >> 8)
+
+        def setByte(sourceByte, sourceIdxRange, destByte, destIdxRange):
+            
+            def getBit(val, bit):
+                return (int((val & (1 << bit)) != 0))
+
+            def setBit(byte, bit, bitval):
+                if bitval == 1:
+                    return (byte | (1 << bit))
+                else:
+                    return (byte & ~(1 << bit))
+
+            
+            for s, d in zip(sourceIdxRange, destIdxRange):
+                destByte = setBit(destByte, d, getBit(sourceByte, s))
+
+            return destByte
+
+
+        tm1_data = [0] * 7
+        tm2_data = [0] * 7
+        tm1_data[0] = setByte(self.arc, [0,1], tm1_data[0], [6,7])
+        tm1_data[0] = setByte(self.legacy_shutdown_cmd_hex, [0], tm1_data[0], [3])
+        tm1_data[0] = setByte(self.torque_cmd_hex, [8,9,10], tm1_data[0], [0,1,2])
+        self.a0 =  (self.arc << 6) | (self.legacy_shutdown_cmd_hex << 3) | ((self.torque_cmd_hex & 0x700) >> 8)
+
+
         # a1: Torque_cmd
+        tm1_data[1] = setByte(self.torque_cmd_hex, [0,1,2,3,4,5,6,7], tm1_data[1], [0,1,2,3,4,5,6,7])
         self.a1 =  (self.torque_cmd_hex & 0x0FF)
+        
         # a2: Shutdown command (bit 6-7), Enable command (bit 3-5), Torque_protect_val (MSB bit 0-2)
+        tm1_data[2] = setByte(self.shutdown_cmd_hex, [0,1], tm1_data[2], [6,7])
+        tm1_data[2] = setByte(self.enable_cmd_hex, [0,1,2], tm1_data[2], [3,4,5])
+        tm1_data[2] = setByte(self.torque_protect_val_hex, [8,9,10], tm1_data[2], [0,1,2])
         self.a2 = ( (self.torque_protect_val_hex & 0x700) >> 8) | self.shutdown_cmd_hex << 6 | self.enable_cmd_hex << 3
+
+
         # a3: Torque_protect_val
+        tm1_data[3] = setByte(self.torque_protect_val_hex, [0,1,2,3,4,5,6,7], tm1_data[3], [0,1,2,3,4,5,6,7])
         self.a3 =  (self.torque_protect_val_hex & 0x0FF)
+        
         # a4: Accel Pedal Pos
+        tm1_data[4] = self.AccPedalPos
         self.a4 =  self.AccPedalPos
+
         # a5: Enable_legacy (bit 4-7), direction (bit 0-3)
         self.a5_TM1 =  (self.legacy_enable_cmd_hex << 4) |  self.TM1_direction_hex     #TM1 direction
         self.a5_TM2 =  (self.legacy_enable_cmd_hex << 4) |  self.TM2_direction_hex     #TM2 direction
+
+        
+        
+        tm1_data[5] = setByte(self.legacy_enable_cmd_hex, [0,1,2,3], tm1_data[5], [4,5,6,7])
+        tm1_data[5] = setByte(self.TM1_direction_hex, [0,1,2,3], tm1_data[5], [0,1,2,3])
+
+        tm2_data = tm1_data.copy()
+        tm2_data[5] = setByte(self.legacy_enable_cmd_hex, [0,1,2,3], tm2_data[5], [4,5,6,7])
+        tm2_data[5] = setByte(self.TM2_direction_hex, [0,1,2,3], tm2_data[5], [0,1,2,3])
+
         # a6: CRC
+        tm1_data[6] = crc8([tm1_data[0], tm1_data[1], tm1_data[2], tm1_data[3], tm1_data[4], tm1_data[5]])
+        #tm2_data[6] = crc8([tm2_data[0], tm2_data[1], tm2_data[2], tm2_data[3], tm2_data[4], tm2_data[5]])
+
         self.a6_TM1 = crc8([self.a0, self.a1, self.a2, self.a3, self.a4, self.a5_TM1])
         self.a6_TM2 = crc8([self.a0, self.a1, self.a2, self.a3, self.a4, self.a5_TM2])
-
+        
         ############## TM Torque Command Message ###############
-        self.TM1_torque_cmd_msg = can.Message(arbitration_id = TM1_TORQUE_CMD_ID, extended_id = False, data =[self.a0, self.a1, self.a2, self.a3, self.a4, self.a5_TM1, self.a6_TM1] )
-        self.TM2_torque_cmd_msg = can.Message(arbitration_id = TM2_TORQUE_CMD_ID, extended_id = False, data =[self.a0, self.a1, self.a2, self.a3, self.a4, self.a5_TM2, self.a6_TM2] )
+        old_data1 = [self.a0, self.a1, self.a2, self.a3, self.a4, self.a5_TM1, self.a6_TM1]
+        old_data2 = [self.a0, self.a1, self.a2, self.a3, self.a4, self.a5_TM2, self.a6_TM2]
+        
+        self.TM1_torque_cmd_msg = can.Message(arbitration_id=TM1_TORQUE_CMD_ID, extended_id=False, data=old_data1)
+        self.TM2_torque_cmd_msg = can.Message(arbitration_id=TM2_TORQUE_CMD_ID, extended_id=False, data=old_data2)
+
+        
+        print('{} {} {}'.format(old_data1, tm1_data, old_data1==tm1_data))
 
         ############## TM Torque Protect bytes ###############
         # b0: arc protect (bit 6-7), torque env high (MSB bit 0-2)
@@ -303,12 +369,13 @@ if __name__ == "__main__":
     while True:
         bunny.enable()
         #bunny.print_CAN()
-        bus.send(bunny.TM1_torque_cmd_msg)
-        bus.send(bunny.TM2_torque_cmd_msg)
+        bunny.change_torque(100)
+##        bus.send(bunny.TM1_torque_cmd_msg)
+##        bus.send(bunny.TM2_torque_cmd_msg)
         time.sleep(5)
         bunny.disable()
-        bus.send(bunny.TM1_torque_cmd_msg)
-        bus.send(bunny.TM2_torque_cmd_msg)
+##        bus.send(bunny.TM1_torque_cmd_msg)
+##        bus.send(bunny.TM2_torque_cmd_msg)
         #bunny.print_CAN()
         time.sleep(5)
 
