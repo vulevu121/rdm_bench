@@ -6,19 +6,106 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>350</width>
-    <height>442</height>
+    <width>800</width>
+    <height>480</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+background-color:rgb(59, 56, 56);
+color: rgb(218, 218, 218);
+font: 12pt &quot;MS Shell Dlg 2&quot;;
+}
+
+QPushButton:flat {
+	border: none;
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="start_btn">
     <property name="geometry">
      <rect>
-      <x>11</x>
-      <y>11</y>
+      <x>190</x>
+      <y>130</y>
+      <width>93</width>
+      <height>33</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(118, 118, 113);</string>
+    </property>
+    <property name="text">
+     <string>Start</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>290</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>10 nm</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>50 nm</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>100 nm</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QPushButton" name="epb_btn">
+    <property name="geometry">
+     <rect>
+      <x>660</x>
+      <y>30</y>
+      <width>131</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>EPB</string>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normalon>graphics/epb_button.png</normalon>
+     </iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>80</width>
+      <height>80</height>
+     </size>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="stop_btn">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>350</y>
       <width>93</width>
       <height>33</height>
      </rect>
@@ -29,69 +116,102 @@
      </font>
     </property>
     <property name="text">
-     <string>Start</string>
+     <string>Stop</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox">
+   <widget class="QRadioButton" name="radioButton">
     <property name="geometry">
      <rect>
-      <x>111</x>
-      <y>11</y>
-      <width>125</width>
-      <height>28</height>
+      <x>190</x>
+      <y>190</y>
+      <width>151</width>
+      <height>20</height>
      </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-     </font>
     </property>
     <property name="text">
-     <string>RDM test 1</string>
+     <string>RDM Test #1</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_2">
+   <widget class="QRadioButton" name="radioButton_2">
     <property name="geometry">
      <rect>
-      <x>111</x>
-      <y>51</y>
-      <width>125</width>
-      <height>28</height>
+      <x>190</x>
+      <y>230</y>
+      <width>151</width>
+      <height>20</height>
      </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-     </font>
     </property>
     <property name="text">
-     <string>RDM test 2</string>
+     <string>RDM Test #2</string>
     </property>
    </widget>
-   <widget class="QSplitter" name="splitter">
+   <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>170</y>
-      <width>306</width>
-      <height>192</height>
+      <x>190</x>
+      <y>290</y>
+      <width>181</width>
+      <height>31</height>
      </rect>
     </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
+    <property name="text">
+     <string>Torque Command:</string>
     </property>
-    <widget class="QLabel" name="label">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
+   </widget>
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>151</width>
+      <height>491</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(50, 45, 45);</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QPushButton" name="menu_btn">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>131</width>
+       <height>71</height>
+      </rect>
      </property>
      <property name="text">
-      <string>Data:</string>
+      <string>Menu</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normalon>graphics/menu.png</normalon>
+      </iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>50</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPlainTextEdit" name="plainTextEdit"/>
    </widget>
+   <zorder>frame</zorder>
+   <zorder>start_btn</zorder>
+   <zorder>comboBox</zorder>
+   <zorder>epb_btn</zorder>
+   <zorder>stop_btn</zorder>
+   <zorder>radioButton</zorder>
+   <zorder>radioButton_2</zorder>
+   <zorder>label</zorder>
   </widget>
  </widget>
  <resources/>
