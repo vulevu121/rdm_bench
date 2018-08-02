@@ -384,18 +384,17 @@ if __name__ == "__main__":
     bus.send(bunny.TM1_torque_protect_msg)
     #bus.send(bunny.TM2_torque_cmd_msg)"""
     ######## Test enable/disable  ################
+    #bunny.enable()
     while True:
-        bunny.enable()
         #bunny.print_CAN()
-        bunny.change_torque(100)
-##        bus.send(bunny.TM1_torque_cmd_msg)
-##        bus.send(bunny.TM2_torque_cmd_msg)
-        time.sleep(5)
-        bunny.disable()
-##        bus.send(bunny.TM1_torque_cmd_msg)
-##        bus.send(bunny.TM2_torque_cmd_msg)
+        bus.send(bunny.TM1_torque_cmd_msg)
+        #bus.send(bunny.TM2_torque_cmd_msg)
+        bus.send(bunny.TM1_torque_protect_msg)
+        time.sleep(0.01)
+        bunny.update_CAN_msg()
+        #bus.send(bunny.TM2_torque_cmd_msg)
         #bunny.print_CAN()
-        time.sleep(5)
+        #time.sleep(1)
 
     ########### Test reading inverter status #######
     """while True:
