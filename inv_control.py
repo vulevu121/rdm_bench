@@ -167,6 +167,22 @@ class RDM:
         else:
             counter += 1
 
+    def getByte(self, sourceByte, sourceIdxRange, destByte, destIdxRange):
+        
+        def getBit(val, bit):
+            return (int((val & (1 << bit)) != 0))
+
+        def setBit(byte, bit, bitval):
+            if bitval == 1:
+                return (byte | (1 << bit))
+            else:
+                return (byte & ~(1 << bit))
+
+        
+        for s, d in zip(sourceIdxRange, destIdxRange):
+            destByte = setBit(destByte, d, getBit(sourceByte, s))
+
+        return destByte
 
 
     def update_CAN_msg(self):
@@ -210,71 +226,51 @@ class RDM:
         self.torque_env_high_hex    = limit((self.torque_cmd_hex + 0xfa),0x0,0x7FF)
         self.torque_env_low_hex     = limit((self.torque_cmd_hex - 0xfa),0x0,0x7FF)
 
+
+
+
 	############## TM Torque Command bytes ###############
         # Update all messages. Only CRC and Direction signals are different between TM torque_cmd messages. The rest of the signals are exactly the same for both
         # a0: ARC (bit 6-7), shutdown_legacy (bit 3), torque_cmd (MSB bit 0-2)
-
-        def setByte(sourceByte, sourceIdxRange, destByte, destIdxRange):
-            
-            def getBit(val, bit):
-                return (int((val & (1 << bit)) != 0))
-
-            def setBit(byte, bit, bitval):
-                if bitval == 1:
-                    return (byte | (1 << bit))
-                else:
-                    return (byte & ~(1 << bit))
-
-            
-            for s, d in zip(sourceIdxRange, destIdxRange):
-                destByte = setBit(destByte, d, getBit(sourceByte, s))
-
-            return destByte
-
-
-        tm1_data = [0] * 7
-        tm2_data = [0] * 7
-        tm1_data[0] = setByte(self.arc, [0,1], tm1_data[0], [6,7])
-        tm1_data[0] = setByte(self.legacy_shutdown_cmd_hex, [0], tm1_data[0], [3])
-        tm1_data[0] = setByte(self.torque_cmd_hex, [8,9,10], tm1_data[0], [0,1,2])
         self.a0 =  (self.arc << 6) | (self.legacy_shutdown_cmd_hex << 3) | ((self.torque_cmd_hex & 0x700) >> 8)
 
+        TM1_torque_cmd_bytes = [0] * 7
+        TM1_torque_cmd_bytes[0] = self.getByte(self.arc, [0,1], TM1_torque_cmd_bytes[0], [6,7])
+        TM1_torque_cmd_bytes[0] = self.getByte(self.legacy_shutdown_cmd_hex, [0], TM1_torque_cmd_bytes[0], [3])
+        TM1_torque_cmd_bytes[0] = self.getByte(self.torque_cmd_hex, [8,9,10], TM1_torque_cmd_bytes[0], [0,1,2])
 
         # a1: Torque_cmd
-        tm1_data[1] = setByte(self.torque_cmd_hex, [0,1,2,3,4,5,6,7], tm1_data[1], [0,1,2,3,4,5,6,7])
         self.a1 =  (self.torque_cmd_hex & 0x0FF)
+        TM1_torque_cmd_bytes[1] = self.getByte(self.torque_cmd_hex, [0,1,2,3,4,5,6,7], TM1_torque_cmd_bytes[1], [0,1,2,3,4,5,6,7])
         
         # a2: Shutdown command (bit 6-7), Enable command (bit 3-5), Torque_protect_val (MSB bit 0-2)
-        tm1_data[2] = setByte(self.shutdown_cmd_hex, [0,1], tm1_data[2], [6,7])
-        tm1_data[2] = setByte(self.enable_cmd_hex, [0,1,2], tm1_data[2], [3,4,5])
-        tm1_data[2] = setByte(self.torque_protect_val_hex, [8,9,10], tm1_data[2], [0,1,2])
         self.a2 = ( (self.torque_protect_val_hex & 0x700) >> 8) | self.shutdown_cmd_hex << 6 | self.enable_cmd_hex << 3
-
+        TM1_torque_cmd_bytes[2] = self.getByte(self.shutdown_cmd_hex, [0,1], TM1_torque_cmd_bytes[2], [6,7])
+        TM1_torque_cmd_bytes[2] = self.getByte(self.enable_cmd_hex, [0,1,2], TM1_torque_cmd_bytes[2], [3,4,5])
+        TM1_torque_cmd_bytes[2] = self.getByte(self.torque_protect_val_hex, [8,9,10], TM1_torque_cmd_bytes[2], [0,1,2])
 
         # a3: Torque_protect_val
-        tm1_data[3] = setByte(self.torque_protect_val_hex, [0,1,2,3,4,5,6,7], tm1_data[3], [0,1,2,3,4,5,6,7])
         self.a3 =  (self.torque_protect_val_hex & 0x0FF)
+        TM1_torque_cmd_bytes[3] = self.getByte(self.torque_protect_val_hex, [0,1,2,3,4,5,6,7], TM1_torque_cmd_bytes[3], [0,1,2,3,4,5,6,7])
         
         # a4: Accel Pedal Pos
-        tm1_data[4] = self.AccPedalPos
         self.a4 =  self.AccPedalPos
+        TM1_torque_cmd_bytes[4] = self.AccPedalPos
 
         # a5: Enable_legacy (bit 4-7), direction (bit 0-3)
         self.a5_TM1 =  (self.legacy_enable_cmd_hex << 4) |  self.TM1_direction_hex     #TM1 direction
         self.a5_TM2 =  (self.legacy_enable_cmd_hex << 4) |  self.TM2_direction_hex     #TM2 direction
-
         
-        
-        tm1_data[5] = setByte(self.legacy_enable_cmd_hex, [0,1,2,3], tm1_data[5], [4,5,6,7])
-        tm1_data[5] = setByte(self.TM1_direction_hex, [0,1,2,3], tm1_data[5], [0,1,2,3])
+        TM1_torque_cmd_bytes[5] = self.getByte(self.legacy_enable_cmd_hex, [0,1,2,3], TM1_torque_cmd_bytes[5], [4,5,6,7])
+        TM1_torque_cmd_bytes[5] = self.getByte(self.TM1_direction_hex, [0,1,2,3], TM1_torque_cmd_bytes[5], [0,1,2,3])
 
-        tm2_data = tm1_data.copy()
-        tm2_data[5] = setByte(self.legacy_enable_cmd_hex, [0,1,2,3], tm2_data[5], [4,5,6,7])
-        tm2_data[5] = setByte(self.TM2_direction_hex, [0,1,2,3], tm2_data[5], [0,1,2,3])
+        TM2_torque_cmd_bytes = TM1_torque_cmd_bytes.copy()
+        TM2_torque_cmd_bytes[5] = self.getByte(self.legacy_enable_cmd_hex, [0,1,2,3], TM2_torque_cmd_bytes[5], [4,5,6,7])
+        TM2_torque_cmd_bytes[5] = self.getByte(self.TM2_direction_hex, [0,1,2,3], TM2_torque_cmd_bytes[5], [0,1,2,3])
 
         # a6: CRC
-        tm1_data[6] = crc8([tm1_data[0], tm1_data[1], tm1_data[2], tm1_data[3], tm1_data[4], tm1_data[5]])
-        #tm2_data[6] = crc8([tm2_data[0], tm2_data[1], tm2_data[2], tm2_data[3], tm2_data[4], tm2_data[5]])
+        TM1_torque_cmd_bytes[6] = crc8(TM1_torque_cmd_bytes[0:-1])
+        TM2_torque_cmd_bytes[6] = crc8(TM2_torque_cmd_bytes[0:-1])
 
         self.a6_TM1 = crc8([self.a0, self.a1, self.a2, self.a3, self.a4, self.a5_TM1])
         self.a6_TM2 = crc8([self.a0, self.a1, self.a2, self.a3, self.a4, self.a5_TM2])
@@ -283,30 +279,52 @@ class RDM:
         old_data1 = [self.a0, self.a1, self.a2, self.a3, self.a4, self.a5_TM1, self.a6_TM1]
         old_data2 = [self.a0, self.a1, self.a2, self.a3, self.a4, self.a5_TM2, self.a6_TM2]
         
-        self.TM1_torque_cmd_msg = can.Message(arbitration_id=TM1_TORQUE_CMD_ID, extended_id=False, data=old_data1)
-        self.TM2_torque_cmd_msg = can.Message(arbitration_id=TM2_TORQUE_CMD_ID, extended_id=False, data=old_data2)
+        self.TM1_torque_cmd_msg = can.Message(arbitration_id=TM1_TORQUE_CMD_ID, extended_id=False, data=TM1_torque_cmd_bytes)
+        self.TM2_torque_cmd_msg = can.Message(arbitration_id=TM2_TORQUE_CMD_ID, extended_id=False, data=TM2_torque_cmd_bytes)
 
         
-        print('{} {} {}'.format(old_data1, tm1_data, old_data1==tm1_data))
+        print('{} {} {}'.format(old_data1==TM1_torque_cmd_bytes, old_data1, TM1_torque_cmd_bytes))
+        print('{} {} {}'.format(old_data2==TM2_torque_cmd_bytes, old_data2, TM2_torque_cmd_bytes))
 
         ############## TM Torque Protect bytes ###############
         # b0: arc protect (bit 6-7), torque env high (MSB bit 0-2)
         self.b0 = (self.arc << 6) | ((self.torque_env_high_hex & 0x700) >> 8)
+        TM1_torque_protect_bytes = [0] * 6
+        TM1_torque_protect_bytes[0] = self.getByte(self.arc, [0,1], TM1_torque_protect_bytes[0], [6,7])
+        TM1_torque_protect_bytes[0] = self.getByte(self.torque_env_high_hex, [8,9,10], TM1_torque_protect_bytes[0], [0,1,2])
+        
         # b1: torque env high
         self.b1 = self.torque_env_high_hex & 0x0FF
+        TM1_torque_protect_bytes[1] = self.getByte(self.torque_env_high_hex, [0,1,2,3,4,5,6,7], TM1_torque_protect_bytes[1], [0,1,2,3,4,5,6,7])
+        
         # b2: AccPedalPos red
         self.b2 = self.AccPedalPos
+        TM1_torque_protect_bytes[2] = self.AccPedalPos
+
         # b3: torque env low (MSB bit 0-2)
         self.b3 =  (self.torque_env_low_hex & 0x700) >> 8
+        TM1_torque_protect_bytes[3] = self.getByte(self.torque_env_low_hex, [8,9,10], TM1_torque_protect_bytes[3], [0,1,2])
+        
         # b4: torque env low
         self.b4 = self.torque_env_low_hex & 0x0FF
+        TM1_torque_protect_bytes[4] = self.getByte(self.torque_env_low_hex, [0,1,2,3,4,5,6,7], TM1_torque_protect_bytes[4], [0,1,2,3,4,5,6,7])
+        
         # b5: neutral red (bit 4-7), direction red (bit 0-3)
         self.b5_TM1 = (0xA << 4) | self.TM1_direction_hex           #always transmitt NEUTRAL
         self.b5_TM2 = (0xA << 4) | self.TM2_direction_hex
+        TM2_torque_protect_bytes = TM1_torque_protect_bytes.copy()
+        TM1_torque_protect_bytes[5] = (0xA << 4) | self.TM1_direction_hex           #always transmitt NEUTRAL
+        TM2_torque_protect_bytes[5] = (0xA << 4) | self.TM2_direction_hex
+
+        old_data3 = [self.b0, self.b1, self.b2, self.b3, self.b4, self.b5_TM1]
+        old_data4 = [self.b0, self.b1, self.b2, self.b3, self.b4, self.b5_TM2]
 
         ############## TM Torque Command Message ###############
-        self.TM1_torque_protect_msg = can.Message(arbitration_id = TM1_TORQUE_PROTECT_ID, extended_id = False, data =[self.b0, self.b1, self.b2, self.b3, self.b4, self.b5_TM1])
-        self.TM2_torque_protect_msg = can.Message(arbitration_id = TM2_TORQUE_PROTECT_ID, extended_id = False, data =[self.b0, self.b1, self.b2, self.b3, self.b4, self.b5_TM2])
+        self.TM1_torque_protect_msg = can.Message(arbitration_id = TM1_TORQUE_PROTECT_ID, extended_id = False, data=TM1_torque_protect_bytes)
+        self.TM2_torque_protect_msg = can.Message(arbitration_id = TM2_TORQUE_PROTECT_ID, extended_id = False, data=TM2_torque_protect_bytes)
+
+        print('{} {} {}'.format(old_data3==TM1_torque_protect_bytes, old_data3, TM1_torque_protect_bytes))
+        print('{} {} {}'.format(old_data4==TM2_torque_protect_bytes, old_data4, TM2_torque_protect_bytes))
 
 #################################   RDM methods END ########################################################
 
