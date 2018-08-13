@@ -65,7 +65,7 @@ class RDM:
         self.update_CAN_msg()
 
 #################################   RDM methods ########################################################
-    def change_torque(self,target_torque):                            # Change current torque cmd to target torque cmnd
+    def set_torque(self,target_torque):                            # Change current torque cmd to target torque cmnd
         self.torque_cmd = target_torque
         self.update_CAN_msg()
 
@@ -340,11 +340,11 @@ def crc8(buff):
     crc = 0
     for b in buff:
         crc^= b
-        for i in range(8):
-            if crc & 1:
-                crc = (crc >> 1) ^ 0x8c
+        for i in range(7,-1):
+            if crc & 0x80:
+                crc = (crc << 1) ^ 0x1d
             else:
-                crc >>= 1
+                crc <<= 1
     return crc
 
 
@@ -373,7 +373,7 @@ if __name__ == "__main__":
     #bus.send(bunny.TM2_torque_cmd_msg)
     bunny.change_direction('R')
     for i in range(-2000,2000,10):
-        bunny.change_torque(i)
+        bunny.set_torque(i)
         bus.send(bunny.TM1_torque_cmd_msg)
         #bus.send(bunny.TM2_torque_cmd_msg)
         bus.send(bunny.TM1_torque_protect_msg)
@@ -387,7 +387,7 @@ if __name__ == "__main__":
     while True:
         bunny.enable()
         #bunny.print_CAN()
-        bunny.change_torque(100)
+        bunny.set_torque(100)
 ##        bus.send(bunny.TM1_torque_cmd_msg)
 ##        bus.send(bunny.TM2_torque_cmd_msg)
         time.sleep(5)
