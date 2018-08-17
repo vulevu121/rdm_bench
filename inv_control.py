@@ -28,7 +28,7 @@ counter2 = 0
 ##################################### RDM Class definition ############################################
 class RDM:
     def __init__(self,
-                 AccPedalPos = 0x50,
+                 AccPedalPos = 0,
                  arc = 0,
                  crc = 0,
                  direction = 'D',
@@ -62,6 +62,7 @@ class RDM:
         self.TM2_status_string   = 'None'
 
         # Initialize message
+        self.msg_list =[]
         self.update_CAN_msg()
 
 #################################   RDM methods ########################################################
@@ -307,6 +308,11 @@ class RDM:
         #print('{} {} {}'.format(old_data3==TM1_torque_protect_bytes, old_data3, TM1_torque_protect_bytes))
         #print('{} {} {}'.format(old_data4==TM2_torque_protect_bytes, old_data4, TM2_torque_protect_bytes))
 
+        # Compile to a list to use on GUI code
+        self.msg_list = [self.rdm.TM1_torque_cmd_msg,
+                        self.rdm.TM2_torque_cmd_msg,
+                        self.TM1_torque_protect_msg,
+                        self.TM2_torque_protect_msg]
 #################################   RDM methods END ########################################################
 
 def limit(num,min,max):                 #limit range for torque command or any other command
