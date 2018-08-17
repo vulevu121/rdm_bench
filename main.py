@@ -10,7 +10,8 @@ import re
 
 TransmitFlag = False
 bus = None
-torque_value = 10      # Make sure is the default selection for the torqueCmdBox
+torque_value = 0
+cycle_time = 0.01
 
 # Add these options to torqueCmdBox
 torqueCmdBoxValues = ['0 nm', '10 nm', '50 nm', '100 nm']
@@ -29,7 +30,10 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             
         # Start CAN bus
         initCAN()
+        # Create RDM object
         self.rdm = RDM()
+
+        # Event handlers
         self.torqueCmdBox.currentIndexChanged.connect(lambda: self.update_torque_cmd())
         self.startBtn.clicked.connect(lambda: self.start_CAN_thread())
         self.stop_btn.clicked.connect(lambda: self.stop_transmit())
@@ -47,22 +51,23 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global TransmitFlag
         global bus
         global torque_value
+        global cycle_time
+
         self.rdm.enable()
         self.rdm.set_torque(0)
         self.rdm.update_CAN_msg()
+        
         # Send CAN continously
         while(TransmitFlag):
-        
-            
             for msg in self.rdm.msg_list: 
-                bus.send(msg)
-                
+                bus.send(msg)                
             # Send messages every 10 ms    
-            time.sleep(0.01)
+            time.sleep(cycle_time)
 
     def stop_transmit(self):
         print ("Stop CAN transmit...")
         global TransmitFlag
+        global cycle_time
         # Set this flag to stop the ongoing transmittion 
         TransmitFlag = False
         # Send msg 5 more times before complete stop
@@ -74,7 +79,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             for msg in self.rdm.msg_list: 
                 bus.send(msg)   
             # Send messages every 10 ms    
-            time.sleep(0.01)  
+            time.sleep(cycle_time)  
     
 
 
