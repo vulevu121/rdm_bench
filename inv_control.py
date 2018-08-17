@@ -68,7 +68,7 @@ class RDM:
 #################################   RDM methods ########################################################
     def set_torque(self,target_torque):                            # Change current torque cmd to target torque cmnd
         self.torque_cmd = target_torque
-        self.update_CAN_msg()
+        #self.update_CAN_msg()
 
     def enable(self):                                                 # Send enable command to INV
         self.legacy_shutdown_cmd = "no_shutdown_requested"
@@ -76,7 +76,7 @@ class RDM:
         time.sleep(0.1)
         self.legacy_enable_cmd = "enabled"
         self.enable_cmd        = "prop_ready"
-        self.update_CAN_msg()
+        #self.update_CAN_msg()
 
         #print('RDM enabled: ',self.legacy_enable_cmd)
         #print('RDM shutdown: ',self.legacy_shutdown_cmd)
@@ -87,7 +87,7 @@ class RDM:
         time.sleep(0.1)
         self.legacy_shutdown_cmd = "inverter_shutdown_requested"
         self.shutdown_cmd = "shutdown_w_discharge"
-        self.update_CAN_msg()
+        #self.update_CAN_msg()
 
         #print('RDM enabled: ',self.legacy_enable_cmd)
         #print('RDM shutdown: ',self.legacy_shutdown_cmd)
@@ -97,7 +97,7 @@ class RDM:
             self.direction = 'D'
         elif new_direction == 'R':
             self.direction = 'R'
-        self.update_CAN_msg()
+        #self.update_CAN_msg()
 
 
     def get_TM1_status(self,msg):                                      # Pass CAN message in as argument
@@ -309,8 +309,8 @@ class RDM:
         #print('{} {} {}'.format(old_data4==TM2_torque_protect_bytes, old_data4, TM2_torque_protect_bytes))
 
         # Compile to a list to use on GUI code
-        self.msg_list = [self.rdm.TM1_torque_cmd_msg,
-                        self.rdm.TM2_torque_cmd_msg,
+        self.msg_list = [self.TM1_torque_cmd_msg,
+                        self.TM2_torque_cmd_msg,
                         self.TM1_torque_protect_msg,
                         self.TM2_torque_protect_msg]
 #################################   RDM methods END ########################################################
@@ -388,17 +388,17 @@ if __name__ == "__main__":
     #bus.send(bunny.TM2_torque_cmd_msg)"""
     ######## Test enable/disable  ################
     while True:
-        bunny.enable()
+        #bunny.enable()
         #bunny.print_CAN()
         bunny.set_torque(100)
-##        bus.send(bunny.TM1_torque_cmd_msg)
+        bus.send(bunny.TM1_torque_cmd_msg)
 ##        bus.send(bunny.TM2_torque_cmd_msg)
-        time.sleep(5)
-        bunny.disable()
+
+
 ##        bus.send(bunny.TM1_torque_cmd_msg)
 ##        bus.send(bunny.TM2_torque_cmd_msg)
         #bunny.print_CAN()
-        time.sleep(5)
+        time.sleep(1)
 
     ########### Test reading inverter status #######
     """while True:
