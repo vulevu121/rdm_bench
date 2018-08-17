@@ -12,7 +12,7 @@ TransmitFlag = False
 bus = None
 torque_value = 10      # Make sure is the default selection for the torqueCmdBox
 
-
+# Add these options to torqueCmdBox
 torqueCmdBoxValues = ['0 nm', '10 nm', '50 nm', '100 nm']
 
 
