@@ -53,63 +53,10 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global torque_value
         global cycle_time
 
-        #self.rdm.enable()
-        self.rdm.set_torque(0)
-        self.rdm.shutdown_cmd_hex = 0x0
-        self.rdm.legacy_shutdown_cmd_hex = 0x0
-
-        startTime = time.time()
-        while(True):
-            self.rdm.enable_cmd = '0x0'
-            self.rdm.update_CAN_msg()
-            for msg in self.rdm.msg_list: 
-                bus.send(msg)
-            time.sleep(0.008)
-
-            if time.time() - startTime > 2:
-                break
-        
-        startTime = time.time()
-        while(True):
-            self.rdm.enable_cmd = '0x1'
-            self.rdm.update_CAN_msg()
-            for msg in self.rdm.msg_list: 
-                bus.send(msg)
-            time.sleep(0.008)
-
-            if time.time() - startTime > 1:
-                break
-        
-        startTime = time.time()
-        while(True):
-            self.rdm.enable_cmd = '0x2'
-            self.rdm.update_CAN_msg()
-            for msg in self.rdm.msg_list: 
-                bus.send(msg)
-            time.sleep(0.008)
-
-            if time.time() - startTime > 1:
-                break
-        
-        startTime = time.time()
-        while(True):
-            self.rdm.enable_cmd = '0x3'
-            self.rdm.update_CAN_msg()
-            for msg in self.rdm.msg_list: 
-                bus.send(msg)
-            time.sleep(0.008)
-
-            if time.time() - startTime > 5:
-                break        
-
-    
-        self.rdm.shutdown_cmd_hex = 0x0
-        self.rdm.legacy_shutdown_cmd_hex = 0x0
-        
-        self.rdm.enable()
+       
+        self.rdm.enable(bus)
         # Send CAN continously
         while(TransmitFlag):
-            #self.enable_cmd = 'cmd_enable'
             self.rdm.update_CAN_msg()
             #bus.send(self.rdm.TM2_torque_cmd_msg)
             for msg in self.rdm.msg_list: 
@@ -120,21 +67,10 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
     def stop_transmit(self):
         print ("Stop CAN transmit...")
         global TransmitFlag
-        global cycle_time
         # Set this flag to stop the ongoing transmittion 
         TransmitFlag = False
-        # Send msg 5 more times before complete stop
-        self.rdm.disable()
-        self.rdm.set_torque(0)
-        self.rdm.torque_protect_val = 0
-        self.rdm.update_CAN_msg()
-        
-        for i in range(5):          
-            for msg in self.rdm.msg_list: 
-                bus.send(msg)   
-            # Send messages every 10 ms    
-            time.sleep(cycle_time)  
-    
+        self.rdm.disable(bus)
+  
 
 
     def start_CAN_thread(self):

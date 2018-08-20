@@ -28,27 +28,19 @@ counter1 = 0
 counter2 = 0
 ##################################### RDM Class definition ############################################
 class RDM:
-    def __init__(self,
-                 AccPedalPos = 0,
-                 arc = 0,
-                 crc = 0,
-                 direction = 'D',
-                 legacy_enable_cmd = 'not_enabled',
-                 legacy_shutdown_cmd = 'no_shutdown_requested',
-                 torque_cmd = 0,
-                 torque_protect_val = 0):
+    def __init__(self):
         
         # Initilize signals
-        self.direction           = direction
-        self.legacy_enable_cmd   = legacy_enable_cmd
-        self.legacy_shutdown_cmd = legacy_shutdown_cmd
-        self.enable_cmd          = "off"
-        self.shutdown_cmd        = "no_cmd"
-        self.torque_cmd          = torque_cmd
-        self.torque_protect_val  = torque_protect_val
-        self.AccPedalPos         = AccPedalPos
-        self.arc                 = arc
-        self.crc                 = crc
+        self.direction           = 'D'
+        self.legacy_enable_cmd   = 0x5
+        self.legacy_shutdown_cmd = 0x0
+        self.enable_cmd          = 0x0
+        self.shutdown_cmd        = 0x0
+        self.torque_cmd          = 0x0
+        self.torque_protect_val  = 0x0
+        self.AccPedalPos         = 0x0
+        self.arc                 = 0
+        self.crc                 = 0
         ######## Inverter Status  ######
         self.TM1_inv_temp_sens   = 9999
         self.TM1_motor_temp_sens = 9999
@@ -71,34 +63,78 @@ class RDM:
         self.torque_cmd = target_torque
         #self.update_CAN_msg()
 
-    def enable(self):                                                 # Send enable command to INV
-        self.legacy_shutdown_cmd = "no_shutdown_requested"
-        self.shutdown_cmd = "no_cmd"
-        time.sleep(0.1)
-        self.legacy_enable_cmd = "enabled"
-        self.enable_cmd        = "prop_ready"
-        #self.update_CAN_msg()
+    def enable(self,bus):                                                 # Send enable command to INV
+        # no commmand
+        self.legacy_shutdown_cmd = 0x0
+        self.shutdown_cmd = 0x0
+        # enable command
+        self.legacy_enable_cmd = 0xA
+        # set torque command to zero
+        self.set_torque(0)
+        # Must enable in the following sequence
+        
+        enable_seq = [0x0, 0x1, 0x2, 0x3]
 
-        #print('RDM enabled: ',self.legacy_enable_cmd)
-        #print('RDM shutdown: ',self.legacy_shutdown_cmd)
+        # Wait 1 second before transition to next step
+        for step in enable_seq:        
+            startTime = time.time()
+            self.enable_cmd = step
+           
 
-    def disable(self):                                                # Send disable command to INV
-        self.legacy_enable_cmd = "not_enabled"
-        self.enable_cmd = "off"
-        time.sleep(0.1)
-        self.legacy_shutdown_cmd = "inverter_shutdown_requested"
-        self.shutdown_cmd = "shutdown_w_discharge"
-        #self.update_CAN_msg()
+            while(True):
+                # update in the loop to ensure ARC increment correctly
+                self.update_CAN_msg()
+                for msg in self.msg_list: 
+                    bus.send(msg)
+                time.sleep(0.008)
+                if time.time() - startTime > 0.5:
+                    break
 
-        #print('RDM enabled: ',self.legacy_enable_cmd)
-        #print('RDM shutdown: ',self.legacy_shutdown_cmd)
+    def disable(self,bus):                                                
+        # set torque command to zero
+        self.set_torque(0)
+        # disable with the following sequence
+        # IMPORTANT: PULL WUP LINE LOW
+        disable_seq = [0x3, 0x2, 0x1, 0x0]
 
-    def change_direction(self,new_direction):                                         # Flip between D -> R
+        # Wait 1 second before transition to next step
+        for step in disable_seq:        
+            startTime = time.time()
+            self.enable_cmd = step
+
+
+            while(True):
+                # update in the loop to ensure ARC increment correctly
+                self.update_CAN_msg()
+                for msg in self.msg_list: 
+                    bus.send(msg)
+                time.sleep(0.008)
+                if time.time() - startTime > 0.5:
+                    break
+        # After enable_cmd becomes zero, send shutdown request
+        # shutdown requested
+        self.legacy_shutdown_cmd = 0x1
+        # shutdown w/ active discharge
+        self.shutdown_cmd = 0x2
+        # not enabled
+        self.legacy_enable_cmd = 0x5
+        
+        while(True):
+            # update in the loop to ensure ARC increment correctly
+            self.update_CAN_msg()
+            for msg in self.msg_list: 
+                bus.send(msg)
+            time.sleep(0.008)
+            if time.time() - startTime > 2:
+                break
+
+
+    def set_direction(self,new_direction):                              # Flip between D -> R
         if new_direction == 'D':
             self.direction = 'D'
         elif new_direction == 'R':
             self.direction = 'R'
-        #self.update_CAN_msg()
+
 
 
     def get_TM1_status(self,msg):                                      # Pass CAN message in as argument
@@ -172,26 +208,26 @@ class RDM:
 
 
     def update_CAN_msg(self):
-        cmd2hex = {'R_TM1': 0x5,
-                   'R_TM2': 0xA,
-                   'D_TM1': 0x0A,
-                   'D_TM2': 0x05,
-                   # legacy commands
-                   'not_enabled': 0x05,
-                   'enabled': 0x0A,
-                   'no_shutdown_requested': 0x00,
-                   'inverter_shutdown_requested': 0x01,
-                   # 2.0 commands
-                   'prop_ready': 0x03,
-                   'off': 0x0,
-                   'no_cmd': 0x0,
-                   'shutdown_w_discharge': 0x2,
-                   'cmd_enable': 0x1,
-                   '0x0': 0x0,
-                   '0x1': 0x1,
-                   '0x2': 0x2,
-                   '0x3': 0x3,
-                   }
+##        cmd2hex = {'R_TM1': 0x5,
+##                   'R_TM2': 0xA,
+##                   'D_TM1': 0x0A,
+##                   'D_TM2': 0x05,
+##                   # legacy commands
+##                   'not_enabled': 0x05,
+##                   'enabled': 0x0A,
+##                   'no_shutdown_requested': 0x00,
+##                   'inverter_shutdown_requested': 0x01,
+##                   # 2.0 commands
+##                   'prop_ready': 0x03,
+##                   'off': 0x0,
+##                   'no_cmd': 0x0,
+##                   'shutdown_w_discharge': 0x2,
+##                   'cmd_enable': 0x1,
+##                   '0x0': 0x0,
+##                   '0x1': 0x1,
+##                   '0x2': 0x2,
+##                   '0x3': 0x3,
+##                   }
 
         
         # Convert input to hex
@@ -203,20 +239,18 @@ class RDM:
             self.TM2_direction_hex =  0x05            # CCW
 
         # legacy commands
-        #self.legacy_enable_cmd_hex = cmd2hex[self.legacy_enable_cmd]
-        self.legacy_enable_cmd_hex = cmd2hex[self.enable_cmd]
-        self.legacy_shutdown_cmd_hex = cmd2hex[self.legacy_shutdown_cmd]
+        self.legacy_enable_cmd_hex = self.legacy_enable_cmd
+        self.legacy_shutdown_cmd_hex = self.legacy_shutdown_cmd
 
-        #self.legacy_shutdown_cmd_hex = 0x1
-
+        
         # 2.0 commands
-        self.enable_cmd_hex = cmd2hex[self.enable_cmd]
-        self.shutdown_cmd_hex = cmd2hex[self.shutdown_cmd]
+        self.enable_cmd_hex = self.enable_cmd
+        self.shutdown_cmd_hex = self.shutdown_cmd
         
 
         self.arc                    = (self.arc + 1) % 4                                   # rolling counter 0 - 3
         self.torque_cmd_hex         = limit(self.torque_cmd + 1024,0x0,0x7FF)              # torque command
-        self.torque_protect_val_hex = 0  #self.torque_cmd_hex                                  # torque protect = torque command
+        self.torque_protect_val_hex = self.torque_protect_val                                 # torque protect = torque command
         self.torque_env_high_hex    = limit((self.torque_cmd_hex + 0xfa),0x0,0x7FF)
         self.torque_env_low_hex     = limit((self.torque_cmd_hex - 0xfa),0x0,0x7FF)
 
@@ -344,17 +378,6 @@ def limit(num,min,max):                 #limit range for torque command or any o
     elif num > max:
         return max
 
-##def crc8(buff):
-##    crc = 0xFF
-##    
-##    for b in buff:
-##        crc ^= b
-##        for i in range(7,-1):
-##            if crc & 0x80:
-##                crc = (crc << 1) ^ 0x1d
-##            else:
-##                crc = crc << 1
-##    return ~crc & 0x00FF
 
 def crc8(RAW_DATA):
     remainder = np.uint32(0xff)
@@ -371,7 +394,7 @@ def crc8(RAW_DATA):
                 remainder = (remainder << 1)
         
         remainder = np.uint32(remainder)
-        #print(remainder)
+        
 
     CRCResult = ~remainder & 0x00FF
     return CRCResult
@@ -406,43 +429,16 @@ def initCAN():
 
 if __name__ == "__main__":
     initCAN()
-    #def __init__(self,  AccPedalPos = 0x50, arc = 0, crc = 0, direction = 'D', legacy_enable_cmd = 'not_enabled', legacy_shutdown_cmd = 'no_shutdown_requested', torque_cmd = 0, torque_protect_val = 0):
     bunny = RDM()
 
-    ####### Test changing torque command #########
-    """while True:
 
-    bus.send(bunny.TM1_torque_cmd_msg)
-    #bus.send(bunny.TM2_torque_cmd_msg)
-    bunny.enable()
-    bus.send(bunny.TM1_torque_cmd_msg)
-    #bus.send(bunny.TM2_torque_cmd_msg)
-    bunny.change_direction('R')
-    for i in range(-2000,2000,10):
-        bunny.set_torque(i)
-        bus.send(bunny.TM1_torque_cmd_msg)
-        #bus.send(bunny.TM2_torque_cmd_msg)
-        bus.send(bunny.TM1_torque_protect_msg)
-        #bunny.printAll()
-    bunny.disable()
-    bunny.change_direction('D')
-    bus.send(bunny.TM1_torque_cmd_msg)
-    bus.send(bunny.TM1_torque_protect_msg)
-    #bus.send(bunny.TM2_torque_cmd_msg)"""
     ######## Test enable/disable  ################
     while True:
-        #bunny.enable()
-        #bunny.print_CAN()
+        bunny.enable(bus)
         bunny.set_torque(100)
-        bus.send(bunny.TM1_torque_cmd_msg)
-##        bus.send(bunny.TM2_torque_cmd_msg)
-
-
-##        bus.send(bunny.TM1_torque_cmd_msg)
-##        bus.send(bunny.TM2_torque_cmd_msg)
-        #bunny.print_CAN()
-        time.sleep(1)
-
+        bunny.update_CAN_msg()
+        bunny.disable(bus)
+        bunny.update_CAN_msg()
     ########### Test reading inverter status #######
     """while True:
         for msg in bus:
