@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'rdm_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.7
+# Created by: PyQt5 UI code generator 5.11.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -187,6 +187,17 @@ class Ui_MainWindow(object):
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
         self.label_4.setGeometry(QtCore.QRect(0, 0, 800, 70))
         self.label_4.setObjectName("label_4")
+        self.enableBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.enableBtn.setGeometry(QtCore.QRect(180, 90, 93, 33))
+        font = QtGui.QFont()
+        font.setFamily("MS Shell Dlg 2")
+        font.setPointSize(10)
+        font.setBold(False)
+        font.setItalic(False)
+        font.setWeight(50)
+        self.enableBtn.setFont(font)
+        self.enableBtn.setStyleSheet("background-color: rgb(118, 118, 113);")
+        self.enableBtn.setObjectName("enableBtn")
         self.label_2.raise_()
         self.label_3.raise_()
         self.groupBox.raise_()
@@ -198,6 +209,7 @@ class Ui_MainWindow(object):
         self.label_4.raise_()
         self.menuBtn.raise_()
         self.epbBtn.raise_()
+        self.enableBtn.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusBar = QtWidgets.QStatusBar(MainWindow)
         self.statusBar.setObjectName("statusBar")
@@ -221,5 +233,6 @@ class Ui_MainWindow(object):
         self.label_2.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><img src=\":/background/graphics/revero_800.png\"/></p></body></html>"))
         self.label_3.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><img src=\":/titlebar/graphics/titlebar.png\"/></p></body></html>"))
         self.label_4.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt;\">RDM Bench</span></p></body></html>"))
+        self.enableBtn.setText(_translate("MainWindow", "Enable"))
 
 import rdm_graphics_rc

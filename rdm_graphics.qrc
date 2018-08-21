@@ -1,0 +1,16 @@
+<RCC>
+  <qresource prefix="background">
+    <file>graphics/revero_800.png</file>
+  </qresource>
+  <qresource prefix="titlebar">
+    <file>graphics/titlebar.png</file>
+  </qresource>
+  <qresource prefix="epb_graphics">
+    <file>graphics/epb_pressed.png</file>
+    <file>graphics/epb_normal.png</file>
+  </qresource>
+  <qresource prefix="menu_graphics">
+    <file>graphics/menu_normal.png</file>
+    <file>graphics/menu_pressed.png</file>
+  </qresource>
+</RCC>
