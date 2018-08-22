@@ -94,15 +94,13 @@ class RDM:
         # set torque command to zero
         self.set_torque(0)
         # disable with the following sequence
-        # IMPORTANT: PULL WUP LINE LOW
+
         disable_seq = [0x3, 0x2, 0x1, 0x0]
 
-        # Wait 1 second before transition to next step
+        # Wait 0.5 second before transition to next step
         for step in disable_seq:        
             startTime = time.time()
             self.enable_cmd = step
-
-
             while(True):
                 # update in the loop to ensure ARC increment correctly
                 self.update_CAN_msg()
@@ -111,14 +109,14 @@ class RDM:
                 time.sleep(0.008)
                 if time.time() - startTime > 0.5:
                     break
-        # After enable_cmd becomes zero, send shutdown request
+                
+        # After enable_cmd becomes zero, send shutdown request for alit more time (2 seconds)
         # shutdown requested
         self.legacy_shutdown_cmd = 0x1
         # shutdown w/ active discharge
         self.shutdown_cmd = 0x2
         # not enabled
-        self.legacy_enable_cmd = 0x5
-        
+        self.legacy_enable_cmd = 0x5       
         while(True):
             # update in the loop to ensure ARC increment correctly
             self.update_CAN_msg()
@@ -128,8 +126,14 @@ class RDM:
             if time.time() - startTime > 2:
                 break
 
+        # TODO: PULL WUP LINE LOW
 
-    def set_direction(self,new_direction):                              # Flip between D -> R
+        # Finally, reset all shutdown command to default value
+        self.legacy_enable_cmd   = 0x5
+        self.legacy_shutdown_cmd = 0x0
+
+
+    def set_direction(self,new_direction):                             
         if new_direction == 'D':
             self.direction = 'D'
         elif new_direction == 'R':
@@ -365,8 +369,6 @@ class RDM:
                          self.TM1_torque_protect_msg,
                          self.TM2_torque_protect_msg]
 
-##        self.msg_list = [self.TM2_torque_cmd_msg,
-##                         self.TM2_torque_protect_msg]
 
 #################################   RDM methods END ########################################################
 

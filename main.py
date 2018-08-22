@@ -15,7 +15,7 @@ torque_value = 0
 cycle_time = 0.01
 
 # Add these options to torqueCmdBox
-torqueCmdBoxValues = ['0 nm', '10 nm', '50 nm', '100 nm']
+torqueCmdBoxValues = ['0 nm', '10 nm', '30 nm', '50 nm', '70 nm', '100 nm']
 
 
 class ExampleApp(QMainWindow, Ui_MainWindow):
