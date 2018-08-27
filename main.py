@@ -1,3 +1,7 @@
+""" Author: Khuong Nguyen, Vu Le
+    2.0 RDM Application Script"""
+
+
 from PyQt5.QtWidgets import QMainWindow, QApplication
 #from PyQt5.QtGui import QIcon, QPixmap
 import sys
