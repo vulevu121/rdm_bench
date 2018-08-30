@@ -23,6 +23,19 @@ TM2_TORQUE_CMD_ID     = 0x48
 TM2_TORQUE_PROTECT_ID = 0x42
 TM2_STATUS_ID         = 0x154
 TM1_FEEDBACK_ID       = 0xCB
+
+Inv_Diag_Msg_ID = {'TM1': 0x781,
+                   'TM2': 0x782,
+                   'GEN': 0x780,
+               'Default': 0x783}
+Inv_Diag_Rsp_ID = {'TM1': 0x788,
+                   'TM2': 0x789,
+                   'GEN': 0x78A,
+                  'BOOT': 0x78B}
+B100_Values = {'TM1': 0x1,
+               'TM2': 0x2,
+               'GEN': 0x0}
+
 ####### Miscellaneous #######
 bus = None
 counter = 0
@@ -73,7 +86,9 @@ class RDM:
         self.torque_cmd = target_torque
         #self.update_CAN_msg()
 
-    def enable(self,bus):                                                 # Send enable command to INV
+    def enable(self,bus):
+        # pull WUP2 high
+        self.WUP2('ON')
         # no commmand
         self.legacy_shutdown_cmd = 0x0
         self.shutdown_cmd = 0x0
@@ -99,8 +114,17 @@ class RDM:
                 time.sleep(0.008)
                 if time.time() - startTime > 0.5:
                     break
-
-    def disable(self,bus):                                                
+    def WUP2(command = 'ON'):
+        if command == 'OFF':
+        # send logic LOW
+            pass
+        else:
+        # send logic HIGH
+            pass
+    
+    def disable(self,bus):
+        # TODO: PULL WUP LINE LOW
+        self.WUP2(OFF)
         # set torque command to zero
         self.set_torque(0)
         # disable with the following sequence
@@ -136,8 +160,8 @@ class RDM:
             if time.time() - startTime > 2:
                 break
 
-        # TODO: PULL WUP LINE LOW
 
+            
         # Finally, reset all shutdown command to default value
         self.legacy_enable_cmd   = 0x5
         self.legacy_shutdown_cmd = 0x0
@@ -149,7 +173,51 @@ class RDM:
         elif new_direction == 'R':
             self.direction = 'R'
 
+    def assign_id(self,bus):
+       
+        global Inv_Diag_Msg_ID
+        global Inv_Diag_Rsp_ID
+        global B100_Values
+        global curr_ID
+        global goal_ID
+        prog_pos_resp = False
+        b100_pos_resp = False
+        # User input current assigned ID / Or check current assigned ID directly
 
+        # Prompt for goal ID
+
+        # Compile message to enable programming mode
+        diag_msg = can.Message(arbitration_id = Inv_Diag_Msg_ID[curr_ID], extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
+        # Enable programming mode on inverter
+        print('Enabling programming mode...')
+        bus.send(diag_msg)
+        # Confirm positive response, then send programming command
+        print('Waiting for programing mode response...')
+        startTime = time.time()
+        while((time.time() - startTime)> 0.1):
+            msg = bus.recv()
+            if msg.arbitration_id in Inv_Diag_Rsp_ID.values():
+                if msg.data[0] == 0x6 and msg.data[1] == 0x50 and msg.data[2] == 0x2:
+                    pro_pos_resp = True
+                   
+        if pro_pos_resp:
+            print('Programming Mode Confirmed. Writing DID $B100...')
+            diag_msg = can.Message(arbitration_id = Inv_Diag_Msg_ID[goal_ID], extended_id = False,dlc = 8, data=[0x5,0x2E,0xB1,0x0,0x0,B100_Values[goal_ID]])
+            bus.send(diag_msg)
+            # Confirm positive response, power cycle
+            print('Waiting for $B100 response...')
+            startTime = time.time()
+            while((time.time() - startTime)> 0.2):
+                msg = bus.recv()
+                if msg.arbitration_id in Inv_Diag_Rsp_ID.values():
+                    if msg.data[0] == 0x3 and msg.data[1] == 0x6E and msg.data[2] == 0xB1 and msg.data[3] == 0x0:
+                        print('DID $B100 Written Successfully...\n Please Cycle Power')
+                        b100_pos_resp = True
+                    # Request current ID and dislay on GUI
+                else:
+                    print('DID $B100 Not Written...\n Please Cycle Power And Try Again\n')                         
+        else:
+            print('Programming mode no response...')                   
 
     def get_inverters_status(self,bus):
         startTime = time.time()
@@ -198,28 +266,6 @@ class RDM:
         except:
             return 'Not Available'
             
-
-##    def printAll(self):                                # Use for while/for loop only
-##        global counter
-##        if counter == 500:
-##            print('direction:\t',self.direction)
-##            print('legacy enable:\t',self.legacy_enable_cmd)
-##            print('legacy shutdown:\t',self.legacy_shutdown_cmd)
-##            print('torque command:\t',self.torque_cmd)
-##            print('torque protect value:\t',self.torque_protect_val)
-##            print('accel pedal sensor:\t',self.AccPedalPos)
-##            print('arc:\t\t',self.arc)
-##            print('TM1 torque command msg:\t', self.TM1_torque_cmd_msg)
-##            print('TM1 torque protect msg:\t', self.TM1_torque_protect_msg)
-##            print('TM1 status signal:\t',       self.TM1_status_string)
-##            print('TM2 torque protect msg:\t', self.TM2_torque_protect_msg)
-##            print('TM2 torque command msg:\t', self.TM2_torque_cmd_msg)
-##            print('TM2 status signal:\t',       self.TM2_status_string)
-##            counter = 0
-##        else:
-##            counter += 1
-
-
 
 
     def update_CAN_msg(self):
