@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" Author: Khuong Nguyen, Vu Le, Tai Le
+""" Author: Khuong Nguyen, Vu Le, Tai Le, Tim Medina
     Script for controlling 2.0  Inverter"""
 
 
