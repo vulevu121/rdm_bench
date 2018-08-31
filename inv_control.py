@@ -24,23 +24,10 @@ TM2_TORQUE_PROTECT_ID = 0x42
 TM2_STATUS_ID         = 0x154
 TM1_FEEDBACK_ID       = 0xCB
 
-Inv_Diag_Msg_ID = {'TM1': 0x781,
-                   'TM2': 0x782,
-                   'GEN': 0x780,
-               'Default': 0x783}
-Inv_Diag_Rsp_ID = {'TM1': 0x788,
-                   'TM2': 0x789,
-                   'GEN': 0x78A,
-                  'BOOT': 0x78B}
-B100_Values = {'TM1': 0x1,
-               'TM2': 0x2,
-               'GEN': 0x0}
 
 ####### Miscellaneous #######
 bus = None
-counter = 0
-counter1 = 0
-counter2 = 0
+
 ##################################### RDM Class definition ############################################
 class RDM:
     def __init__(self):
@@ -173,24 +160,37 @@ class RDM:
         elif new_direction == 'R':
             self.direction = 'R'
 
-    def assign_id(self,bus):
-       
-        global Inv_Diag_Msg_ID
-        global Inv_Diag_Rsp_ID
-        global B100_Values
-        global curr_ID
-        global goal_ID
+    def assign_id(self,bus,goal_ID = 'GEN'):
+        # Use this ID to enable Programming Mode 
+        Inv_Diag_Msg_ID = {'TM1'    : 0x781,
+                           'TM2'    : 0x782,
+                           'GEN'    : 0x780,
+                           'DEFAULT': 0x783}
+        
+        Inv_Diag_Rsp_ID = {'TM1' : 0x788,
+                           'TM2' : 0x789,
+                           'GEN' : 0x78A,
+                           'BOOT': 0x78B}
+        
+        # Use this to assign new ID
+        B100_Values = {'TM1': 0x1,
+                       'TM2': 0x2,
+                       'GEN': 0x0}
+
+        curr_ID = None
         prog_pos_resp = False
         b100_pos_resp = False
-        # User input current assigned ID / Or check current assigned ID directly
 
-        # Prompt for goal ID
-
-        # Compile message to enable programming mode
-        diag_msg = can.Message(arbitration_id = Inv_Diag_Msg_ID[curr_ID], extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
+        # Compile message to enable programming mode regardless of the current ID
+        diag_msg_TM1     = can.Message(arbitration_id = Inv_Diag_Msg_ID['TM1'],     extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
+        diag_msg_TM2     = can.Message(arbitration_id = Inv_Diag_Msg_ID['TM2'],     extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
+        diag_msg_GEN     = can.Message(arbitration_id = Inv_Diag_Msg_ID['GEN'],     extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
+        diag_msg_DEFAULT = can.Message(arbitration_id = Inv_Diag_Msg_ID['DEFAULT'], extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
+        diag_msg_list = [diag_msg_TM1,diag_msg_TM2,diag_msg_GEN,diag_msg_DEFAULT]
         # Enable programming mode on inverter
         print('Enabling programming mode...')
-        bus.send(diag_msg)
+        for diag_msg in diag_msg_list:
+            bus.send(diag_msg)
         # Confirm positive response, then send programming command
         print('Waiting for programing mode response...')
         startTime = time.time()
@@ -199,10 +199,12 @@ class RDM:
             if msg.arbitration_id in Inv_Diag_Rsp_ID.values():
                 if msg.data[0] == 0x6 and msg.data[1] == 0x50 and msg.data[2] == 0x2:
                     pro_pos_resp = True
-                   
+                    # Assume there will only be 1 response from the inverter with the current ID information
+                    curr_ID = msg.arbitration_id
+
         if pro_pos_resp:
             print('Programming Mode Confirmed. Writing DID $B100...')
-            diag_msg = can.Message(arbitration_id = Inv_Diag_Msg_ID[goal_ID], extended_id = False,dlc = 8, data=[0x5,0x2E,0xB1,0x0,0x0,B100_Values[goal_ID]])
+            diag_msg = can.Message(arbitration_id = curr_ID, extended_id = False, dlc = 8, data=[0x5,0x2E,0xB1,0x0,0x0,B100_Values[goal_ID]])
             bus.send(diag_msg)
             # Confirm positive response, power cycle
             print('Waiting for $B100 response...')
@@ -215,7 +217,7 @@ class RDM:
                         b100_pos_resp = True
                     # Request current ID and dislay on GUI
                 else:
-                    print('DID $B100 Not Written...\n Please Cycle Power And Try Again\n')                         
+                    print('DID $B100 Not Written...\n Please Cycle Power And Try Again')                         
         else:
             print('Programming mode no response...')                   
 
@@ -249,7 +251,7 @@ class RDM:
                 break
         
 
-    def decode_inv_status(self,status):                                     # Pass status signal in as argument
+    def decode_inv_status(self,status):                                     
         status2str = {0x1: 'INIT_ECU',
                       0x2: 'INIT_SYS',
                       0x3: 'NORMAL_ENABLE',
@@ -465,22 +467,6 @@ def initCAN():
 
 
 if __name__ == "__main__":
-##    initCAN()
-##    bunny = RDM()
-##
-##
-##    ######## Test enable/disable  ################
-##    while True:
-##        bunny.enable(bus)
-##        bunny.set_torque(100)
-##        bunny.update_CAN_msg()
-##        bunny.disable(bus)
-##        bunny.update_CAN_msg()
-    ########### Test reading inverter status #######
-    """while True:
-        for msg in bus:
-            if msg.arbitration_id == TM1_STATUS_ID:
-                bunny.get_TM1_status(msg)
-            elif msg.arbitration_id == TM2_STATUS_ID:
-                bunny.get_TM2_status(msg)
-            bunny.printAll()"""
+    initCAN()
+    rdm = RDM()
+    rdm.assign_id(bus)
