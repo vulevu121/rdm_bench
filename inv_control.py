@@ -10,7 +10,7 @@ from can import Message
 import time
 import subprocess
 import datetime
-import numpy as np
+import numpy as np                                                                                                                                                                   
 
 ######## CAN ID ################
 TM1_TORQUE_CMD_ID     = 0x47
@@ -194,22 +194,22 @@ class RDM:
         # Confirm positive response, then send programming command
         print('Waiting for programing mode response...')
         startTime = time.time()
-        while((time.time() - startTime)> 0.1):
+        while((time.time() - startTime) < 0.1):
             msg = bus.recv()
             if msg.arbitration_id in Inv_Diag_Rsp_ID.values():
                 if msg.data[0] == 0x6 and msg.data[1] == 0x50 and msg.data[2] == 0x2:
-                    pro_pos_resp = True
+                    prog_pos_resp = True
                     # Assume there will only be 1 response from the inverter with the current ID information
                     curr_ID = msg.arbitration_id
 
-        if pro_pos_resp:
+        if prog_pos_resp:
             print('Programming Mode Confirmed. Writing DID $B100...')
             diag_msg = can.Message(arbitration_id = curr_ID, extended_id = False, dlc = 8, data=[0x5,0x2E,0xB1,0x0,0x0,B100_Values[goal_ID]])
             bus.send(diag_msg)
             # Confirm positive response, power cycle
             print('Waiting for $B100 response...')
             startTime = time.time()
-            while((time.time() - startTime)> 0.2):
+            while((time.time() - startTime) < 0.2):
                 msg = bus.recv()
                 if msg.arbitration_id in Inv_Diag_Rsp_ID.values():
                     if msg.data[0] == 0x3 and msg.data[1] == 0x6E and msg.data[2] == 0xB1 and msg.data[3] == 0x0:
@@ -432,7 +432,7 @@ def crc8(RAW_DATA):
             else:
                 remainder = (remainder << 1)
         
-        remainder = np.uint32(remainder)
+        remainder = np.uint32(remainder) 
         
 
     CRCResult = ~remainder & 0x00FF
