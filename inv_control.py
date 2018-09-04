@@ -167,10 +167,10 @@ class RDM:
                            'GEN'    : 0x780,
                            'DEFAULT': 0x783}
         
-        Inv_Diag_Rsp_ID = {'TM1' : 0x788,
-                           'TM2' : 0x789,
-                           'GEN' : 0x78A,
-                           'BOOT': 0x78B}
+        ID_to_name = {1921 :'TM1',
+                      1922 :'TM2',
+                      1920 :'GEN',
+                      1923 :'BOOT'}
         
         # Use this to assign new ID
         B100_Values = {'TM1': 0x1,
@@ -178,69 +178,7 @@ class RDM:
                        'GEN': 0x0}
 
         curr_ID = None
-        prog_pos_resp = False
-        b100_pos_resp = False
-
-        # Compile message to enable programming mode regardless of the current ID
-        diag_msg_TM1     = can.Message(arbitration_id = Inv_Diag_Msg_ID['TM1'],     extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
-        diag_msg_TM2     = can.Message(arbitration_id = Inv_Diag_Msg_ID['TM2'],     extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
-        diag_msg_GEN     = can.Message(arbitration_id = Inv_Diag_Msg_ID['GEN'],     extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
-        diag_msg_DEFAULT = can.Message(arbitration_id = Inv_Diag_Msg_ID['DEFAULT'], extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
-        diag_msg_list = [diag_msg_TM1,diag_msg_TM2,diag_msg_GEN,diag_msg_DEFAULT]
-        # Enable programming mode on inverter. IMPORTANT: expect only 1 response from the inverter even if 4 msg are sent
-        print('Enabling programming mode...')
-        for diag_msg in diag_msg_list:
-            bus.send(diag_msg)
-            response = bus.recv(timeout = 0.1)
-            time.sleep(0.01)
-        # Confirm positive response, then send programming command
-        print('Waiting for programing mode response...')
-        startTime = time.time()
-        while((time.time() - startTime) < 0.1):
-            msg = bus.recv(timeout = 1)
-            if msg.arbitration_id in Inv_Diag_Rsp_ID.values():
-                if msg.data[0] == 0x6 and msg.data[1] == 0x50 and msg.data[2] == 0x2:
-                    prog_pos_resp = True
-                    # Assume there will only be 1 response from the inverter with the current ID information
-                    curr_ID = msg.arbitration_id
-
-        if prog_pos_resp:
-            print('Programming Mode Confirmed. Writing DID $B100...')
-            diag_msg = can.Message(arbitration_id = curr_ID, extended_id = False, dlc = 8, data=[0x5,0x2E,0xB1,0x0,0x0,B100_Values[goal_ID]])
-            bus.send(diag_msg)
-            # Confirm positive response, power cycle
-            print('Waiting for $B100 response...')
-            startTime = time.time()
-            while((time.time() - startTime) < 0.2):
-                msg = bus.recv(timeout = 1)
-                if msg.arbitration_id in Inv_Diag_Rsp_ID.values():
-                    if msg.data[0] == 0x3 and msg.data[1] == 0x6E and msg.data[2] == 0xB1 and msg.data[3] == 0x0:
-                        print('DID $B100 Written Successfully...\n Please Cycle Power')
-                        b100_pos_resp = True
-                    # Request current ID and dislay on GUI
-                else:
-                    print('DID $B100 Not Written...\n Please Cycle Power And Try Again')                         
-        else:
-            print('Programming mode no response...')                   
-
-    def assign_id2(self,bus,goal_ID = 'GEN'):
-        # Use this ID to enable Programming Mode 
-        Inv_Diag_Msg_ID = {'TM1'    : 0x781,
-                           'TM2'    : 0x782,
-                           'GEN'    : 0x780,
-                           'DEFAULT': 0x783}
-        
-        Inv_Diag_Rsp_ID = {'TM1' : 0x788,
-                           'TM2' : 0x789,
-                           'GEN' : 0x78A,
-                           'BOOT': 0x78B}
-        
-        # Use this to assign new ID
-        B100_Values = {'TM1': 0x1,
-                       'TM2': 0x2,
-                       'GEN': 0x0}
-
-        curr_ID = None
+        b100_resp = []
         prog_pos_resp = False
         b100_pos_resp = False
 
@@ -258,6 +196,7 @@ class RDM:
             response = bus.recv(timeout = 0.1)
             if response != None:
                 curr_ID = diag_msg.arbitration_id
+
                 break
         # Confirm positive response, then send programming command
         print('Waiting for programing mode response...')
@@ -266,24 +205,26 @@ class RDM:
                 prog_pos_resp = True
                 
             if prog_pos_resp:
-                print('Programming Mode Confirmed. Writing DID $B100...')
+                
+                print('{} confirmed Programming Mode. New ID is {}. Writing DID $B100...'.format(ID_to_name[curr_ID],goal_ID))
                 diag_msg = can.Message(arbitration_id = curr_ID, extended_id = False, dlc = 8, data=[0x5,0x2E,0xB1,0x0,0x0,B100_Values[goal_ID]])
                 bus.send(diag_msg)
                 # Confirm positive response. The confirmation comes in the 2nd response from the inverter. Need to save all the response for processing
                 print('Waiting for $B100 response...')
-                b100_resp.append(bus.recv(timeout = 0.1))
-
+                startTime = time.time()
+                while(time.time() - startTime < 0.1):
+                    b100_resp.append(bus.recv())
+                    
                 if len(b100_resp) != 0:
                     for resp in b100_resp:
                         if resp.data[0] == 0x3 and resp.data[1] == 0x6E and resp.data[2] == 0xB1 and resp.data[3] == 0x0:
-                            print('DID $B100 Written Successfully...\nPlease Cycle Power')
+                            print('DID $B100 Written Successfully...\nPlease Cycle Power\n')
                             b100_pos_resp = True           
                 else:
-                    print('DID $B100 Not Written...\nPlease Cycle Power And Try Again')   
-
+                    print('DID $B100 Not Written...\nPlease Cycle Power And Try Again\n')
                 
         else:
-            print('Programming mode no response...')
+            print('Programming mode no response...\n')
 
 
         
@@ -537,4 +478,8 @@ def initCAN():
 if __name__ == "__main__":
     initCAN()
     rdm = RDM()
-    rdm.assign_id2(bus)
+    rdm.assign_id(bus,'GEN')
+    # For some reason, need 5 second in between calls to print out the right from and goal ID
+    time.sleep(5)              
+    rdm.assign_id(bus,'TM2')
+ 
