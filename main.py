@@ -3,7 +3,6 @@
 
 
 from PyQt5.QtWidgets import QMainWindow, QApplication
-#from PyQt5.QtGui import QIcon, QPixmap
 import sys
 
 from rdm_gui import *
@@ -13,7 +12,7 @@ import re
 
 
 TransmitFlag = False
-EnableFlag   = False
+EnableFlag   = False                                                                                                                                   
 ReadFlag     = False
 bus = None
 torque_value = 0
@@ -29,9 +28,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         # Add items to combo box
-        global torqueCmdBoxValues
-        self.torqueCmdBox.clear()
-        self.torqueCmdBox.addItems(torqueCmdBoxValues)
+        #global torqueCmdBoxValues
+        #self.torqueCmdBox.clear()
+        #self.torqueCmdBox.addItems(torqueCmdBoxValues)
 
             
         # Start CAN bus
@@ -40,7 +39,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.rdm = RDM()
 
         # Event handlers
-        self.torqueCmdBox.currentIndexChanged.connect(lambda:self.update_torque_cmd())
+##        self.torqueCmdBox.currentIndexChanged.connect(lambda:self.update_torque_cmd())
         self.startStopBtn.clicked.connect            (lambda:self.start_CAN_thread())
         self.enableBtn.clicked.connect               (lambda:self.enable_RDM())
         self.torqueCmdMinus.clicked.connect          (lambda:self.minus_torque())
@@ -72,12 +71,12 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Update torque display
         self.torqueCmdBox_2.setText('{} nm'.format(torque_value))    
     
-    def update_torque_cmd(self):
-        global torque_value
-        # Check for change in torque command value (from dropdown menu)
-        # and convert to integer
-        torque_value = numberFromString(self.torqueCmdBox.currentText())
-        self.rdm.set_torque(torque_value)
+##    def update_torque_cmd(self):
+##        global torque_value
+##        # Check for change in torque command value (from dropdown menu)
+##        # and convert to integer
+##        torque_value = numberFromString(self.torqueCmdBox.currentText())
+##        self.rdm.set_torque(torque_value)
 
     def enable_RDM(self):
         print("Enable RDM...")
@@ -169,8 +168,8 @@ def initCAN():
 def main():
     app = QApplication(sys.argv)
     form = ExampleApp()
-    form.show()
-    #form.showFullScreen()
+    #form.show()
+    form.showFullScreen()
     app.exec_()
 	
 if __name__ == '__main__':

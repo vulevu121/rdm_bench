@@ -103,7 +103,7 @@ class RDM:
                 time.sleep(0.008)
                 if time.time() - startTime > 0.5:
                     break
-    def WUP2(command = 'ON'):
+    def WUP2(self,command = 'ON'):
         if command == 'OFF':
         # send logic LOW
             pass
@@ -113,7 +113,7 @@ class RDM:
     
     def disable(self,bus):
         # TODO: PULL WUP LINE LOW
-        self.WUP2(OFF)
+        self.WUP2('OFF')
         # set torque command to zero
         self.set_torque(0)
         # disable with the following sequence
