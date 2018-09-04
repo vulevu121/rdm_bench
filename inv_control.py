@@ -256,7 +256,7 @@ class RDM:
         for diag_msg in diag_msg_list:
             bus.send(diag_msg)
             response = bus.recv(timeout = 0.1)
-
+            if response != None: break
         # Confirm positive response, then send programming command
         print('Waiting for programing mode response...')
         if response != None:
