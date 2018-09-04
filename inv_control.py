@@ -256,17 +256,18 @@ class RDM:
         for diag_msg in diag_msg_list:
             bus.send(diag_msg)
             response = bus.recv(timeout = 0.1)
-            if response != None: break
+            if response != None:
+                curr_ID = diag_msg.arbitration_id
+                break
         # Confirm positive response, then send programming command
         print('Waiting for programing mode response...')
         if response != None:
             if response.data[0] == 0x6 and response.data[1] == 0x50 and response.data[2] == 0x2:
                 prog_pos_resp = True
-                curr_ID = hex(response.arbitration_id)
                 
             if prog_pos_resp:
                 print('Programming Mode Confirmed. Writing DID $B100...')
-                diag_msg = can.Message(arbitration_id = int(curr_ID,16), extended_id = False, dlc = 8, data=[0x5,0x2E,0xB1,0x0,0x0,B100_Values[goal_ID]])
+                diag_msg = can.Message(arbitration_id = curr_ID, extended_id = False, dlc = 8, data=[0x5,0x2E,0xB1,0x0,0x0,B100_Values[goal_ID]])
                 bus.send(diag_msg)
                 # Confirm positive response, power cycle
                 print('Waiting for $B100 response...')
