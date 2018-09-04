@@ -64,6 +64,8 @@ class RDM:
         self.TM2_torque_sens     = 9999
         self.TM2_voltage_sens    = 9999
 
+        #### Single/Double Run Mode (0: both TMs, 1: TM1 Only, 2: TM2 Only ####
+        self.run_mode = 0    
         # Initialize message
         self.msg_list =[]
         self.update_CAN_msg()
@@ -196,7 +198,6 @@ class RDM:
             response = bus.recv(timeout = 0.1)
             if response != None:
                 curr_ID = diag_msg.arbitration_id
-
                 break
         # Confirm positive response, then send programming command
         print('Waiting for programing mode response...')
@@ -224,10 +225,7 @@ class RDM:
                     print('DID $B100 Not Written...\nPlease Cycle Power And Try Again\n')
                 
         else:
-            print('Programming mode no response...\n')
-
-
-        
+            print('Programming mode no response...\n')        
 
 
     def get_inverters_status(self,bus):
@@ -406,15 +404,19 @@ class RDM:
 
 
         # Compile to a list to use on GUI code
-        self.msg_list = [self.TM1_torque_cmd_msg,
-                         self.TM2_torque_cmd_msg,
-                         self.TM1_torque_protect_msg,
-                         self.TM2_torque_protect_msg]
-        self.msg_list_tm1 = [self.TM1_torque_cmd_msg,
-                         self.TM1_torque_protect_msg]
-        self.msg_list_tm2 = [self.TM2_torque_cmd_msg,
+        if self.run_mode == 0:
+            self.msg_list = [self.TM1_torque_cmd_msg,
+                             self.TM2_torque_cmd_msg,
+                             self.TM1_torque_protect_msg,
                              self.TM2_torque_protect_msg]
-
+        elif self.run_mode == 1:
+            self.msg_list_tm1 = [self.TM1_torque_cmd_msg,
+                             self.TM1_torque_protect_msg]
+        elif self.run_mode == 2:
+            self.msg_list_tm2 = [self.TM2_torque_cmd_msg,
+                                 self.TM2_torque_protect_msg]
+        else:
+            print ('Invalid run mode')
 
 #################################   RDM methods END ########################################################
 
@@ -479,7 +481,7 @@ if __name__ == "__main__":
     initCAN()
     rdm = RDM()
     rdm.assign_id(bus,'GEN')
-    # For some reason, need 5 second in between calls to print out the right from and goal ID
+    # For some reason, need 5 second in between calls to print out the right from ID and goal ID
     time.sleep(5)              
     rdm.assign_id(bus,'TM2')
  
