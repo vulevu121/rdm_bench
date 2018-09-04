@@ -269,13 +269,15 @@ class RDM:
                 print('Programming Mode Confirmed. Writing DID $B100...')
                 diag_msg = can.Message(arbitration_id = curr_ID, extended_id = False, dlc = 8, data=[0x5,0x2E,0xB1,0x0,0x0,B100_Values[goal_ID]])
                 bus.send(diag_msg)
-                # Confirm positive response, power cycle
+                # Confirm positive response. The confirmation comes in the 2nd response from the inverter. Need to save all the response for processing
                 print('Waiting for $B100 response...')
-                b100_resp = bus.recv(timeout = 0.1)
+                b100_resp.append(bus.recv(timeout = 0.1))
 
-                if b100_resp != None and b100_resp.data[0] == 0x3 and b100_resp.data[1] == 0x6E and b100_resp.data[2] == 0xB1 and b100_resp.data[3] == 0x0:
-                        print('DID $B100 Written Successfully...\nPlease Cycle Power')
-                        b100_pos_resp = True           
+                if len(b100_resp) != 0:
+                    for resp in b100_resp:
+                        if resp.data[0] == 0x3 and resp.data[1] == 0x6E and resp.data[2] == 0xB1 and resp.data[3] == 0x0:
+                            print('DID $B100 Written Successfully...\nPlease Cycle Power')
+                            b100_pos_resp = True           
                 else:
                     print('DID $B100 Not Written...\nPlease Cycle Power And Try Again')   
 
