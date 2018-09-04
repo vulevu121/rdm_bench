@@ -262,21 +262,21 @@ class RDM:
         if response != None:
             if response.data[0] == 0x6 and response.data[1] == 0x50 and response.data[2] == 0x2:
                 prog_pos_resp = True
-                curr_ID = response.arbitration_id
+                curr_ID = hex(response.arbitration_id)
                 
             if prog_pos_resp:
                 print('Programming Mode Confirmed. Writing DID $B100...')
-                diag_msg = can.Message(arbitration_id = curr_ID, extended_id = False, dlc = 8, data=[0x5,0x2E,0xB1,0x0,0x0,B100_Values[goal_ID]])
+                diag_msg = can.Message(arbitration_id = int(curr_ID,16), extended_id = False, dlc = 8, data=[0x5,0x2E,0xB1,0x0,0x0,B100_Values[goal_ID]])
                 bus.send(diag_msg)
                 # Confirm positive response, power cycle
                 print('Waiting for $B100 response...')
                 b100_resp = bus.recv(timeout = 0.1)
 
                 if b100_resp != None and b100_resp.data[0] == 0x3 and b100_resp.data[1] == 0x6E and b100_resp.data[2] == 0xB1 and b100_resp.data[3] == 0x0:
-                        print('DID $B100 Written Successfully...\n Please Cycle Power')
+                        print('DID $B100 Written Successfully...\nPlease Cycle Power')
                         b100_pos_resp = True           
                 else:
-                    print('DID $B100 Not Written...\n Please Cycle Power And Try Again')   
+                    print('DID $B100 Not Written...\nPlease Cycle Power And Try Again')   
 
                 
         else:
