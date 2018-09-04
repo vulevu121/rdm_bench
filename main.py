@@ -99,8 +99,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                 EnableFlag = False
             self.rdm.update_CAN_msg()
             for msg in self.rdm.msg_list:
-            #for msg in self.rdm.msg_list_tm1:
-            #for msg in self.rdm.msg_list_tm2:
                 bus.send(msg)                
             # Send messages every 10 ms    
             time.sleep(0.007)
