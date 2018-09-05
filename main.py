@@ -31,7 +31,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         #self.torqueCmdBox.clear()
         #self.torqueCmdBox.addItems(torqueCmdBoxValues)
         self.torqueCmdBox.setText('0 Nm')  
-            
+        self.Both_radio_btn.setChecked(True) 
         # Start CAN bus
         initCAN()
         # Create RDM object
@@ -39,16 +39,17 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
         # Event handlers
         #self.torqueCmdBox.currentIndexChanged.connect(lambda:self.update_torque_cmd())
-        self.startStopBtn.clicked.connect            (lambda:self.start_CAN_thread())
-        self.enableBtn.clicked.connect               (lambda:self.enable_RDM())
-        self.torqueCmdMinus.clicked.connect          (lambda:self.minus_torque())
-        self.torqueCmdPlus.clicked.connect           (lambda:self.plus_torque())
-        self.Both_radio_btn.isChecked().connect       (lambda:self.run_mode(0))
-        self.TM1_radio_btn.isChecked().connect       (lambda:self.run_mode(1))
-        self.TM2_radio_btn.isChecked().connect       (lambda:self.run_mode(2))
+        self.startStopBtn.clicked.connect       (lambda:self.start_CAN_thread())
+        self.enableBtn.clicked.connect          (lambda:self.enable_RDM())
+        self.torqueCmdMinus.clicked.connect     (lambda:self.minus_torque())
+        self.torqueCmdPlus.clicked.connect      (lambda:self.plus_torque())
+        self.Both_radio_btn.toggled.connect     (lambda:self.run_mode(0))
+        self.TM1_radio_btn.toggled.connect      (lambda:self.run_mode(1))
+        self.TM2_radio_btn.toggled.connect      (lambda:self.run_mode(2))
         
     def run_mode(self,choice):
         self.rdm.run_mode = choice
+        #print(self.rdm.run_mode)
 
     def start_read(self):
         global ReadFlag
@@ -57,6 +58,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             self.rdm.get_inverters_status(bus)
             self.tm1StatusBox.setText(self.rdm.TM1_status_sig)
             self.tm2StatusBox.setText(self.rdm.TM2_status_sig)
+            self.rpmLCD.display(self.rdm.TM1_speed_sens)
+            self.torqueLCD.display(self.rdm.TM1_torque_sens)
             
     def minus_torque(self):
         global torque_value
@@ -83,7 +86,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         EnableFlag = True
 
     def start_transmit(self):
-        print("Start CAN transmit...")
+        print("Start CAN transmit...\n")
         global TransmitFlag
         global bus
         global torque_value
