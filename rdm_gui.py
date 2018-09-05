@@ -154,7 +154,7 @@ class Ui_MainWindow(object):
         self.radioButton_2.setObjectName("radioButton_2")
         self.verticalLayout.addWidget(self.radioButton_2)
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
-        self.label_3.setGeometry(QtCore.QRect(0, 0, 800, 79))
+        self.label_3.setGeometry(QtCore.QRect(0, 0, 800, 81))
         self.label_3.setObjectName("label_3")
         self.menuBtn = QtWidgets.QPushButton(self.centralwidget)
         self.menuBtn.setGeometry(QtCore.QRect(20, 6, 40, 40))

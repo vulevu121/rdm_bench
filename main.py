@@ -2,7 +2,7 @@
     2.0 RDM Application Script"""
 
 
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 import sys
 
 from rdm_gui import *
@@ -27,18 +27,15 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         # Add items to combo box
-        #global torqueCmdBoxValues
-        #self.torqueCmdBox.clear()
-        #self.torqueCmdBox.addItems(torqueCmdBoxValues)
         self.torqueCmdBox.setText('0 Nm')  
-        self.Both_radio_btn.setChecked(True) 
+        self.Both_radio_btn.setChecked(True)
+        radio_btns = [self.Both_radio_btn, self.TM1_radio_btn, self.TM2_radio_btn]
         # Start CAN bus
-        initCAN()
+        #initCAN()
         # Create RDM object
         self.rdm = RDM()
 
         # Event handlers
-        #self.torqueCmdBox.currentIndexChanged.connect(lambda:self.update_torque_cmd())
         self.startStopBtn.clicked.connect       (lambda:self.start_CAN_thread())
         self.enableBtn.clicked.connect          (lambda:self.enable_RDM())
         self.torqueCmdMinus.clicked.connect     (lambda:self.minus_torque())
@@ -46,10 +43,34 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.Both_radio_btn.toggled.connect     (lambda:self.run_mode(0))
         self.TM1_radio_btn.toggled.connect      (lambda:self.run_mode(1))
         self.TM2_radio_btn.toggled.connect      (lambda:self.run_mode(2))
+
+        # Pop Up meassage box
+        self.mode_msg_box = QMessageBox()
+        self.mode_msg_box.setIcon(QMessageBox.Information)
+        self.mode_msg_box.setText('RDM is running!')
+        self.mode_msg_box.setInformativeText('Please Stop RDM and try again.')
+        self.mode_msg_box.setWindowTitle("Run Mode Message")
+        self.mode_msg_box.setStandardButtons(QMessageBox.Ok)
+        #self.mode_msg_box.buttonClicked.connect(self.close_msg_box)
         
-    def run_mode(self,choice):
-        self.rdm.run_mode = choice
-        #print(self.rdm.run_mode)
+
+           
+    def run_mode(self,mode):
+        global EnableFlag
+        if EnableFlag != True:
+            self.rdm.run_mode = mode
+            self.set_radio_btns_state('locked')
+            print('Radio buttons are now locked')
+        else:
+            print('RDM is running. MODE can be changed after RDM STOP')
+            self.mode_msg_box.exec_()
+            
+    def set_radio_btns_state(self, state = 'unlocked'):
+        for btn in radio_btns:
+            if state == 'locked':
+                btn.setEnabled(False)
+            elif state == 'unlocked':
+                btn.setEnabled(True)
 
     def start_read(self):
         global ReadFlag
@@ -104,7 +125,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             for msg in self.rdm.msg_list:
                 bus.send(msg)                
             # Send messages every 10 ms    
-            time.sleep(0.005)
+            time.sleep(0.007)
 
     def stop_transmit(self):
         global TransmitFlag
@@ -119,14 +140,24 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Set this flag to  disable RDM
         print ("Disable RDM...")
         EnableFlag = False
-        # Set this flag to stop reading  inverter status
-        print ("Stop reading status...")
-        ReadFlag = False
+
         # Set this flag to stop the ongoing transmittion
         print ("Stop CAN transmit...")
         TransmitFlag = False
         self.rdm.disable(bus)
-  
+        
+        # Set this flag to stop reading  inverter status
+        print ("Stop reading status...")
+        ReadFlag = False
+
+        # clear text from status box
+        self.tm1StatusBox.clear()
+        self.tm2StatusBox.clear()
+        self.rpmLCD.display(0)
+        self.torqueLCD.display(0)
+        
+        # Unlock Run Mode radio buttons
+        self.set_radio_btns_state('unlocked')
 
 
     def start_CAN_thread(self):
