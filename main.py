@@ -101,7 +101,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             for msg in self.rdm.msg_list:
                 bus.send(msg)                
             # Send messages every 10 ms    
-            time.sleep(0.007)
+            time.sleep(0.005)
 
     def stop_transmit(self):
         global TransmitFlag
