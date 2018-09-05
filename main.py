@@ -38,11 +38,17 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.rdm = RDM()
 
         # Event handlers
-##        self.torqueCmdBox.currentIndexChanged.connect(lambda:self.update_torque_cmd())
+        #self.torqueCmdBox.currentIndexChanged.connect(lambda:self.update_torque_cmd())
         self.startStopBtn.clicked.connect            (lambda:self.start_CAN_thread())
         self.enableBtn.clicked.connect               (lambda:self.enable_RDM())
         self.torqueCmdMinus.clicked.connect          (lambda:self.minus_torque())
         self.torqueCmdPlus.clicked.connect           (lambda:self.plus_torque())
+        self.Both_radio_btn.isChecked().connect       (lambda:self.run_mode(0))
+        self.TM1_radio_btn.isChecked().connect       (lambda:self.run_mode(1))
+        self.TM2_radio_btn.isChecked().connect       (lambda:self.run_mode(2))
+        
+    def run_mode(self,choice):
+        self.rdm.run_mode = choice
 
     def start_read(self):
         global ReadFlag
