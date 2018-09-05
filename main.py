@@ -19,7 +19,6 @@ torque_value = 0
 cycle_time = 0.01
 
 # Add these options to torqueCmdBox
-torqueCmdBoxValues = ['0 nm', '10 nm','11 nm', '12 nm', '13 nm', '14 nm']
 
 
 class ExampleApp(QMainWindow, Ui_MainWindow):
@@ -31,7 +30,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         #global torqueCmdBoxValues
         #self.torqueCmdBox.clear()
         #self.torqueCmdBox.addItems(torqueCmdBoxValues)
-
+        self.torqueCmdBox.setText('0 Nm')  
             
         # Start CAN bus
         initCAN()
@@ -60,7 +59,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         torque_value = limit(torque_value - 1, 0, 14)   
         self.rdm.set_torque(torque_value)
         # Update torque display
-        self.torqueCmdBox_2.setText('{} nm'.format(torque_value))
+        self.torqueCmdBox.setText('{} Nm'.format(torque_value))
 
     def plus_torque(self):
         global torque_value
@@ -69,14 +68,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         torque_value = limit(torque_value + 1, 0, 14)   
         self.rdm.set_torque(torque_value)
         # Update torque display
-        self.torqueCmdBox_2.setText('{} nm'.format(torque_value))    
+        self.torqueCmdBox.setText('{} Nm'.format(torque_value))    
     
-##    def update_torque_cmd(self):
-##        global torque_value
-##        # Check for change in torque command value (from dropdown menu)
-##        # and convert to integer
-##        torque_value = numberFromString(self.torqueCmdBox.currentText())
-##        self.rdm.set_torque(torque_value)
 
     def enable_RDM(self):
         print("Enable RDM...")
@@ -98,6 +91,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                 self.rdm.enable(bus)
                 EnableFlag = False
             self.rdm.update_CAN_msg()
+            
             for msg in self.rdm.msg_list:
                 bus.send(msg)                
             # Send messages every 10 ms    
@@ -109,9 +103,10 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global ReadFlag
 
         # change SSB text to START
+        self.startStopBtn.setText('Start')
         self.startStopBtn.clicked.disconnect()
         self.startStopBtn.clicked.connect(lambda: self.start_CAN_thread())
-        self.startStopBtn.setText('Start')
+
         # Set this flag to  disable RDM
         print ("Disable RDM...")
         EnableFlag = False
@@ -134,9 +129,10 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         ReadFlag = True
 
         # change SSB text to STOP
+        self.startStopBtn.setText('Stop')
         self.startStopBtn.clicked.disconnect()
         self.startStopBtn.clicked.connect(lambda: self.stop_transmit())
-        self.startStopBtn.setText('Stop')
+
 
         # separate thread to prevent gui freezing. PASS HANDLE NOT FUNCTION CALL
         send_thread = threading.Thread(target=self.start_transmit, args=())
@@ -166,8 +162,8 @@ def initCAN():
 def main():
     app = QApplication(sys.argv)
     form = ExampleApp()
-    #form.show()
-    form.showFullScreen()
+    form.show()
+    #form.showFullScreen()
     app.exec_()
 	
 if __name__ == '__main__':
