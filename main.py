@@ -29,7 +29,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Add items to combo box
         self.torqueCmdBox.setText('0 Nm')  
         self.Both_radio_btn.setChecked(True)
-        radio_btns = [self.Both_radio_btn, self.TM1_radio_btn, self.TM2_radio_btn]
+        self.radio_btns = [self.Both_radio_btn, self.TM1_radio_btn, self.TM2_radio_btn]
         # Start CAN bus
         #initCAN()
         # Create RDM object
@@ -59,14 +59,13 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global EnableFlag
         if EnableFlag != True:
             self.rdm.run_mode = mode
-            self.set_radio_btns_state('locked')
-            print('Radio buttons are now locked')
+            print('Run Mode Changed')
         else:
             print('RDM is running. MODE can be changed after RDM STOP')
             self.mode_msg_box.exec_()
             
     def set_radio_btns_state(self, state = 'unlocked'):
-        for btn in radio_btns:
+        for btn in self.radio_btns:
             if state == 'locked':
                 btn.setEnabled(False)
             elif state == 'unlocked':
@@ -76,12 +75,15 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global ReadFlag
         print('Reading inverter status...')
         while (ReadFlag):
-            self.rdm.get_inverters_status(bus)
-            self.tm1StatusBox.setText(self.rdm.TM1_status_sig)
-            self.tm2StatusBox.setText(self.rdm.TM2_status_sig)
-            self.rpmLCD.display(self.rdm.TM1_speed_sens)
-            self.torqueLCD.display(self.rdm.TM1_torque_sens)
-            
+            try:
+                self.rdm.get_inverters_status(bus)
+                self.tm1StatusBox.setText(self.rdm.TM1_status_sig)
+                self.tm2StatusBox.setText(self.rdm.TM2_status_sig)
+                self.rpmLCD.display(self.rdm.TM1_speed_sens)
+                self.torqueLCD.display(self.rdm.TM1_torque_sens)
+            except:
+                print('Unable to access CAN bus\n')
+                break
     def minus_torque(self):
         global torque_value
         print('Torque command minus 1...')
@@ -105,6 +107,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         print("Enable RDM...")
         global EnableFlag
         EnableFlag = True
+        print("Mode buttons are locked")
+        self.set_radio_btns_state('locked')
 
     def start_transmit(self):
         print("Start CAN transmit...\n")
@@ -117,16 +121,18 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
        
         # Send CAN continously
         while(TransmitFlag):
-            if EnableFlag:
-                self.rdm.enable(bus)
-                EnableFlag = False
-            self.rdm.update_CAN_msg()
-            
-            for msg in self.rdm.msg_list:
-                bus.send(msg)                
-            # Send messages every 10 ms    
-            time.sleep(0.007)
-
+            try:
+                if EnableFlag:
+                    self.rdm.enable(bus)
+                    EnableFlag = False
+                self.rdm.update_CAN_msg()               
+                for msg in self.rdm.msg_list:
+                    bus.send(msg)                
+                # Send messages every 10 ms    
+                time.sleep(0.007)
+            except:
+                print('Unable to access CAN bus\n')
+                break
     def stop_transmit(self):
         global TransmitFlag
         global EnableFlag
@@ -193,11 +199,14 @@ def numberFromString(string):
 
 def initCAN():
     global bus
-    can.rc['interface'] = 'socketcan'
-    can.rc['bitrate'] = 500000
-    can.rc['channel'] = 'can0'
-    bus = Bus()
-    bus.flush_tx_buffer()
+    try:
+        can.rc['interface'] = 'socketcan'
+        can.rc['bitrate'] = 500000
+        can.rc['channel'] = 'can0'
+        bus = Bus()
+        bus.flush_tx_buffer()
+    except:
+        print('No can0 device bus')
 	
 def main():
     app = QApplication(sys.argv)
