@@ -22,7 +22,7 @@ TM1_FEEDBACK_ID       = 0xCA
 TM2_TORQUE_CMD_ID     = 0x48
 TM2_TORQUE_PROTECT_ID = 0x42
 TM2_STATUS_ID         = 0x154
-TM1_FEEDBACK_ID       = 0xCB
+TM2_FEEDBACK_ID       = 0xCB
 
 
 ####### Miscellaneous #######
