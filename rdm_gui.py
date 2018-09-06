@@ -23,8 +23,13 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "QPushButton {\n"
-"    background-color: rgb(59, 56, 56);\n"
+"    background-color: rgb(118, 118, 113);\n"
 "    height: 40px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: rgb(59, 56, 56);\n"
+"    color: rgb(100, 95, 95);\n"
 "}\n"
 "\n"
 "QGroupBox {\n"
@@ -122,7 +127,7 @@ class Ui_MainWindow(object):
         font.setItalic(False)
         font.setWeight(50)
         self.startStopBtn.setFont(font)
-        self.startStopBtn.setStyleSheet("background-color: rgb(118, 118, 113);")
+        self.startStopBtn.setStyleSheet("")
         self.startStopBtn.setObjectName("startStopBtn")
         self.epbBtn = QtWidgets.QPushButton(self.centralwidget)
         self.epbBtn.setGeometry(QtCore.QRect(740, 6, 40, 40))
@@ -179,6 +184,7 @@ class Ui_MainWindow(object):
         self.label_4.setGeometry(QtCore.QRect(0, 0, 800, 70))
         self.label_4.setObjectName("label_4")
         self.enableBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.enableBtn.setEnabled(False)
         self.enableBtn.setGeometry(QtCore.QRect(180, 90, 93, 33))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
@@ -187,7 +193,7 @@ class Ui_MainWindow(object):
         font.setItalic(False)
         font.setWeight(50)
         self.enableBtn.setFont(font)
-        self.enableBtn.setStyleSheet("background-color: rgb(118, 118, 113);")
+        self.enableBtn.setStyleSheet("")
         self.enableBtn.setObjectName("enableBtn")
         self.torqueCmdPlus = QtWidgets.QPushButton(self.centralwidget)
         self.torqueCmdPlus.setGeometry(QtCore.QRect(290, 410, 60, 60))
@@ -199,7 +205,6 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.torqueCmdPlus.setFont(font)
         self.torqueCmdPlus.setStyleSheet("QPushButton {\n"
-"    background-color: rgb(118, 118, 113);\n"
 "    font: 30pt \"MS Shell Dlg 2\";\n"
 "}\n"
 "")
@@ -215,7 +220,6 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.torqueCmdMinus.setFont(font)
         self.torqueCmdMinus.setStyleSheet("QPushButton {\n"
-"    background-color: rgb(118, 118, 113);\n"
 "    font: 30pt \"MS Shell Dlg 2\";\n"
 "}\n"
 "")

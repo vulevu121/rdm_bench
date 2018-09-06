@@ -27,8 +27,13 @@ QLabel {
 }
 
 QPushButton {
-	background-color: rgb(59, 56, 56);
+	background-color: rgb(118, 118, 113);
 	height: 40px;
+}
+
+QPushButton:disabled {
+	background-color: rgb(59, 56, 56);
+	color: rgb(100, 95, 95);
 }
 
 QGroupBox {
@@ -136,7 +141,7 @@ QLCDNumber {
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(118, 118, 113);</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string>Start</string>
@@ -283,6 +288,9 @@ QPushButton:hover {
     </property>
    </widget>
    <widget class="QPushButton" name="enableBtn">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>180</x>
@@ -301,7 +309,7 @@ QPushButton:hover {
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(118, 118, 113);</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string>Enable</string>
@@ -327,7 +335,6 @@ QPushButton:hover {
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton {
-	background-color: rgb(118, 118, 113);
 	font: 30pt &quot;MS Shell Dlg 2&quot;;
 }
 </string>
@@ -359,7 +366,6 @@ QPushButton:hover {
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton {
-	background-color: rgb(118, 118, 113);
 	font: 30pt &quot;MS Shell Dlg 2&quot;;
 }
 </string>

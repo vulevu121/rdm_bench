@@ -15,7 +15,7 @@ TransmitFlag = False
 EnableFlag   = False                                                                                                                                   
 ReadFlag     = False
 bus = None
-torque_value = 0
+torque_value = 10
 cycle_time = 0.01
 
 # Add these options to torqueCmdBox
@@ -27,7 +27,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         # Add items to combo box
-        self.torqueCmdBox.setText('0 Nm')  
+        global torque_value
+        self.torqueCmdBox.setText('{} Nm'.format(torque_value))
+        self.enableBtn.setEnabled(False)
         self.Both_radio_btn.setChecked(True)
         self.radio_btns = [self.Both_radio_btn, self.TM1_radio_btn, self.TM2_radio_btn]
         # Start CAN bus
@@ -59,9 +61,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         if EnableFlag != True:
             self.rdm.run_mode = mode
             print('Run Mode Changed')
-        else:
-            print('RDM is running. MODE can be changed after RDM STOP')
-            ret = self.mode_msg_box.exec_()
+        #else:
+            #print('RDM is running. MODE can be changed after RDM STOP')
+            #ret = self.mode_msg_box.exec_()
             
     def set_radio_btns_state(self, state = 'unlocked'):
         for btn in self.radio_btns:
@@ -107,9 +109,36 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         print("Enable RDM...")
         global EnableFlag
         EnableFlag = True
+
+        # change button text to Disable
+        self.enableBtn.setText('Disable')
+        self.enableBtn.clicked.disconnect()
+        self.enableBtn.clicked.connect(lambda: self.disable_RDM())
+        
         print("Mode buttons are locked")
         self.set_radio_btns_state('locked')
 
+    def disable_RDM(self):
+        print("Disable RDM...")
+        global EnableFlag
+        EnableFlag = False
+
+        # change button text to Enable
+        self.enableBtn.setText('Enable')
+        self.enableBtn.clicked.disconnect()
+        self.enableBtn.clicked.connect(lambda: self.enable_RDM())
+        
+        global TransmitFlag
+        # stop send thread temporarily to send disable command
+        TransmitFlag = False
+        self.rdm.disable(bus)
+        # resume send thread
+        TransmitFlag = True
+
+        # Unlock radio buttons
+        print("Mode buttons are unlocked")
+        self.set_radio_btns_state('unlocked')
+        
     def start_transmit(self):
         print("Start CAN transmit...\n")
         global TransmitFlag
@@ -118,6 +147,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global cycle_time
         global EnableFlag 
 
+        # Unlock Enable Button
+        self.enableBtn.setEnabled(True)
        
         # Send CAN continously
         while(TransmitFlag):
@@ -133,22 +164,11 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             except:
                 print('Unable to send on CAN bus\n')
                 break
-            
+        
     def stop_transmit(self):
         global TransmitFlag
         global EnableFlag
         global ReadFlag
-
-        global send_thread
-        global read_thread
-
-        send_thread.join(1)
-        read_thread.join(1)
-        
-        # change SSB text to START
-        self.startStopBtn.setText('Start')
-        self.startStopBtn.clicked.disconnect()
-        self.startStopBtn.clicked.connect(lambda: self.start_CAN_thread())
 
         # Set this flag to  disable RDM
         print ("Disable RDM...")
@@ -163,16 +183,61 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         print ("Stop reading status...")
         ReadFlag = False
 
-        # clear text from status box
+
+        # Wait for threads termination
+        global send_thread
+        global read_thread
+        send_thread.join(1)
+        read_thread.join(1)
+
+        # reset GUI
+        self.reset_gui()
+        
+##        # change SSB text to START
+##        self.startStopBtn.setText('Start')
+##        self.startStopBtn.clicked.disconnect()
+##        self.startStopBtn.clicked.connect(lambda: self.start_CAN_thread())
+##
+##        # Lock Enable Button
+##        self.enableBtn.setEnabled(False)
+##
+##        # clear text from status box
+##        self.tm1StatusBox.clear()
+##        self.tm2StatusBox.clear()
+##        self.rpmLCD.display(0)
+##        self.torqueLCD.display(0)
+##        
+##        # Unlock Run Mode radio buttons
+##        self.set_radio_btns_state('unlocked')
+
+    def reset_gui(self):
+        # reset torque command box
+        global torque_value
+        self.torqueCmdBox.setText('{} Nm'.format(torque_value))
+
+        # reset SSB 
+        self.startStopBtn.setText('Start')
+        self.startStopBtn.clicked.disconnect()
+        self.startStopBtn.clicked.connect(lambda: self.start_CAN_thread())
+
+
+        # reset enable button
+        self.enableBtn.setText('Enable')
+        self.enableBtn.clicked.disconnect()
+        self.enableBtn.clicked.connect(lambda: self.enable_RDM())
+        self.enableBtn.setEnabled(False)
+
+        # reset radio button
+        self.Both_radio_btn.setChecked(True)
+        self.run_mode(0)
+        self.set_radio_btns_state('unlocked')
+
+        # clear text from status boxes
         self.tm1StatusBox.clear()
         self.tm2StatusBox.clear()
         self.rpmLCD.display(0)
         self.torqueLCD.display(0)
         
-        # Unlock Run Mode radio buttons
-        self.set_radio_btns_state('unlocked')
-
-
     def start_CAN_thread(self):
         print ("Start CAN thread...")
         global TransmitFlag
@@ -188,6 +253,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
         global send_thread
         global read_thread
+        
         # separate thread to prevent gui freezing. PASS HANDLE NOT FUNCTION CALL
         send_thread = threading.Thread(target=self.start_transmit, args=())
         send_thread.daemon = True

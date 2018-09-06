@@ -151,9 +151,7 @@ class RDM:
             time.sleep(0.008)
             if time.time() - startTime > 2:
                 break
-
-
-            
+        
         # Finally, reset all shutdown command to default value
         self.legacy_enable_cmd   = 0x5
         self.legacy_shutdown_cmd = 0x0
