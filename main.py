@@ -32,6 +32,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.enableBtn.setEnabled(False)
         self.Both_radio_btn.setChecked(True)
         self.radio_btns = [self.Both_radio_btn, self.TM1_radio_btn, self.TM2_radio_btn]
+        
         # Start CAN bus
         #initCAN()
         # Create RDM object
@@ -115,8 +116,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.enableBtn.clicked.disconnect()
         self.enableBtn.clicked.connect(lambda: self.disable_RDM())
         
-        print("Mode buttons are locked")
-        self.set_radio_btns_state('locked')
 
     def disable_RDM(self):
         print("Disable RDM...")
@@ -135,9 +134,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # resume send thread
         TransmitFlag = True
 
-        # Unlock radio buttons
-        print("Mode buttons are unlocked")
-        self.set_radio_btns_state('unlocked')
         
     def start_transmit(self):
         print("Start CAN transmit...\n")
@@ -149,6 +145,10 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
         # Unlock Enable Button
         self.enableBtn.setEnabled(True)
+
+        # Lock Run Mode radio btns
+        print("Mode buttons are locked")
+        self.set_radio_btns_state('locked')
        
         # Send CAN continously
         while(TransmitFlag):
@@ -228,8 +228,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.enableBtn.setEnabled(False)
 
         # reset radio button
-        self.Both_radio_btn.setChecked(True)
-        self.run_mode(0)
+        #self.Both_radio_btn.setChecked(True)
+        #self.run_mode(0)
         self.set_radio_btns_state('unlocked')
 
         # clear text from status boxes
