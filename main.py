@@ -33,8 +33,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.Both_radio_btn.setChecked(True)
         self.radio_btns = [self.Both_radio_btn, self.TM1_radio_btn, self.TM2_radio_btn]
         
-        # Start CAN bus
-        #initCAN()
         # Create RDM object
         self.rdm = RDM()
 
@@ -112,10 +110,12 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         EnableFlag = True
 
         # change button text to Disable
-        self.enableBtn.setText('Disable')
-        self.enableBtn.clicked.disconnect()
-        self.enableBtn.clicked.connect(lambda: self.disable_RDM())
+        #self.enableBtn.setText('Disable')
+        #self.enableBtn.clicked.disconnect()
+        #self.enableBtn.clicked.connect(lambda: self.disable_RDM())
         
+        # change button to disabled mode
+        self.enableBtn.setEnabled(False)
 
     def disable_RDM(self):
         print("Disable RDM...")
@@ -126,13 +126,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.enableBtn.setText('Enable')
         self.enableBtn.clicked.disconnect()
         self.enableBtn.clicked.connect(lambda: self.enable_RDM())
-        
-        global TransmitFlag
-        # stop send thread temporarily to send disable command
-        TransmitFlag = False
+
+        # When RDM is disabled, it needs to see WUP power cycle to return to inital state
         self.rdm.disable(bus)
-        # resume send thread
-        TransmitFlag = True
 
         
     def start_transmit(self):
@@ -158,7 +154,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                     EnableFlag = False
                 self.rdm.update_CAN_msg()               
                 for msg in self.rdm.msg_list:
-                    bus.send(msg)                
+                    bus.send(msg,0.1)
                 # Send messages every 10 ms    
                 time.sleep(0.007)
             except:
@@ -169,7 +165,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global TransmitFlag
         global EnableFlag
         global ReadFlag
-
+        
         # Set this flag to  disable RDM
         print ("Disable RDM...")
         EnableFlag = False
@@ -178,39 +174,30 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         print ("Stop CAN transmit...")
         TransmitFlag = False
         self.rdm.disable(bus)
-        
+
         # Set this flag to stop reading  inverter status
         print ("Stop reading status...")
         ReadFlag = False
 
 
         # Wait for threads termination
+        print ("Stop CAN thread...")
         global send_thread
         global read_thread
-        send_thread.join(1)
-        read_thread.join(1)
+        send_thread.join(0.1)
+        read_thread.join(0.1)
+
+
+        # shutdown bus
+        print ("Stop CAN bus...")
+        bus.shutdown()
 
         # reset GUI
         self.reset_gui()
         
-##        # change SSB text to START
-##        self.startStopBtn.setText('Start')
-##        self.startStopBtn.clicked.disconnect()
-##        self.startStopBtn.clicked.connect(lambda: self.start_CAN_thread())
-##
-##        # Lock Enable Button
-##        self.enableBtn.setEnabled(False)
-##
-##        # clear text from status box
-##        self.tm1StatusBox.clear()
-##        self.tm2StatusBox.clear()
-##        self.rpmLCD.display(0)
-##        self.torqueLCD.display(0)
-##        
-##        # Unlock Run Mode radio buttons
-##        self.set_radio_btns_state('unlocked')
 
     def reset_gui(self):
+        print('Reset GUI...')
         # reset torque command box
         global torque_value
         self.torqueCmdBox.setText('{} Nm'.format(torque_value))
@@ -222,9 +209,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
 
         # reset enable button
-        self.enableBtn.setText('Enable')
-        self.enableBtn.clicked.disconnect()
-        self.enableBtn.clicked.connect(lambda: self.enable_RDM())
+        #self.enableBtn.setText('Enable')
+        #self.enableBtn.clicked.disconnect()
+        #self.enableBtn.clicked.connect(lambda: self.enable_RDM())
         self.enableBtn.setEnabled(False)
 
         # reset radio button
@@ -233,35 +220,50 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.set_radio_btns_state('unlocked')
 
         # clear text from status boxes
-        self.tm1StatusBox.clear()
-        self.tm2StatusBox.clear()
-        self.rpmLCD.display(0)
-        self.torqueLCD.display(0)
+        #self.tm1StatusBox.clear()
+        #self.tm2StatusBox.clear()
+        #self.rpmLCD.display(0)
+        #self.torqueLCD.display(0)
         
     def start_CAN_thread(self):
-        print ("Start CAN thread...")
         global TransmitFlag
         TransmitFlag = True
 
         global ReadFlag
         ReadFlag = True
 
+        # make sure Bus in started here so both read and start thread can start
+        print ("Start CAN thread...")
+        self.initCAN()
+
         # change SSB text to STOP
         self.startStopBtn.setText('Stop')
         self.startStopBtn.clicked.disconnect()
         self.startStopBtn.clicked.connect(lambda: self.stop_transmit())
 
+      
+        # separate thread to prevent gui freezing. PASS HANDLE NOT FUNCTION CALL
         global send_thread
         global read_thread
         
-        # separate thread to prevent gui freezing. PASS HANDLE NOT FUNCTION CALL
         send_thread = threading.Thread(target=self.start_transmit, args=())
         send_thread.daemon = True
         send_thread.start()        
 
         read_thread = threading.Thread(target=self.start_read, args=())
         read_thread.daemon = True
-        read_thread.start()        
+        read_thread.start()
+
+    def initCAN(self):
+        global bus
+        try:
+            can.rc['interface'] = 'socketcan'
+            can.rc['bitrate'] = 500000
+            can.rc['channel'] = 'can0'
+            bus = Bus()
+            bus.flush_tx_buffer()
+        except:
+            print('No can0 device bus')
 
 def numberFromString(string):
     # this return a list of number from the string
@@ -271,16 +273,7 @@ def numberFromString(string):
     # just need to access the first item
     return numbers[0]                
 
-def initCAN():
-    global bus
-    try:
-        can.rc['interface'] = 'socketcan'
-        can.rc['bitrate'] = 500000
-        can.rc['channel'] = 'can0'
-        bus = Bus()
-        bus.flush_tx_buffer()
-    except:
-        print('No can0 device bus')
+
 	
 def main():
     app = QApplication(sys.argv)

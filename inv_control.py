@@ -89,20 +89,19 @@ class RDM:
         
         enable_seq = [0x0, 0x1, 0x2, 0x3]
 
-        # Wait 1 second before transition to next step
         for step in enable_seq:        
             startTime = time.time()
             self.enable_cmd = step
            
-
             while(True):
                 # update in the loop to ensure ARC increment correctly
                 self.update_CAN_msg()
                 for msg in self.msg_list: 
-                    bus.send(msg)
+                    bus.send(msg,0.1)
                 time.sleep(0.008)
                 if time.time() - startTime > 0.5:
                     break
+                
     def WUP2(self,command = 'ON'):
         if command == 'OFF':
         # send logic LOW
@@ -130,7 +129,7 @@ class RDM:
                 self.update_CAN_msg()
                 try:
                     for msg in self.msg_list:
-                        bus.send(msg)
+                        bus.send(msg,0.1)
                 except:
                     print('Send CAN bus timeout')
                     return
@@ -147,7 +146,7 @@ class RDM:
             # update in the loop to ensure ARC increment correctly
             self.update_CAN_msg()
             for msg in self.msg_list: 
-                bus.send(msg)
+                bus.send(msg,0.1)
             time.sleep(0.008)
             if time.time() - startTime > 2:
                 break
@@ -216,7 +215,7 @@ class RDM:
                 print('Waiting for $B100 response...')
                 startTime = time.time()
                 while(time.time() - startTime < 0.1):
-                    b100_resp.append(bus.recv())
+                    b100_resp.append(bus.recv(0.05))
                     
                 if len(b100_resp) != 0:
                     for resp in b100_resp:
@@ -232,8 +231,8 @@ class RDM:
 
     def get_inverters_status(self,bus):
         startTime = time.time()
-        while (True):
-            msg = bus.recv()
+        while (time.time() - startTime < 0.2):
+            msg = bus.recv(0.05)
             if msg.arbitration_id == TM1_STATUS_ID:
                 self.TM1_inv_temp_sens   = msg.data[0] - 40
                 self.TM1_motor_temp_sens = msg.data[1] - 40
@@ -256,9 +255,6 @@ class RDM:
                 self.TM2_speed_sens      =   ((msg.data[2]         << 8 | msg.data[3]) * 0.5 ) - 16384
                 self.TM2_torque_sens     =   ((msg.data[0] & 0x7)  << 8 | msg.data[1])         - 1024
                 self.TM2_voltage_sens    =   ((msg.data[4] & 0xF)  << 8 | msg.data[5]) * 0.25
-            if time.time() - startTime > 0.5:
-                break
-        
 
     def decode_inv_status(self,status):                                     
         status2str = {0x1: 'INIT_ECU',
