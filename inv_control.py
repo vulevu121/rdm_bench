@@ -71,9 +71,9 @@ class RDM:
         self.update_CAN_msg()
 
 #################################   RDM methods ########################################################
-    def set_torque(self,target_torque):                            # Change current torque cmd to target torque cmnd
+    def set_torque(self,target_torque):                            
         self.torque_cmd = target_torque
-        #self.update_CAN_msg()
+
 
     def enable(self,bus):
         # pull WUP2 high
@@ -119,23 +119,26 @@ class RDM:
         
         disable_seq = [0x3, 0x2, 0x1, 0x0]
 
-        # Wait 0.5 second before transition to next step
+        # Wait 0.1 second before transition to next step
         for step in disable_seq:
             startTime = time.time()
             self.enable_cmd = step
-            while(time.time() - startTime < 0.2):
+            while(time.time() - startTime < 0.1):
 
                 # update in the loop to ensure ARC increment correctly
                 self.update_CAN_msg()
+                # use try - except to avoid App crashing when tx_buffer overflow 
                 try:
                     for msg in self.msg_list:
-                        bus.send(msg,0.1)
+                        bus.send(msg)
                 except:
-                    print('Send CAN bus timeout')
+                    print('...Send CAN bus error...')
+                    # clear tx buffer to avoid crashing
+                    bus.flush_tx_buffer()
                     return
                 time.sleep(0.008)
                 
-        # After enable_cmd becomes zero, send shutdown request for alit more time (2 seconds)
+        # After enable_cmd becomes zero, send shutdown request for ab+it more time (2 seconds)
         # shutdown requested
         self.legacy_shutdown_cmd = 0x1
         # shutdown w/ active discharge
@@ -163,99 +166,39 @@ class RDM:
         elif new_direction == 'R':
             self.direction = 'R'
 
-    def assign_id(self,bus,goal_ID = 'GEN'):
-        # Use this ID to enable Programming Mode 
-        Inv_Diag_Msg_ID = {'TM1'    : 0x781,
-                           'TM2'    : 0x782,
-                           'GEN'    : 0x780,
-                           'DEFAULT': 0x783}
-        
-        ID_to_name = {1921 :'TM1',
-                      1922 :'TM2',
-                      1920 :'GEN',
-                      1923 :'BOOT'}
-        
-        # Use this to assign new ID
-        B100_Values = {'TM1': 0x1,
-                       'TM2': 0x2,
-                       'GEN': 0x0}
-
-        curr_ID = None
-        b100_resp = []
-        prog_pos_resp = False
-        b100_pos_resp = False
-
-        # Compile message to enable programming mode regardless of the current ID
-        diag_msg_TM1     = can.Message(arbitration_id = Inv_Diag_Msg_ID['TM1'],     extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
-        diag_msg_TM2     = can.Message(arbitration_id = Inv_Diag_Msg_ID['TM2'],     extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
-        diag_msg_GEN     = can.Message(arbitration_id = Inv_Diag_Msg_ID['GEN'],     extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
-        diag_msg_DEFAULT = can.Message(arbitration_id = Inv_Diag_Msg_ID['DEFAULT'], extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
-        diag_msg_list = [diag_msg_TM1,diag_msg_TM2,diag_msg_GEN,diag_msg_DEFAULT]
-        
-        # Enable programming mode on inverter. IMPORTANT: expect only 1 response from the inverter even if 4 msg are sent
-        print('Enabling programming mode...')
-        for diag_msg in diag_msg_list:
-            bus.send(diag_msg)
-            response = bus.recv(timeout = 0.1)
-            if response != None:
-                curr_ID = diag_msg.arbitration_id
-                break
-        # Confirm positive response, then send programming command
-        print('Waiting for programing mode response...')
-        if response != None:
-            if response.data[0] == 0x6 and response.data[1] == 0x50 and response.data[2] == 0x2:
-                prog_pos_resp = True
-                
-            if prog_pos_resp:
-                
-                print('{} confirmed Programming Mode. New ID is {}. Writing DID $B100...'.format(ID_to_name[curr_ID],goal_ID))
-                diag_msg = can.Message(arbitration_id = curr_ID, extended_id = False, dlc = 8, data=[0x5,0x2E,0xB1,0x0,0x0,B100_Values[goal_ID]])
-                bus.send(diag_msg)
-                # Confirm positive response. The confirmation comes in the 2nd response from the inverter. Need to save all the response for processing
-                print('Waiting for $B100 response...')
-                startTime = time.time()
-                while(time.time() - startTime < 0.1):
-                    b100_resp.append(bus.recv(0.05))
-                    
-                if len(b100_resp) != 0:
-                    for resp in b100_resp:
-                        if resp.data[0] == 0x3 and resp.data[1] == 0x6E and resp.data[2] == 0xB1 and resp.data[3] == 0x0:
-                            print('DID $B100 Written Successfully...\nPlease Cycle Power\n')
-                            b100_pos_resp = True           
-                else:
-                    print('DID $B100 Not Written...\nPlease Cycle Power And Try Again\n')
-                
-        else:
-            print('Programming mode no response...\n')        
 
 
     def get_inverters_status(self,bus):
-        startTime = time.time()
-        while (time.time() - startTime < 0.2):
-            msg = bus.recv(0.05)
-            if msg.arbitration_id == TM1_STATUS_ID:
-                self.TM1_inv_temp_sens   = msg.data[0] - 40
-                self.TM1_motor_temp_sens = msg.data[1] - 40
-                self.TM1_pcm_test_fail   = msg.data[2] >> 6
-                self.TM1_status_sig      = self.decode_inv_status((msg.data[2] & 0x3F << 8) | msg.data[3])
-         
-            elif msg.arbitration_id == TM1_FEEDBACK_ID:
-                self.TM1_current_sens    =  (((msg.data[6] & 0x1F) << 8 | msg.data[7]) * 0.25) - 1024
-                self.TM1_speed_sens      =   ((msg.data[2]         << 8 | msg.data[3]) * 0.5 ) - 16384
-                self.TM1_torque_sens     =   ((msg.data[0] & 0x7)  << 8 | msg.data[1])         - 1024
-       
-            elif msg.arbitration_id == TM2_STATUS_ID:
-                self.TM2_inv_temp_sens   = msg.data[0] - 40
-                self.TM2_motor_temp_sens = msg.data[1] - 40
-                self.TM2_pcm_test_fail   = msg.data[2] >> 6
-                self.TM2_status_sig      = self.decode_inv_status((msg.data[2] & 0x3F << 8) | msg.data[3])
-              
-            elif msg.arbitration_id == TM2_FEEDBACK_ID:
-                self.TM2_current_sens    =  (((msg.data[6] & 0x1F) << 8 | msg.data[7]) * 0.25) - 1024
-                self.TM2_speed_sens      =   ((msg.data[2]         << 8 | msg.data[3]) * 0.5 ) - 16384
-                self.TM2_torque_sens     =   ((msg.data[0] & 0x7)  << 8 | msg.data[1])         - 1024
-                self.TM2_voltage_sens    =   ((msg.data[4] & 0xF)  << 8 | msg.data[5]) * 0.25
-
+        try:
+            startTime = time.time()
+            while (time.time() - startTime < 0.05):
+                msg = bus.recv(0.05)
+                if msg.arbitration_id == TM1_STATUS_ID:
+                    self.TM1_inv_temp_sens   = msg.data[0] - 40
+                    self.TM1_motor_temp_sens = msg.data[1] - 40
+                    self.TM1_pcm_test_fail   = msg.data[2] >> 6
+                    self.TM1_status_sig      = self.decode_inv_status((msg.data[2] & 0x3F << 8) | msg.data[3])
+             
+                elif msg.arbitration_id == TM1_FEEDBACK_ID:
+                    self.TM1_current_sens    =  (((msg.data[6] & 0x1F) << 8 | msg.data[7]) * 0.25) - 1024
+                    self.TM1_speed_sens      =   ((msg.data[2]         << 8 | msg.data[3]) * 0.5 ) - 16384
+                    self.TM1_torque_sens     =   ((msg.data[0] & 0x7)  << 8 | msg.data[1])         - 1024
+           
+                elif msg.arbitration_id == TM2_STATUS_ID:
+                    self.TM2_inv_temp_sens   = msg.data[0] - 40
+                    self.TM2_motor_temp_sens = msg.data[1] - 40
+                    self.TM2_pcm_test_fail   = msg.data[2] >> 6
+                    self.TM2_status_sig      = self.decode_inv_status((msg.data[2] & 0x3F << 8) | msg.data[3])
+                  
+                elif msg.arbitration_id == TM2_FEEDBACK_ID:
+                    self.TM2_current_sens    =  (((msg.data[6] & 0x1F) << 8 | msg.data[7]) * 0.25) - 1024
+                    self.TM2_speed_sens      =   ((msg.data[2]         << 8 | msg.data[3]) * 0.5 ) - 16384
+                    self.TM2_torque_sens     =   ((msg.data[0] & 0x7)  << 8 | msg.data[1])         - 1024
+                    self.TM2_voltage_sens    =   ((msg.data[4] & 0xF)  << 8 | msg.data[5]) * 0.25
+        except:
+            print('...Read CAN bus error...')
+            return
+            
     def decode_inv_status(self,status):                                     
         status2str = {0x1: 'INIT_ECU',
                       0x2: 'INIT_SYS',
@@ -414,6 +357,71 @@ class RDM:
                                  self.TM2_torque_protect_msg]
         else:
             print ('Invalid run mode')
+            
+    def assign_id(self,bus,goal_ID = 'GEN'):
+        # Use this ID to enable Programming Mode 
+        Inv_Diag_Msg_ID = {'TM1'    : 0x781,
+                           'TM2'    : 0x782,
+                           'GEN'    : 0x780,
+                           'DEFAULT': 0x783}
+        
+        ID_to_name = {1921 :'TM1',
+                      1922 :'TM2',
+                      1920 :'GEN',
+                      1923 :'BOOT'}
+        
+        # Use this to assign new ID
+        B100_Values = {'TM1': 0x1,
+                       'TM2': 0x2,
+                       'GEN': 0x0}
+
+        curr_ID = None
+        b100_resp = []
+        prog_pos_resp = False
+        b100_pos_resp = False
+
+        # Compile message to enable programming mode regardless of the current ID
+        diag_msg_TM1     = can.Message(arbitration_id = Inv_Diag_Msg_ID['TM1'],     extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
+        diag_msg_TM2     = can.Message(arbitration_id = Inv_Diag_Msg_ID['TM2'],     extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
+        diag_msg_GEN     = can.Message(arbitration_id = Inv_Diag_Msg_ID['GEN'],     extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
+        diag_msg_DEFAULT = can.Message(arbitration_id = Inv_Diag_Msg_ID['DEFAULT'], extended_id = False, dlc = 8, data=[0x2,0x10,0x2])
+        diag_msg_list = [diag_msg_TM1,diag_msg_TM2,diag_msg_GEN,diag_msg_DEFAULT]
+        
+        # Enable programming mode on inverter. IMPORTANT: expect only 1 response from the inverter even if 4 msg are sent
+        print('...Enabling programming mode...')
+        for diag_msg in diag_msg_list:
+            bus.send(diag_msg)
+            response = bus.recv(timeout = 0.1)
+            if response != None:
+                curr_ID = diag_msg.arbitration_id
+                break
+        # Confirm positive response, then send programming command
+        print('...Waiting for programing mode response...')
+        if response != None:
+            if response.data[0] == 0x6 and response.data[1] == 0x50 and response.data[2] == 0x2:
+                prog_pos_resp = True
+                
+            if prog_pos_resp:
+                
+                print('...{} confirmed Programming Mode. New ID is {}. Writing DID $B100...'.format(ID_to_name[curr_ID],goal_ID))
+                diag_msg = can.Message(arbitration_id = curr_ID, extended_id = False, dlc = 8, data=[0x5,0x2E,0xB1,0x0,0x0,B100_Values[goal_ID]])
+                bus.send(diag_msg)
+                # Confirm positive response. The confirmation comes in the 2nd response from the inverter. Need to save all the response for processing
+                print('...Waiting for $B100 response...')
+                startTime = time.time()
+                while(time.time() - startTime < 0.1):
+                    b100_resp.append(bus.recv(0.05))
+                    
+                if len(b100_resp) != 0:
+                    for resp in b100_resp:
+                        if resp.data[0] == 0x3 and resp.data[1] == 0x6E and resp.data[2] == 0xB1 and resp.data[3] == 0x0:
+                            print('...DID $B100 Written Successfully...\nPlease Cycle Power\n')
+                            b100_pos_resp = True           
+                else:
+                    print('...DID $B100 Not Written...\nPlease Cycle Power And Try Again\n...')
+                
+        else:
+            print('...Programming mode no response...\n')        
 
 #################################   RDM methods END ########################################################
 

@@ -70,10 +70,11 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                 btn.setEnabled(False)
             elif state == 'unlocked':
                 btn.setEnabled(True)
+        print("Mode buttons are {}...\n".format(state))
 
     def start_read(self):
         global ReadFlag
-        print('Reading inverter status...')
+        print('Start CAN read...')
         while (ReadFlag):
             try:
                 self.rdm.get_inverters_status(bus)
@@ -82,8 +83,44 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                 self.rpmLCD.display(self.rdm.TM1_speed_sens)
                 self.torqueLCD.display(self.rdm.TM1_torque_sens)
             except:
-                print('Unable to receive on CAN bus\n')
+                print('Unable to receive on CAN bus...\n')
                 break
+
+    def stop_transmit(self):
+        global TransmitFlag
+        global EnableFlag
+        global ReadFlag
+        
+        # Set this flag to  disable RDM
+        print ("Disable RDM...")
+        EnableFlag = False
+
+        # Set this flag to stop the ongoing transmittion
+        print ("Stop CAN transmit...")
+        TransmitFlag = False
+        self.rdm.disable(bus)
+
+        # Set this flag to stop reading  inverter status
+        print ("Stop CAN read..")
+        ReadFlag = False
+
+
+        # Wait for threads termination
+        print ("Stop Transmit & Read CAN threads...")
+        global send_thread
+        global read_thread
+        send_thread.join(0.1)
+        read_thread.join(0.1)
+
+
+        # shutdown bus
+        print ("Stop CAN bus...")
+        bus.shutdown()
+        self.clear_tx_buff()
+        
+        # reset GUI
+        self.reset_gui()
+
             
     def minus_torque(self):
         global torque_value
@@ -117,18 +154,18 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # change button to disabled mode
         self.enableBtn.setEnabled(False)
 
-    def disable_RDM(self):
-        print("Disable RDM...")
-        global EnableFlag
-        EnableFlag = False
-
-        # change button text to Enable
-        self.enableBtn.setText('Enable')
-        self.enableBtn.clicked.disconnect()
-        self.enableBtn.clicked.connect(lambda: self.enable_RDM())
-
-        # When RDM is disabled, it needs to see WUP power cycle to return to inital state
-        self.rdm.disable(bus)
+##    def disable_RDM(self):
+##        print("Disable RDM...")
+##        global EnableFlag
+##        EnableFlag = False
+##
+##        # change button text to Enable
+##        self.enableBtn.setText('Enable')
+##        self.enableBtn.clicked.disconnect()
+##        self.enableBtn.clicked.connect(lambda: self.enable_RDM())
+##
+##        # When RDM is disabled, it needs to see WUP power cycle to return to inital state
+##        self.rdm.disable(bus)
 
         
     def start_transmit(self):
@@ -143,7 +180,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.enableBtn.setEnabled(True)
 
         # Lock Run Mode radio btns
-        print("Mode buttons are locked")
         self.set_radio_btns_state('locked')
        
         # Send CAN continously
@@ -158,46 +194,13 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                 # Send messages every 10 ms    
                 time.sleep(0.007)
             except:
-                print('Unable to send on CAN bus\n')
+                print('Unable to send on CAN bus...\n')
                 break
         
-    def stop_transmit(self):
-        global TransmitFlag
-        global EnableFlag
-        global ReadFlag
-        
-        # Set this flag to  disable RDM
-        print ("Disable RDM...")
-        EnableFlag = False
-
-        # Set this flag to stop the ongoing transmittion
-        print ("Stop CAN transmit...")
-        TransmitFlag = False
-        self.rdm.disable(bus)
-
-        # Set this flag to stop reading  inverter status
-        print ("Stop reading status...")
-        ReadFlag = False
-
-
-        # Wait for threads termination
-        print ("Stop CAN thread...")
-        global send_thread
-        global read_thread
-        send_thread.join(0.1)
-        read_thread.join(0.1)
-
-
-        # shutdown bus
-        print ("Stop CAN bus...")
-        bus.shutdown()
-
-        # reset GUI
-        self.reset_gui()
         
 
     def reset_gui(self):
-        print('Reset GUI...')
+        print('Reset GUI...\n')
         # reset torque command box
         global torque_value
         self.torqueCmdBox.setText('{} Nm'.format(torque_value))
@@ -233,7 +236,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         ReadFlag = True
 
         # make sure Bus in started here so both read and start thread can start
-        print ("Start CAN thread...")
+        print ("Start Transmit & Read CAN threads...")
         self.initCAN()
 
         # change SSB text to STOP
@@ -264,6 +267,11 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             bus.flush_tx_buffer()
         except:
             print('No can0 device bus')
+
+    def clear_tx_buff(self):
+        print('Clear CAN buffer...')
+        global bus
+        bus.flush_tx_buffer()
 
 def numberFromString(string):
     # this return a list of number from the string
