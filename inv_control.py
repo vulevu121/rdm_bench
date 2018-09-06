@@ -117,21 +117,24 @@ class RDM:
         # set torque command to zero
         self.set_torque(0)
         # disable with the following sequence
-
+        
         disable_seq = [0x3, 0x2, 0x1, 0x0]
 
         # Wait 0.5 second before transition to next step
-        for step in disable_seq:        
+        for step in disable_seq:
             startTime = time.time()
             self.enable_cmd = step
-            while(True):
+            while(time.time() - startTime < 0.2):
+
                 # update in the loop to ensure ARC increment correctly
                 self.update_CAN_msg()
-                for msg in self.msg_list: 
-                    bus.send(msg)
+                try:
+                    for msg in self.msg_list:
+                        bus.send(msg)
+                except:
+                    print('Send CAN bus timeout')
+                    return
                 time.sleep(0.008)
-                if time.time() - startTime > 0.5:
-                    break
                 
         # After enable_cmd becomes zero, send shutdown request for alit more time (2 seconds)
         # shutdown requested

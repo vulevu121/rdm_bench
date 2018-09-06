@@ -40,9 +40,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.enableBtn.clicked.connect          (lambda:self.enable_RDM())
         self.torqueCmdMinus.clicked.connect     (lambda:self.minus_torque())
         self.torqueCmdPlus.clicked.connect      (lambda:self.plus_torque())
-        self.Both_radio_btn.toggled.connect     (lambda:self.run_mode(0))
-        self.TM1_radio_btn.toggled.connect      (lambda:self.run_mode(1))
-        self.TM2_radio_btn.toggled.connect      (lambda:self.run_mode(2))
+        self.Both_radio_btn.clicked.connect     (lambda:self.run_mode(0))
+        self.TM1_radio_btn.clicked.connect      (lambda:self.run_mode(1))
+        self.TM2_radio_btn.clicked.connect      (lambda:self.run_mode(2))
 
         # Pop Up meassage box
         self.mode_msg_box = QMessageBox()
@@ -50,10 +50,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.mode_msg_box.setText('RDM is running!')
         self.mode_msg_box.setInformativeText('Please Stop RDM and try again.')
         self.mode_msg_box.setWindowTitle("Run Mode Message")
-        self.mode_msg_box.setStandardButtons(QMessageBox.Ok)
-        #self.mode_msg_box.buttonClicked.connect(self.close_msg_box)
+        self.mode_msg_box.setStyleSheet('background-color: rgb(59, 56, 56)')
+        self.mode_msg_box.setStandardButtons(QMessageBox.Close)        
         
-
            
     def run_mode(self,mode):
         global EnableFlag
@@ -62,7 +61,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             print('Run Mode Changed')
         else:
             print('RDM is running. MODE can be changed after RDM STOP')
-            self.mode_msg_box.exec_()
+            ret = self.mode_msg_box.exec_()
             
     def set_radio_btns_state(self, state = 'unlocked'):
         for btn in self.radio_btns:
@@ -82,8 +81,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                 self.rpmLCD.display(self.rdm.TM1_speed_sens)
                 self.torqueLCD.display(self.rdm.TM1_torque_sens)
             except:
-                print('Unable to access CAN bus\n')
+                print('Unable to receive on CAN bus\n')
                 break
+            
     def minus_torque(self):
         global torque_value
         print('Torque command minus 1...')
@@ -131,13 +131,20 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                 # Send messages every 10 ms    
                 time.sleep(0.007)
             except:
-                print('Unable to access CAN bus\n')
+                print('Unable to send on CAN bus\n')
                 break
+            
     def stop_transmit(self):
         global TransmitFlag
         global EnableFlag
         global ReadFlag
 
+        global send_thread
+        global read_thread
+
+        send_thread.join(1)
+        read_thread.join(1)
+        
         # change SSB text to START
         self.startStopBtn.setText('Start')
         self.startStopBtn.clicked.disconnect()
@@ -179,7 +186,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.startStopBtn.clicked.disconnect()
         self.startStopBtn.clicked.connect(lambda: self.stop_transmit())
 
-
+        global send_thread
+        global read_thread
         # separate thread to prevent gui freezing. PASS HANDLE NOT FUNCTION CALL
         send_thread = threading.Thread(target=self.start_transmit, args=())
         send_thread.daemon = True
