@@ -424,6 +424,9 @@ QPushButton:hover {
       </item>
       <item row="0" column="1">
        <widget class="QLineEdit" name="tm1StatusBox">
+        <property name="mouseTracking">
+         <bool>false</bool>
+        </property>
         <property name="styleSheet">
          <string notr="true">font: 75 18pt &quot;MS Shell Dlg 2&quot;;</string>
         </property>
@@ -450,6 +453,9 @@ QPushButton:hover {
       </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="tm2StatusBox">
+        <property name="mouseTracking">
+         <bool>false</bool>
+        </property>
         <property name="styleSheet">
          <string notr="true">font: 75 18pt &quot;MS Shell Dlg 2&quot;;</string>
         </property>
@@ -524,6 +530,9 @@ QPushButton:hover {
       <width>800</width>
       <height>480</height>
      </rect>
+    </property>
+    <property name="mouseTracking">
+     <bool>false</bool>
     </property>
     <property name="text">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/background/graphics/revero_800.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

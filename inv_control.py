@@ -196,7 +196,7 @@ class RDM:
                     self.TM2_torque_sens     =   ((msg.data[0] & 0x7)  << 8 | msg.data[1])         - 1024
                     self.TM2_voltage_sens    =   ((msg.data[4] & 0xF)  << 8 | msg.data[5]) * 0.25
         except:
-            print('...Read CAN bus error...')
+            #print('...Read CAN bus error...')
             return
             
     def decode_inv_status(self,status):                                     
