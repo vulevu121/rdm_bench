@@ -9,7 +9,7 @@ from rdm_gui import *
 from inv_control import *
 import threading
 import re
-
+import logging
 
 TransmitFlag = False
 EnableFlag   = False                                                                                                                                   
@@ -18,7 +18,8 @@ bus = None
 torque_value = 10
 cycle_time = 0.01
 
-# Add these options to torqueCmdBox
+
+#logging.basicConfig(level=logging.DEBUG,format='(%(threadName)-9s)',)
 
 
 class ExampleApp(QMainWindow, Ui_MainWindow):
@@ -26,6 +27,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         super(self.__class__, self).__init__()
         self.setupUi(self)
 
+        self.lock = threading.Lock()
         # Add items to combo box
         global torque_value
         self.torqueCmdBox.setText('{} Nm'.format(torque_value))
@@ -75,6 +77,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
     def start_read(self):
         global ReadFlag
         print('Start CAN read...')
+        #with self.lock:        
         while (ReadFlag):
             try:
                 self.rdm.get_inverters_status(bus)
@@ -107,21 +110,20 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
         # Wait for threads termination
         print ("Stop Transmit & Read CAN threads...")
-        global send_thread
-        global read_thread
-        send_thread.join(0.1)
-        read_thread.join(0.1)
 
+        send_thread.join()
+        read_thread.join()
+
+        print('active threads: {} {} {}'.format(threading.active_count(),send_thread.is_alive(),read_thread.is_alive()))
 
         # shutdown bus
         print ("Stop CAN bus...")
         bus.shutdown()
         self.clear_tx_buff()
-        
+
         # reset GUI
         self.reset_gui()
-
-            
+           
     def minus_torque(self):
         global torque_value
         print('Torque command minus 1...')
@@ -176,6 +178,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global cycle_time
         global EnableFlag 
 
+        #with self.lock:  
         # Unlock Enable Button
         self.enableBtn.setEnabled(True)
 
@@ -197,7 +200,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                 print('Unable to send on CAN bus...\n')
                 break
         
-        
+    
 
     def reset_gui(self):
         print('Reset GUI...\n')
