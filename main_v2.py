@@ -15,7 +15,9 @@ import logging
 TransmitFlag = False
 EnableFlag   = False                                                                                                                                   
 ReadFlag     = False
-bus = None
+bus         = None
+listener    = None
+notifier    = None
 torque_value = 10
 cycle_time = 0.01
 
@@ -101,7 +103,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global EnableFlag
         global ReadFlag
         global bus
-
+        global notifier
+        
         # Set this flag to  disable RDM
         print ("Disable RDM...")
         EnableFlag = False
@@ -114,7 +117,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Set this flag to stop reading  inverter status
         print ("Stop CAN read..")
         ReadFlag = False
-        self.notifier.stop()
+        notifier.stop()
 
         # Wait for threads termination
         print ("Stop Transmit & Read CAN threads...")
@@ -127,7 +130,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # shutdown bus
         print ("Stop CAN bus...")
         bus.shutdown()
-        self.clear_tx_buff()
+        clear_tx_buff()
 
         # reset GUI
         self.reset_gui()
@@ -172,10 +175,10 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
     def start_read(self):
         print('Start CAN read...')
         global ReadFlag
-        start = time.time()
+        global listener
         while(ReadFlag):            
             #logging.debug('Reading CAN...')
-            msg = self.listener.get_message(timeout = 0.05)
+            msg = listener.get_message(timeout = 0.05)
             self.rdm.get_inverters_status(msg)
             
     def gui_update(self):
@@ -186,7 +189,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.torqueLCD.display(self.rdm.TM1_torque_sens)
 
   
-
     def reset_gui(self):
         print('Reset GUI...\n')
         # reset torque command box
@@ -213,10 +215,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global ReadFlag
         ReadFlag = True
 
-        # make sure Bus in started here so both read and start thread can start
-        print ("Start Transmit & Read CAN threads...")
-        global bus
-        self.initCAN()
 
         # change SSB text to STOP
         self.startStopBtn.setText('Stop')
@@ -225,17 +223,14 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
       
         # separate thread to prevent gui freezing. PASS HANDLE NOT FUNCTION CALL
+        print("Start Transmit & Read CAN threads...")
         global send_thread
         global read_thread
         
         send_thread = threading.Thread(target=self.start_transmit, args=())
         send_thread.setName('Send Thread')
         send_thread.daemon = True
-        send_thread.start()        
-
-        
-        self.listener = can.BufferedReader()
-        self.notifier = can.Notifier(bus, [self.listener])
+        send_thread.start()                
 
         read_thread = threading.Thread(target=self.start_read, args=())
         read_thread.setName('Read Thread')
@@ -244,21 +239,26 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         
 
 
-    def initCAN(self):
-        global bus
-        try:
-            can.rc['interface'] = 'socketcan'
-            can.rc['bitrate'] = 500000
-            can.rc['channel'] = 'can0'
-            bus = Bus()
-            bus.flush_tx_buffer()
-        except:
-            print('No can0 device bus')
-
-    def clear_tx_buff(self):
-        print('Clear CAN buffer...')
-        global bus
+def initCAN():
+    global bus
+    global listener
+    global notifier
+    try:
+        can.rc['interface'] = 'socketcan'
+        can.rc['bitrate'] = 500000
+        can.rc['channel'] = 'can0'
+        bus = Bus()
         bus.flush_tx_buffer()
+        ## CAN listerner
+        listener = can.BufferedReader()
+        notifier = can.Notifier(bus, [self.listener])
+    except:
+        print('No can0 device bus')
+
+def clear_tx_buff(self):
+    print('Clear CAN buffer...')
+    global bus
+    bus.flush_tx_buffer()
 
 def numberFromString(string):
     # this return a list of number from the string
@@ -276,10 +276,13 @@ def main():
     form.show()
     #form.showFullScreen()
 
+    ## Init CAN bus ##
+    initCAN()
     ## QTimer for updating GUI ##
     timer = QTimer()
     timer.timeout.connect(form.gui_update)
     timer.start(1000)
+    
     app.exec_()
 	
 if __name__ == '__main__':
