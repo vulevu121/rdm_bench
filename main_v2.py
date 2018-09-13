@@ -18,6 +18,7 @@ ReadFlag     = False
 bus         = None
 listener    = None
 notifier    = None
+lock        = None
 torque_value = 10
 cycle_time = 0.01
 
@@ -174,18 +175,22 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global ReadFlag
         global listener
         global notifier
-        while(ReadFlag):            
+        global lock
+        while(ReadFlag):
             #logging.debug('Reading CAN...')
             msg = listener.get_message(timeout = 0.05)
-            self.rdm.get_inverters_status(msg)
+            with lock:
+                self.rdm.get_inverters_status(msg)
             
     def gui_update(self):
         print('Updating GUI...\n')
-        self.tm1StatusBox.setText(self.rdm.TM1_status_sig)
-        self.tm2StatusBox.setText(self.rdm.TM2_status_sig)
-        self.rpmLCD.display(self.rdm.TM1_speed_sens)
-        self.torqueLCD.display(self.rdm.TM1_torque_sens)
-
+        global lock
+        with lock:
+            self.tm1StatusBox.setText(self.rdm.TM1_status_sig)
+            self.tm2StatusBox.setText(self.rdm.TM2_status_sig)
+            self.rpmLCD.display(self.rdm.TM1_speed_sens)
+            self.torqueLCD.display(self.rdm.TM1_torque_sens)
+            
   
     def reset_gui(self):
         print('Reset GUI...\n')
@@ -237,7 +242,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         read_thread.setName('Read Thread')
         read_thread.daemon = True
         read_thread.start()
-        
+
 
 
 def initCAN():
@@ -257,10 +262,7 @@ def initCAN():
     except:
         print('No can0 device ')
 
-##def clear_tx_buff():
-##    print('Clear CAN buffer...')
-##    global bus
-##    bus.flush_tx_buffer()
+
 
 def numberFromString(string):
     # this return a list of number from the string
@@ -277,6 +279,10 @@ def main():
     form = ExampleApp()
     form.show()
     #form.showFullScreen()
+
+    ## Thread Rlock for thread safety
+    global lock
+    lock = threading.RLock()
 
     ## QTimer for updating GUI ##
     timer = QTimer()
