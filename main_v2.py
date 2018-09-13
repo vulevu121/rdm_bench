@@ -66,10 +66,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         if EnableFlag != True:
             self.rdm.run_mode = mode
             print('Run Mode Changed')
-        #else:
-            #print('RDM is running. MODE can be changed after RDM STOP')
-            #ret = self.mode_msg_box.exec_()
-            
+          
     def set_radio_btns_state(self, state = 'unlocked'):
         for btn in self.radio_btns:
             if state == 'locked':
@@ -130,7 +127,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # shutdown bus
         print ("Stop CAN bus...")
         bus.shutdown()
-        clear_tx_buff()
+        bus.flush_tx_buffer()
 
         # reset GUI
         self.reset_gui()
@@ -176,6 +173,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         print('Start CAN read...')
         global ReadFlag
         global listener
+        global notifier
         while(ReadFlag):            
             #logging.debug('Reading CAN...')
             msg = listener.get_message(timeout = 0.05)
@@ -221,7 +219,10 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.startStopBtn.clicked.disconnect()
         self.startStopBtn.clicked.connect(lambda: self.stop_transmit())
 
-      
+        ## Init CAN  ##
+        initCAN()
+
+          
         # separate thread to prevent gui freezing. PASS HANDLE NOT FUNCTION CALL
         print("Start Transmit & Read CAN threads...")
         global send_thread
@@ -241,8 +242,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
 def initCAN():
     global bus
-    global listener
-    global notifier
     try:
         can.rc['interface'] = 'socketcan'
         can.rc['bitrate'] = 500000
@@ -250,15 +249,18 @@ def initCAN():
         bus = Bus()
         bus.flush_tx_buffer()
         ## CAN listerner
+        global listener
+        global notifier
         listener = can.BufferedReader()
-        notifier = can.Notifier(bus, [self.listener])
-    except:
-        print('No can0 device bus')
+        notifier = can.Notifier(bus, [listener])
 
-def clear_tx_buff(self):
-    print('Clear CAN buffer...')
-    global bus
-    bus.flush_tx_buffer()
+    except:
+        print('No can0 device ')
+
+##def clear_tx_buff():
+##    print('Clear CAN buffer...')
+##    global bus
+##    bus.flush_tx_buffer()
 
 def numberFromString(string):
     # this return a list of number from the string
@@ -276,8 +278,6 @@ def main():
     form.show()
     #form.showFullScreen()
 
-    ## Init CAN bus ##
-    initCAN()
     ## QTimer for updating GUI ##
     timer = QTimer()
     timer.timeout.connect(form.gui_update)
