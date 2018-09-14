@@ -170,8 +170,17 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global logger
 
         line = ''
+        epoch = time.time()
         # May need to change when adding processing time between Rx and Tx
-        Tx_Rx_Timestamp_offset = 16
+        # Take the time stamp of 1 Rx message for reference
+        sample_rx = bus.recv(timeout = 0.05)
+        if sample_rx is None:
+            # An average delay
+            Tx_Rx_Timestamp_offset = 22
+        else:
+            Tx_Rx_Timestamp_offset = sample_rx.timestamp - epoch
+        #print(Tx_Rx_Timestamp_offset)
+            
         # Unlock Enable Button
         self.enableBtn.setEnabled(True)
 
@@ -308,9 +317,9 @@ def initCAN():
         global path_to_storage
         # Logging Rx message 
         logger   = can.ASCWriter('{}/{}'.format(path_to_storage,log_file_name()))
+        logger.log_event('Start of logging...')
         listener = can.BufferedReader()
         notifier = can.Notifier(bus, [listener,logger])
-        #notifier = can.Notifier(bus, [listener])
     except:
         print('No can0 device ')
 
