@@ -74,8 +74,34 @@ class RDM:
     def set_torque(self,target_torque):                            
         self.torque_cmd = target_torque
 
-
-    def enable(self,bus):
+##    # Enable without logging
+##    def enable(self,bus):
+##        # pull WUP2 high
+##        self.WUP2('ON')
+##        # no commmand
+##        self.legacy_shutdown_cmd = 0x0
+##        self.shutdown_cmd = 0x0
+##        # enable command
+##        self.legacy_enable_cmd = 0xA
+##        # Must enable in the following sequence
+##        
+##        enable_seq = [0x0, 0x1, 0x2, 0x3]
+##
+##        for step in enable_seq:        
+##            startTime = time.time()
+##            self.enable_cmd = step
+##           
+##            while(True):
+##                # update in the loop to ensure ARC increment correctly
+##                self.update_CAN_msg()
+##                for msg in self.msg_list: 
+##                    bus.send(msg,0.1)
+##                time.sleep(0.008)
+##                if time.time() - startTime > 0.5:
+##                    break
+        
+    # Enable with logging
+    def enable(self,bus, logger = None, time_offset = None, msg2str = None):
         # pull WUP2 high
         self.WUP2('ON')
         # no commmand
@@ -91,14 +117,16 @@ class RDM:
             startTime = time.time()
             self.enable_cmd = step
            
-            while(True):
+            while(time.time() - startTime < 0.7):
                 # update in the loop to ensure ARC increment correctly
                 self.update_CAN_msg()
                 for msg in self.msg_list: 
                     bus.send(msg,0.1)
-                time.sleep(0.008)
-                if time.time() - startTime > 0.5:
-                    break
+                    if logger != None:
+                        line = msg2str(msg)
+                        logger.log_event(line, timestamp = time.time()+time_offset)
+                time.sleep(0.007)
+
                 
     def WUP2(self,command = 'ON'):
         if command == 'OFF':
@@ -108,7 +136,7 @@ class RDM:
         # send logic HIGH
             pass
     
-    def disable(self,bus):
+    def disable(self,bus, logger = None, time_offset = None, msg2str = None):
         # TODO: PULL WUP LINE LOW
         self.WUP2('OFF')
         # set torque command to zero
@@ -121,19 +149,15 @@ class RDM:
         for step in disable_seq:
             startTime = time.time()
             self.enable_cmd = step
-            while(time.time() - startTime < 0.1):
+            while(time.time() - startTime < 1):
 
                 # update in the loop to ensure ARC increment correctly
                 self.update_CAN_msg()
-                # use try - except to avoid App crashing when tx_buffer overflow 
-                try:
-                    for msg in self.msg_list:
-                        bus.send(msg)
-                except:
-                    print('...Send CAN bus error...')
-                    # clear tx buffer to avoid crashing
-                    bus.flush_tx_buffer()
-                    return
+                for msg in self.msg_list:
+                    bus.send(msg)
+                    if logger != None:
+                        line = msg2str(msg)
+                        logger.log_event(line, timestamp = time.time()+time_offset)
                 time.sleep(0.008)
                 
         # After enable_cmd becomes zero, send shutdown request for ab+it more time (2 seconds)

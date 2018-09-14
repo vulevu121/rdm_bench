@@ -36,8 +36,9 @@ PEAK_CAN_connected = 1   # 1 is not connected
 
 torque_value = 10
 vehicle_in_test_num = 0
-
 num_test_performed = 0
+Tx_Rx_Timestamp_offset = None
+
 #path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
 path_to_storage     = '/mnt/Sdrive'
 
@@ -221,8 +222,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global cycle_time
         global EnableFlag 
         global logger
-
-        line = ''
+        global Tx_Rx_Timestamp_offset
+        
         epoch = time.time()
         
         # May need to change when adding processing time between Rx and Tx
@@ -245,7 +246,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         while(TransmitFlag):
             try:
                 if EnableFlag:
-                    self.rdm.enable(bus)
+                    self.rdm.enable(bus, logger, Tx_Rx_Timestamp_offset, msg2str)
                     # Set torque value to 10
                     self.rdm.set_torque(torque_value)
                     EnableFlag = False
@@ -317,7 +318,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global listener
         global timer
         global logger
-        
+        global Tx_Rx_Timestamp_offset
         # Set this flag to  disable RDM
         print ("Disable RDM...")
         EnableFlag = False
@@ -325,10 +326,10 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Set this flag to stop the ongoing transmittion
         print ("Stop CAN transmit...")
         TransmitFlag = False
-        self.rdm.disable(bus)
+        self.rdm.disable(bus, logger, Tx_Rx_Timestamp_offset, msg2str)
 
         # Turn OFF PS output
-        power_supply_control(output = 'OFF', voltage = 0.1, current  = 0.1)
+        #power_supply_control(output = 'OFF', voltage = 0.1, current  = 0.1)
 
 
         # Set this flag to stop reading  inverter status
