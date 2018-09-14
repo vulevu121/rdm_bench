@@ -18,7 +18,7 @@ from subprocess import call
 
 # import the file with EPB page
 from rdm_gui_stackedpages import *
-from inv_control_v2 import *
+from inv_control_w_theading_timer import *
 from PS_Control import *
 
 # Flags
