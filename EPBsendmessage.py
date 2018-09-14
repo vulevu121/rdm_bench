@@ -210,10 +210,10 @@ class EPBControl(object):
         self.EPBCommand.data[0]           = crc8(self.EPBCommand,0)    
 
         #self.BrakeStatusHCU.data[1]       = self.crc8(self.BrakeStatusHCU.data[0],1)
-        self.BrakeStatusHCU.data[1]       = self.crc8(self.BrakeStatusHCU,1)
+        self.BrakeStatusHCU.data[1]       = crc8(self.BrakeStatusHCU,1)
 
         #self.GearPosition.data[3]         = self.crc8(self.GearPosition.data[0:3],3)
-        self.GearPosition.data[3]         = self.crc8(self.GearPosition,3)
+        self.GearPosition.data[3]         = crc8(self.GearPosition,3)
 
         
         self.group1_msg_list    = [self.BrakeStatus1, self.BrakeStatusHCU, self.ClimateStatus, self.TotalMilage, self.HCUPNM12V, self.EPBCommand, self.GearPosition ]
@@ -265,10 +265,10 @@ class EPBControl(object):
 ##        self.WheelVelocity.data[3]        = self.crc8(self.WheelVelocity.data[0:3],3)
         
         self.HCU2PTStatus.data[0]         = crc8(self.HCU2PTStatus,0)
-        self.VehicleSpeed.data[7]         = self.crc8(self.VehicleSpeed,7)
-        self.WheelGDriven.data[5]         = self.crc8(self.WheelGDriven,5)
-        self.WheelGNONDriven.data[5]      = self.crc8(self.WheelGNONDriven,5)
-        self.WheelVelocity.data[3]        = self.crc8(self.WheelVelocity,3)
+        self.VehicleSpeed.data[7]         = crc8(self.VehicleSpeed,7)
+        self.WheelGDriven.data[5]         = crc8(self.WheelGDriven,5)
+        self.WheelGNONDriven.data[5]      = crc8(self.WheelGNONDriven,5)
+        self.WheelVelocity.data[3]        = crc8(self.WheelVelocity,3)
 
 
         
