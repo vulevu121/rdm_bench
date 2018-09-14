@@ -167,10 +167,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         num_test_performed = 0
         # Close any opened log session and write to file
         logger.stop()
-        # Append FAILED to file name if Test failed
-        if Test_Result == 'FAILED':
-            os.rename(file_name, 'FAILED_' + file_name)
-            Test_Result = None
         # Start a new log file
         status = create_log()
         # Update status box on RDM page
@@ -178,7 +174,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Update status box on Operator page
         self.op_save_file_status.setText(status)
 
-        
 
     def msgBtn(self):
         ret = self.CAN_adapter_msg.exec_()
@@ -231,19 +226,50 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         elif self.rdm.TM1_status_sig == 'NORMAL_ENABLE' and abs(self.rdm.TM1_speed_sens) < 10:
             self.LED.setPixmap(self.red_led)
             Test_Result = 'FAILED'
+            print('1')
         elif self.rdm.TM2_status_sig == 'NORMAL_ENABLE' and abs(self.rdm.TM2_speed_sens) < 10:
             self.LED.setPixmap(self.red_led)
             Test_Result = 'FAILED'
+            print('2')
+
         elif self.rdm.TM1_status_sig == 'SHUTDWN' or self.rdm.TM2_status_sig == 'SHUTDWN':
         # if this signal is shutdown before disable cmd is sent. that means it failed the test
             self.LED.setPixmap(self.red_led)
             Test_Result = 'FAILED'
+            print('3')
+
         else:
             self.LED.setPixmap(self.green_led)
             Test_Result = 'PASSED'
             
         # Stop RDM
         self.stop_transmit()
+
+
+##        # If test failed, stop logging, rename file and start a new log
+##        if Test_Result == 'FAILED':
+##            # Stop logger
+##            logger.stop()
+##            self.rename_failed()
+##            Test_Result = None
+##            time.sleep(1)
+##            # Start a new log file
+##            status = create_log()
+##            # Update status box on RDM page
+##            self.save_file_status.setText(status)
+##            # Update status box on Operator page
+##            self.op_save_file_status.setText(status)
+##    
+##         This keeps causing segmentation fault. Maybe just have a separate script to
+##         rename the file later        
+
+
+    def rename_failed(self):
+        path_to_file = '{}/{}'.format(path_to_storage,file_name)
+        path_to_new_file = '{}/FAILED_{}'.format(path_to_storage,file_name) 
+        os.rename(path_to_file, path_to_new_file)
+
+
 
     def show_progress(self):
         # show progress bar
@@ -462,7 +488,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
         # Turn OFF PS output
         power_supply_control(output = 'OFF', voltage = 0.1, current  = 0.1)
-
+            
 
         # Set this flag to stop reading  inverter status
         #print ("Stop CAN read..")
@@ -503,7 +529,6 @@ def check_PEAK_CAN_connection():
  
 
 def initCAN():
-    global form
     # Initilize bus
     global bus
     can.rc['interface'] = 'socketcan'
@@ -584,14 +609,15 @@ def power_supply_control(output , voltage , current):
         print('Power Supply not found. Please check and try again')
 
 def main():
-    global form
+
     app = QApplication(sys.argv)
     form = ExampleApp()
     form.show()
     #form.showFullScreen()   
 
     # Mount S Drive
-    call('sudo mount -t cifs -o username=RDM_Bench,password="AqAErT4AJ@&Rq6KQ",sec=ntlmsspi //fafs02/Engineering/Khuong\ Nguyen/Raspberry\ Pi /mnt/Sdrive', shell=True)
+    if os.path.ismount(path_to_storage) == False:
+        call('sudo mount -t cifs -o username=RDM_Bench,password="AqAErT4AJ@&Rq6KQ",sec=ntlmsspi //fafs02/Engineering/Khuong\ Nguyen/Raspberry\ Pi /mnt/Sdrive', shell=True)
     
     ## Thread Rlock for thread safety for
     ## read/write status to GUI
@@ -602,7 +628,7 @@ def main():
     ## Timer need to start in Main Thread i.e in main()
     timer = QTimer()
     timer.timeout.connect(form.update_gui)
-    timer.start(1000)
+    timer.start(500)
 
     ## Start App ##
     app.exec_()
