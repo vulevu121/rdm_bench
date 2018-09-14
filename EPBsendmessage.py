@@ -250,7 +250,7 @@ class EPBControl(object):
         self.WheelRotatUnDriven.data[0]   = (self.WheelRotatUnDriven.data[0]   & 0x3F)  |(counter3<<6)                            
         self.WheelRotatDriven.data[0]     = (self.WheelRotatDriven.data[0]     & 0x3F)  |(counter3<<6)
         self.EBCMBrake.data[0]            = (self.EBCMBrake.data[0]            & 0)     | counter3
-        self.AXLETorqueData[0]            = (self.AXLETorqueData[0]            & 0xFC)  | counter3
+        self.AXLETorqueData.data[0]       = (self.AXLETorqueData.data[0]       & 0xFC)  | counter3
         
         # CRC
         EBCMBrakeTorqueCRC              = crc8_PTECT_DRIV_INTEND_BRAKE_TORQ(self.EBCMBrake)
