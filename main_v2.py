@@ -80,9 +80,11 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.veh_num_save_btn.clicked.connect  (lambda:self.veh_num_save())
 
         # Page switch
+        self.change_page('RDM page')
         self.epbBtn.clicked.connect             (lambda:self.change_page('EPB page'))
         self.rdmBtn.clicked.connect             (lambda:self.change_page('RDM page'))
         self.menuBtn.clicked.connect            (lambda:self.change_page('Operator page'))
+        self.op_epbBtn.clicked.connect          (lambda:self.change_page('EPB page'))
     
         # Pop Up meassage box
         self.CAN_adapter_msg = QMessageBox()
