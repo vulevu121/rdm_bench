@@ -159,8 +159,10 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         if test == 1:
             # Start Tx and Rx thread
             self.start_CAN_thread()
-            # Run motor for 10 seconds
-            self.enable_RDM()
+            # Set Enable in 2 seconds
+            enable_thread = threading.Timer(2,self.enable_RDM)
+            enable_thread.daemon = True
+            enable_thread.start()
             # Start another thread to run autotest and prevent read thread frozen
             # test for duration 15s
             duration = 15 
@@ -171,6 +173,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             # Auto test LED default to grey
             self.LED.setPixmap(self.grey_led)
             auto_test_thread.start()
+        # NOTE: For some reason, auto test causes the SSB on the Engineer Control Page to disconnect
+        #       and does not reconnect to start_CAN_thread(). Need to restart the application to fix
+        #       DONT USE BOTH PAGE IN THE SAME SESSION FOR NOW
 
 
     def complete_test(self):
@@ -182,6 +187,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             self.LED.setPixmap(self.green_led)
         # Stop RDM
         self.stop_transmit()
+
+
                 
     def run_mode(self,mode):
         global EnableFlag
@@ -390,7 +397,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         
 
         # Wait for threads termination
-        print ("Stop Transmit & Read CAN threads...")
+        #print ("Stop Transmit threads...")
         global send_thread
         global read_thread
         send_thread.join()

@@ -432,7 +432,7 @@ class RDM:
                 
             if prog_pos_resp:
                 
-                print('{} confirmed Programming Mode. New ID is {}. Writing DID $B100...'.format(ID_to_name[curr_ID],goal_ID))
+                #print('{} confirmed Programming Mode. New ID is {}. Writing DID $B100...'.format(ID_to_name[curr_ID],goal_ID))
                 diag_msg = can.Message(arbitration_id = curr_ID, extended_id = False, dlc = 8, data=[0x5,0x2E,0xB1,0x0,0x0,B100_Values[goal_ID]])
                 bus.send(diag_msg)
                 # Confirm positive response. The confirmation comes in the 2nd response from the inverter. Need to save all the response for processing
@@ -447,11 +447,11 @@ class RDM:
                     for resp in b100_resp:
                         if resp.data[0] == 0x3 and resp.data[1] == 0x6E and resp.data[2] == 0xB1 and resp.data[3] == 0x0:
                             b100_pos_resp = True
-                            msg = 'DID $B100 Written Successfully. Please Cycle Power\n'
+                            msg ='{} Responded. New ID {} Is Written Successfully. Please Cycle Power'.format(ID_to_name[curr_ID],goal_ID)
                             print(msg)
                             return msg
                 else:
-                    msg = 'DID $B100 Not Written. Please Cycle Power And Try Again...'
+                    msg = 'New ID Is Not Written. Please Cycle Power And Try Again...'
                     print(msg)
                     return msg
                 
