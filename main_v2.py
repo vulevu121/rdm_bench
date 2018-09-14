@@ -14,6 +14,7 @@ import logging
 import visa
 import os.path
 from os import path
+from subprocess import call
 
 # import the file with EPB page
 from rdm_gui_stackedpages import *
@@ -31,6 +32,7 @@ notifier    = None
 lock        = None
 timer       = None
 logger      = None
+PEAK_CAN_connected = 1   # 1 is not connected 
 
 torque_value = 10
 vehicle_in_test_num = 0
@@ -79,17 +81,31 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.rdmBtn.clicked.connect             (lambda:self.change_page('RDM page'))
 
         # Pop Up meassage box
-        self.mode_msg_box = QMessageBox()
-        self.mode_msg_box.setIcon(QMessageBox.Information)
-        self.mode_msg_box.setText('RDM is running!')
-        self.mode_msg_box.setInformativeText('Please Stop RDM and try again.')
-        self.mode_msg_box.setWindowTitle("Run Mode Message")
-        self.mode_msg_box.setStyleSheet('background-color: rgb(59, 56, 56)')
-        self.mode_msg_box.setStandardButtons(QMessageBox.Close)        
-        
+        self.CAN_adapter_msg = QMessageBox()
+        self.CAN_adapter_msg.setIcon(QMessageBox.Critical)
+        self.CAN_adapter_msg.setText('CAN bus can not be found.')
+        self.CAN_adapter_msg.setInformativeText('Please check PEAK CAN adapter and try again.')
+        self.CAN_adapter_msg.setWindowTitle("PEAK CAN connection")
+        self.CAN_adapter_msg.setStyleSheet('background-color: rgb(59, 56, 56)')
+        self.CAN_adapter_msg.setStandardButtons(QMessageBox.Retry| QMessageBox.Abort)        
+        #self.CAN_adapter_msg.buttonClicked.connect(msgBtn)
+
+        # Init CAN
+        global PEAK_CAN_connected
+        while PEAK_CAN_connected == 1:
+            ret = self.CAN_adapter_msg.exec_()
+            if ret == 0x40000:
+                # Abort
+                exit()
+            # if PEAK CAN is connected, loop will exit
+            check_PEAK_CAN_connection()
+            
     #######################################        
     ############# GUI methods #############           
     #######################################
+
+    def msgBtb(self):
+        ret = self.CAN_adapter_msg.exec_()
 
     def change_page(self,target = 'EPB page'):
         pages = {'EPB page': self.EPB_page, 'RDM page': self.RDM_page}
@@ -243,10 +259,14 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global notifier
         global lock
         while(ReadFlag):
-            msg = listener.get_message(timeout = 0.05)
-            with lock:
-                self.rdm.get_inverters_status(msg)
+            try:
+                msg = listener.get_message(timeout = 0.05)
+                with lock:
+                    self.rdm.get_inverters_status(msg)
+            except:
+                print('Unable to read on CAN bus')
 
+                
     def start_CAN_thread(self):
         global TransmitFlag
         TransmitFlag = True
@@ -261,7 +281,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.startStopBtn.clicked.connect(lambda: self.stop_transmit())
 
         ## Init CAN  ##
-        initCAN()
+        #initCAN()
          
         # separate thread to prevent gui freezing. PASS HANDLE NOT FUNCTION CALL
         print("Start Transmit & Read CAN threads...")
@@ -325,11 +345,18 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
     #######################################        
     ############# Main functions ##########          
     #######################################
+
+def check_PEAK_CAN_connection():
+    global PEAK_CAN_connected
+    # 1 means no can0. prompt user for exit/retry and wait for input
+    PEAK_CAN_connected = call("sudo ip link set can0 up", shell=True)
+
  
 
 def initCAN():
-    global bus
 
+    # Initilize bus
+    global bus
     can.rc['interface'] = 'socketcan'
     can.rc['bitrate'] = 500000
     can.rc['channel'] = 'can0'
@@ -343,14 +370,12 @@ def initCAN():
     global path_to_storage
 
     # Logging Rx message 
-    try:
-        logger   = can.ASCWriter('{}/{}'.format(path_to_storage,log_file_name()))
-        listener = can.BufferedReader()
-        notifier = can.Notifier(bus, [listener,logger])
+    logger   = can.ASCWriter('{}/{}'.format(path_to_storage,log_file_name()))
+    listener = can.BufferedReader()
+    notifier = can.Notifier(bus, [listener,logger])
 
-    except:
-        print('No can0 device ')
-        #exit()
+
+
 
 def create_file_name(vehicle_number = 0, num_test_performed = 0):
     file_name = 'PV{:02d}.{:d}.asc'.format(vehicle_number,num_test_performed)
