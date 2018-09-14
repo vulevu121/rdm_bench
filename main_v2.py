@@ -435,15 +435,18 @@ def numberFromString(string):
     #######################################
 
 def power_supply_control(output , voltage , current):
-    rm = visa.ResourceManager('@py')
-    inst = rm.open_resource('USB0::2391::43271::US17M5344R::0::INSTR') 
+    try:
+        rm = visa.ResourceManager('@py')
+        inst = rm.open_resource('USB0::2391::43271::US17M5344R::0::INSTR') 
 
-    ## Print for debug ##
-    PSwrite(inst,'VSET', voltage)
-    PSwrite(inst,'CSET', current)
-    PSwrite(inst,'ON')
+        ## Print for debug ##
+        PSwrite(inst,'VSET', voltage)
+        PSwrite(inst,'CSET', current)
+        PSwrite(inst,'ON')
 
-    PSwrite(inst, output)
+        PSwrite(inst, output)
+    except:
+        print('Power Supply not found. Please check and try again')
 
 def main():
 
