@@ -29,6 +29,8 @@ logger      = None
 
 torque_value = 10
 vehicle_in_test_num = 0
+#path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
+path_to_storage     = '/mnt/Sdrive'
 
 
 #logging.basicConfig(level=logging.DEBUG,format='(%(threadName)-9s) %(message)s',)
@@ -168,7 +170,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global logger
 
         line = ''
-        Tx_Rx_Timestamp_offset = 5
+        # May need to change when adding processing time between Rx and Tx
+        Tx_Rx_Timestamp_offset = 16
         # Unlock Enable Button
         self.enableBtn.setEnabled(True)
 
@@ -302,8 +305,9 @@ def initCAN():
         global listener
         global notifier
         global logger
+        global path_to_storage
         # Logging Rx message 
-        logger   = can.ASCWriter('RDM_logs/{}'.format(log_file_name()))
+        logger   = can.ASCWriter('{}/{}'.format(path_to_storage,log_file_name()))
         listener = can.BufferedReader()
         notifier = can.Notifier(bus, [listener,logger])
         #notifier = can.Notifier(bus, [listener])
@@ -323,10 +327,11 @@ def create_file_name(vehicle_number = 0):
 
 def log_file_name():
     global vehicle_in_test_num
+    global path_to_storage
     file_name = create_file_name(vehicle_in_test_num)
     # Change path according to locations of log files
-    while path.exists('RDM_logs/{}'.format(file_name)) :
-        print (file_name)
+    while path.exists('{}/{}'.format(path_to_storage,file_name)) :
+        #print (file_name)
         # file already exists, add 0.1 to vehicle test number
         vehicle_in_test_num = vehicle_in_test_num + 0.1
         file_name = create_file_name(vehicle_in_test_num)
