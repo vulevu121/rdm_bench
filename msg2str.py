@@ -4,15 +4,15 @@ import can
 
 
 def msg2str(msg):
-    t = msg.timestamp
+    #t = msg.timestamp (timestamp is already handled by the log_event function)
     ID = msg.arbitration_id
-    c = msg.channel
+    c = 1
     dlc = msg.dlc
     data = msg.data
     data_str = ''
     for d in data:
         data_str = data_str +'{:02x} '.format(d)
-    line =  '{} {} {:x} Tx d {} '.format(t,c,ID,dlc) + data_str
+    line =  '{}  {:03x}             Tx   d {} '.format(c,ID,dlc) + data_str
     return line
 
 

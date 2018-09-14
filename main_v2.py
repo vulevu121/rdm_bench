@@ -1,4 +1,4 @@
-""" Author: Khuong Nguyen, Vu Le, Tai
+""" Author: Khuong Nguyen, Vu Le
     2.0 RDM Application Script"""
 
 
@@ -174,8 +174,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                     bus.send(msg,0.1)
                     # Logging Tx message
                     line = msg2str(msg)
-                    # Need to figure out the time to add to EPOCh
-                    #print(time.time())
+                    # Need to figure out the time to add to EPOCH
                     logger.log_event(line,timestamp = time.time() + Tx_Rx_Timestamp_offset)
                 # Send messages every 10 ms    
                 time.sleep(0.007)

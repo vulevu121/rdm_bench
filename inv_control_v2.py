@@ -170,7 +170,7 @@ class RDM:
 
     def get_inverters_status(self,msg):
         try:
-            #print(msg)
+ 
             if msg.arbitration_id == TM1_STATUS_ID:
                 self.TM1_inv_temp_sens   = msg.data[0] - 40
                 self.TM1_motor_temp_sens = msg.data[1] - 40
