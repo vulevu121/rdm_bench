@@ -303,7 +303,7 @@ def initCAN():
         global notifier
         global logger
         # Logging Rx message 
-        logger   = can.ASCWriter(log_file_name())
+        logger   = can.ASCWriter('RDM_logs/{}'.format(log_file_name()))
         listener = can.BufferedReader()
         notifier = can.Notifier(bus, [listener,logger])
         #notifier = can.Notifier(bus, [listener])
@@ -319,14 +319,18 @@ def create_file_name(vehicle_number = 0):
         file_name = 'PV{:02.1f}.asc'.format(vehicle_number)
     return file_name
 
+
+
 def log_file_name():
     global vehicle_in_test_num
     file_name = create_file_name(vehicle_in_test_num)
-    while path.exists(file_name) :
+    # Change path according to locations of log files
+    while path.exists('RDM_logs/{}'.format(file_name)) :
         print (file_name)
         # file already exists, add 0.1 to vehicle test number
         vehicle_in_test_num = vehicle_in_test_num + 0.1
-        file_name = create_file_name(vehicle_in_test_num) 
+        file_name = create_file_name(vehicle_in_test_num)
+    print(file_name)
     return file_name
 
               
