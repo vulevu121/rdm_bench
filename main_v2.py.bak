@@ -10,15 +10,15 @@ import sys
 import threading
 import re
 import logging
-
-import visa
+#import PS_Control
+#import visa
 import os.path
 from os import path
 
 # import the file with EPB page
 from rdm_gui_stackedpages import *
 from inv_control_v2 import *
-from PS_Control import *
+#from PS_Control import *
 
 # Flags
 TransmitFlag = False
@@ -34,12 +34,16 @@ logger      = None
 
 torque_value = 10
 vehicle_in_test_num = 0
+<<<<<<< HEAD
 
+path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
+#path_to_storage     = '/mnt/Sdrive'
+=======
 num_test_performed = 0
 #path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
 path_to_storage     = '/mnt/Sdrive'
+>>>>>>> ada3a4169cc12761fbae3f84344d9da40e240178
 
-#path_to_storage     = '/mnt/Ddrive'
 
 #logging.basicConfig(level=logging.DEBUG,format='(%(threadName)-9s) %(message)s',)
 
@@ -247,6 +251,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             with lock:
                 self.rdm.get_inverters_status(msg)
 
+        
     def start_CAN_thread(self):
         global TransmitFlag
         TransmitFlag = True
@@ -299,9 +304,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Set this flag to stop reading  inverter status
         print ("Stop CAN read..")
         ReadFlag = False
-        # Dont stop reading status
-        #notifier.stop()
-        #listener.stop()
+        notifier.stop()
+        listener.stop()
         
 
         # Wait for threads termination
@@ -311,8 +315,10 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         send_thread.join()
         read_thread.join()
 
-        # Dont shutdown bus to let operator do multiple cycle
-        #bus.shutdown()
+
+        # shutdown bus
+        print ("Stop CAN bus...")
+        bus.shutdown()
         bus.flush_tx_buffer()
 
         # reset GUI
@@ -329,30 +335,32 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
 def initCAN():
     global bus
-
-    can.rc['interface'] = 'socketcan'
-    can.rc['bitrate'] = 500000
-    can.rc['channel'] = 'can0'
-    bus = Bus()
-    bus.flush_tx_buffer()
-
-    ## CAN listerner ##
-    global listener
-    global notifier
-    global logger
-    global path_to_storage
-
-    # Logging Rx message 
     try:
+        can.rc['interface'] = 'socketcan'
+        can.rc['bitrate'] = 500000
+        can.rc['channel'] = 'can0'
+        bus = Bus()
+        bus.flush_tx_buffer()
+
+        ## CAN listerner ##
+        global listener
+        global notifier
+        global logger
+        global path_to_storage
+        # Logging Rx message 
         logger   = can.ASCWriter('{}/{}'.format(path_to_storage,log_file_name()))
+        logger.log_event('Start of logging...')
         listener = can.BufferedReader()
         notifier = can.Notifier(bus, [listener,logger])
-
     except:
         print('No can0 device ')
-        #exit()
 
 def create_file_name(vehicle_number = 0, num_test_performed = 0):
+##    if isinstance(vehicle_number,int):
+##        file_name = 'PV{:02d}.asc'.format(vehicle_number)
+##    else:
+##        # file name range from .1 to .9
+##        file_name = 'PV{:02.1f}.asc'.format(vehicle_number)
     file_name = 'PV{:02d}.{:d}.asc'.format(vehicle_number,num_test_performed)
     return file_name
 
@@ -362,13 +370,9 @@ def log_file_name():
     global num_test_performed 
     global path_to_storage
     file_name = create_file_name(vehicle_in_test_num,num_test_performed)
-    # Check if path to storage is valid
-    
-    if not path.exists(path_to_storage):
-        print('"{}" is not a valid path. Please try again'.format(path_to_storage))
-        pass
     # Change path according to locations of log files
     while path.exists('{}/{}'.format(path_to_storage,file_name)) :
+        #print (file_name)
         # file already exists, increase num_test_performed by 1
         num_test_performed = num_test_performed + 1
         file_name = create_file_name(vehicle_in_test_num,num_test_performed)
@@ -401,20 +405,21 @@ def numberFromString(string):
     ######Power Supply functions ##########          
     #######################################
 
-def power_supply_control(output = 'OFF', voltage = 2, current = 0.5):
-    rm = visa.ResourceManager('@py')
-    print(rm.list_resources())
-    inst = rm.open_resource('USB0::2391::43271::US17M5344R::0::INSTR')
-    print(inst.query("*IDN?"))  
-
-    ## Print for debug ##
+##def power_supply_control(output = 'OFF', voltage = 0, current = 0):
+##    rm = visa.ResourceManager()
+##    print(rm.list_resources())
+##    #Value here may change depending upon raspberry pi's resource identification
+##    inst = rm.open_resource('USB0::0x0957::0xA907::US17M5344R::INSTR')
+##    print(inst.query("*IDN?"))
+##
+##    print(inst.query("*IDN?"))
 ##    PSwrite(inst,'VSET', voltage)
 ##    PSwrite(inst,'CSET', current)
 ##
 ##    print(PSquery(inst, 'OUTP'))
 ##    print(PSquery(inst, 'VSET'))
-
-    PSwrite(inst, output)
+##
+##    PSwrite(inst, output)
 
 def main():
 
