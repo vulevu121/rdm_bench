@@ -45,7 +45,7 @@ num_test_performed = 0
 Tx_Rx_Timestamp_offset = None
 duration           =  20
 file_name          = None
-
+form            = None
 #path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
 path_to_storage     = '/mnt/Sdrive'
 
@@ -504,7 +504,7 @@ def check_PEAK_CAN_connection():
  
 
 def initCAN():
-
+    global form
     # Initilize bus
     global bus
     can.rc['interface'] = 'socketcan'
@@ -514,11 +514,8 @@ def initCAN():
     bus.flush_tx_buffer()
 
     # Logging 
-    status = create_log()
-    # Update status box on RDM page
-    self.save_file_status.setText(status)
-    # Update status box on Operator page
-    self.op_save_file_status.setText(status)
+    create_log()
+
 
 def create_file_name(vehicle_number = 0, num_test_performed = 0):
     file_name = 'PV{:02d}.{:d}.asc'.format(vehicle_number,num_test_performed)
@@ -588,7 +585,7 @@ def power_supply_control(output , voltage , current):
         print('Power Supply not found. Please check and try again')
 
 def main():
-
+    global form
     app = QApplication(sys.argv)
     form = ExampleApp()
     form.show()
