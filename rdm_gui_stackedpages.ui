@@ -212,7 +212,7 @@ QLineEdit#save_file_statusl{
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="RDM_page">
      <widget class="QGroupBox" name="groupBox_3">
@@ -1356,7 +1356,7 @@ QPushButton:hover {
      <widget class="QGroupBox" name="groupBox_16">
       <property name="geometry">
        <rect>
-        <x>373</x>
+        <x>380</x>
         <y>90</y>
         <width>401</width>
         <height>321</height>
@@ -1375,16 +1375,6 @@ QPushButton:hover {
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_7">
-        <item row="0" column="0">
-         <widget class="QLabel" name="tm1Label_5">
-          <property name="text">
-           <string>TM1 Status</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="1">
          <widget class="QLineEdit" name="op_tm1StatusBox">
           <property name="mouseTracking">
@@ -1404,30 +1394,8 @@ QPushButton:hover {
           </property>
          </widget>
         </item>
-        <item row="5" column="1">
-         <widget class="QLCDNumber" name="op_tm2_motor_rpm_LCD">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Plain</enum>
-          </property>
-          <property name="lineWidth">
-           <number>1</number>
-          </property>
-          <property name="digitCount">
-           <number>15</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLCDNumber" name="op_tm1_inv_temp_LCD">
+        <item row="2" column="1">
+         <widget class="QLCDNumber" name="op_tm1_motor_rpm_LCD">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -1461,27 +1429,8 @@ QPushButton:hover {
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="op_tm2StatusBox">
-          <property name="mouseTracking">
-           <bool>false</bool>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">font: 75 18pt &quot;MS Shell Dlg 2&quot;;</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLCDNumber" name="op_tm1_motor_rpm_LCD">
+        <item row="1" column="1">
+         <widget class="QLCDNumber" name="op_tm1_inv_temp_LCD">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -1527,16 +1476,6 @@ QPushButton:hover {
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_28">
-          <property name="text">
-           <string>TM1 Inv Temp</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_29">
           <property name="text">
@@ -1544,6 +1483,57 @@ QPushButton:hover {
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="op_tm2StatusBox">
+          <property name="mouseTracking">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">font: 75 18pt &quot;MS Shell Dlg 2&quot;;</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_31">
+          <property name="text">
+           <string>TM2 Motor RPM</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLCDNumber" name="op_tm2_motor_rpm_LCD">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <property name="lineWidth">
+           <number>1</number>
+          </property>
+          <property name="digitCount">
+           <number>15</number>
+          </property>
+          <property name="segmentStyle">
+           <enum>QLCDNumber::Flat</enum>
           </property>
          </widget>
         </item>
@@ -1557,10 +1547,20 @@ QPushButton:hover {
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_31">
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_28">
           <property name="text">
-           <string>TM2 Motor RPM</string>
+           <string>TM1 Inv Temp</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="tm1Label_5">
+          <property name="text">
+           <string>TM1 Status</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -1575,7 +1575,7 @@ QPushButton:hover {
        <rect>
         <x>30</x>
         <y>90</y>
-        <width>321</width>
+        <width>331</width>
         <height>81</height>
        </rect>
       </property>
@@ -1629,7 +1629,7 @@ QPushButton:hover {
        <rect>
         <x>30</x>
         <y>190</y>
-        <width>321</width>
+        <width>331</width>
         <height>141</height>
        </rect>
       </property>
@@ -1641,7 +1641,7 @@ QPushButton:hover {
         <rect>
          <x>10</x>
          <y>25</y>
-         <width>307</width>
+         <width>311</width>
          <height>46</height>
         </rect>
        </property>
@@ -1666,7 +1666,7 @@ QPushButton:hover {
              </font>
             </property>
             <property name="text">
-             <string>PV</string>
+             <string>VIN</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -1772,7 +1772,7 @@ QPushButton:hover {
          <widget class="QPushButton" name="op_veh_num_save_btn">
           <property name="minimumSize">
            <size>
-            <width>100</width>
+            <width>90</width>
             <height>0</height>
            </size>
           </property>
@@ -1803,7 +1803,7 @@ QPushButton:hover {
         <rect>
          <x>10</x>
          <y>80</y>
-         <width>301</width>
+         <width>311</width>
          <height>51</height>
         </rect>
        </property>
@@ -1819,8 +1819,8 @@ QPushButton:hover {
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>359</y>
-        <width>321</width>
+        <y>360</y>
+        <width>331</width>
         <height>51</height>
        </rect>
       </property>
@@ -1902,7 +1902,7 @@ QPushButton:hover {
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>450</y>
+        <y>430</y>
         <width>741</width>
         <height>23</height>
        </rect>
@@ -1914,6 +1914,22 @@ QPushButton:hover {
        <bool>false</bool>
       </property>
      </widget>
+     <widget class="QLabel" name="msg_label">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>450</y>
+        <width>751</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Message Here.................</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
      <zorder>bgLabel_6</zorder>
      <zorder>groupBox_16</zorder>
      <zorder>groupBox_14</zorder>
@@ -1923,6 +1939,7 @@ QPushButton:hover {
      <zorder>label_6</zorder>
      <zorder>op_epbBtn</zorder>
      <zorder>progressBar</zorder>
+     <zorder>msg_label</zorder>
     </widget>
     <widget class="QWidget" name="Assign_ID_page">
      <widget class="QLabel" name="label_7">

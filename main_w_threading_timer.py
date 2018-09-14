@@ -101,7 +101,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.op_veh_num_up.clicked.connect        (lambda:self.veh_num_up_func())
         self.op_veh_num_save_btn.clicked.connect  (lambda:self.veh_num_save())
 
-        # Default page
+        # Default page on start up
         self.change_page('RDM page')
 
         # Page switch
@@ -261,7 +261,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global EnableFlag
         if EnableFlag != True:
             self.rdm.run_mode = mode
-            print('Run Mode Changed')
+            print('Run Mode: {}'.format(mode))
 
         
     def set_radio_btns_state(self, state = 'unlocked'):
@@ -293,7 +293,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         print('Torque command: {}'.format(torque_value))
                     
     def update_gui(self):
-        #print('Updating GUI...\n')
         global lock
         with lock:
             # Update RDM page 
@@ -518,7 +517,7 @@ def initCAN():
 
 
 def create_file_name(vehicle_number = 0, num_test_performed = 0):
-    file_name = 'PV{:02d}.{:d}.asc'.format(vehicle_number,num_test_performed)
+    file_name = 'VIN{:02d}.{:d}.asc'.format(vehicle_number,num_test_performed)
     return file_name
 
 
@@ -603,7 +602,7 @@ def main():
     ## Timer need to start in Main Thread i.e in main()
     timer = QTimer()
     timer.timeout.connect(form.update_gui)
-    timer.start(500)
+    timer.start(1000)
 
     ## Start App ##
     app.exec_()
