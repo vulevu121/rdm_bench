@@ -152,7 +152,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global torque_value
         global cycle_time
         global EnableFlag 
-
+        global logger
+        
         # Unlock Enable Button
         self.enableBtn.setEnabled(True)
 
@@ -168,6 +169,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                 self.rdm.update_CAN_msg()               
                 for msg in self.rdm.msg_list:
                     bus.send(msg,0.1)
+                    # Logging Tx message 
+                    logger.log_event(msg)
                 # Send messages every 10 ms    
                 time.sleep(0.007)
                 logging.debug('sending...')
@@ -280,8 +283,11 @@ def initCAN():
         ## CAN listerner ##
         global listener
         global notifier
+        global logger
+        # Logging Rx message 
+        logger   = can.ASCWriter('log.asc')
         listener = can.BufferedReader()
-        notifier = can.Notifier(bus, [listener])
+        notifier = can.Notifier(bus, [listener,logger])
 
     except:
         print('No can0 device ')
