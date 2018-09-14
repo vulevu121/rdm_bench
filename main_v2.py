@@ -90,8 +90,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.CAN_adapter_msg.setStandardButtons(QMessageBox.Retry| QMessageBox.Abort)        
         #self.CAN_adapter_msg.buttonClicked.connect(msgBtn)
 
-        # Init CAN
+        # Check PEAK CAN connection
         global PEAK_CAN_connected
+        check_PEAK_CAN_connection()
         while PEAK_CAN_connected == 1:
             ret = self.CAN_adapter_msg.exec_()
             if ret == 0x40000:
@@ -99,7 +100,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                 exit()
             # if PEAK CAN is connected, loop will exit
             check_PEAK_CAN_connection()
-            
+        # Confirmed connection. Initialize CAN bus
+        initCAN()
+        
     #######################################        
     ############# GUI methods #############           
     #######################################
@@ -122,6 +125,13 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global vehicle_in_test_num
         vehicle_in_test_num = self.vehicle_number.value()
         print('Vehicle in test number: {}'.format(vehicle_in_test_num))
+        # When test a new vehicle, reset num of test performed
+        global num_test_performed
+        num_test_performed = 0
+        # Close any opened log session and write to file
+        logger.stop()
+        # Start a new log file
+        create_log()
                 
     def run_mode(self,mode):
         global EnableFlag
@@ -196,10 +206,10 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         print("Enable RDM...")
         global EnableFlag
         global torque_value
+        # Turn ON HV Power Supply Output
+        power_supply_control(output = 'ON', voltage = 340, current = 1.5)
         # Enable RDM
         EnableFlag = True
-        # Set torque value to 10
-        self.rdm.set_torque(torque_value)
         # change button to disabled mode
         self.enableBtn.setEnabled(False)
 
@@ -236,6 +246,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             try:
                 if EnableFlag:
                     self.rdm.enable(bus)
+                    # Set torque value to 10
+                    self.rdm.set_torque(torque_value)
                     EnableFlag = False
                 self.rdm.update_CAN_msg()               
                 for msg in self.rdm.msg_list:
@@ -280,8 +292,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.startStopBtn.clicked.disconnect()
         self.startStopBtn.clicked.connect(lambda: self.stop_transmit())
 
-        ## Init CAN  ##
-        #initCAN()
          
         # separate thread to prevent gui freezing. PASS HANDLE NOT FUNCTION CALL
         print("Start Transmit & Read CAN threads...")
@@ -306,6 +316,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global notifier
         global listener
         global timer
+        global logger
         
         # Set this flag to  disable RDM
         print ("Disable RDM...")
@@ -316,9 +327,14 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         TransmitFlag = False
         self.rdm.disable(bus)
 
+        # Turn OFF PS output
+        power_supply_control(output = 'OFF', voltage = 0.1, current  = 0.1)
+
+
         # Set this flag to stop reading  inverter status
-        print ("Stop CAN read..")
-        ReadFlag = False
+        #print ("Stop CAN read..")
+        #ReadFlag = False
+        
         # Dont stop reading status
         #notifier.stop()
         #listener.stop()
@@ -329,7 +345,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global send_thread
         global read_thread
         send_thread.join()
-        read_thread.join()
+        # Should not stop thread. Continue reading status
+        #read_thread.join()
 
         # Dont shutdown bus to let operator do multiple cycle
         #bus.shutdown()
@@ -337,9 +354,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
         # reset GUI
         self.reset_gui()
-        #print('Active threads: {}'.format(threading.active_count()))
 
-
+        
 
                                   
     #######################################        
@@ -363,17 +379,8 @@ def initCAN():
     bus = Bus()
     bus.flush_tx_buffer()
 
-    ## CAN listerner ##
-    global listener
-    global notifier
-    global logger
-    global path_to_storage
-
-    # Logging Rx message 
-    logger   = can.ASCWriter('{}/{}'.format(path_to_storage,log_file_name()))
-    listener = can.BufferedReader()
-    notifier = can.Notifier(bus, [listener,logger])
-
+    # Logging 
+    create_log()
 
 
 
@@ -382,27 +389,28 @@ def create_file_name(vehicle_number = 0, num_test_performed = 0):
     return file_name
 
 
-def log_file_name():
+def create_log():
     global vehicle_in_test_num
     global num_test_performed 
     global path_to_storage
+    global logger
+    global listener
+    global notifier
     file_name = create_file_name(vehicle_in_test_num,num_test_performed)
     # Check if path to storage is valid
-    
     if not path.exists(path_to_storage):
         print('"{}" is not a valid path. Please try again'.format(path_to_storage))
-        pass
     # Change path according to locations of log files
     while path.exists('{}/{}'.format(path_to_storage,file_name)) :
         # file already exists, increase num_test_performed by 1
         num_test_performed = num_test_performed + 1
         file_name = create_file_name(vehicle_in_test_num,num_test_performed)
-    print(file_name)
-    return file_name
-
+    logger  = can.ASCWriter('{}/{}'.format(path_to_storage,file_name))
+    listener = can.BufferedReader()
+    notifier = can.Notifier(bus, [listener,logger])
+    print('log file {} is created'.format(file_name))
               
 def msg2str(msg):
-    #t = msg.timestamp (timestamp is already handled by the log_event function)
     ID = msg.arbitration_id
     c = 1
     dlc = msg.dlc
@@ -426,18 +434,14 @@ def numberFromString(string):
     ######Power Supply functions ##########          
     #######################################
 
-def power_supply_control(output = 'OFF', voltage = 2, current = 0.5):
+def power_supply_control(output , voltage , current):
     rm = visa.ResourceManager('@py')
-    print(rm.list_resources())
-    inst = rm.open_resource('USB0::2391::43271::US17M5344R::0::INSTR')
-    print(inst.query("*IDN?"))  
+    inst = rm.open_resource('USB0::2391::43271::US17M5344R::0::INSTR') 
 
     ## Print for debug ##
-##    PSwrite(inst,'VSET', voltage)
-##    PSwrite(inst,'CSET', current)
-##
-##    print(PSquery(inst, 'OUTP'))
-##    print(PSquery(inst, 'VSET'))
+    PSwrite(inst,'VSET', voltage)
+    PSwrite(inst,'CSET', current)
+    PSwrite(inst,'ON')
 
     PSwrite(inst, output)
 
