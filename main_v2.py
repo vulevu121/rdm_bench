@@ -180,13 +180,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         if test == 1:
             # Start Tx and Rx thread
             self.start_CAN_thread()
-            # Set Enable in 2 seconds
-            enable_thread = threading.Timer(1,self.enable_RDM)
-            enable_thread.daemon = True
-            enable_thread.start()
             # Start another thread to run autotest and prevent read thread frozen
             ## Start RDM, run for 15 seconds, Stop ##
-            auto_test_thread = threading.Timer(duration,self.complete_test)
+            auto_test_thread = threading.Timer(duration - 2,self.complete_test)
             auto_test_thread.daemon = True
             print('Start auto test')
             # Auto test LED default to grey
@@ -195,6 +191,11 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             # NOTE: For some reason, auto test causes the SSB on the Engineer Control Page to disconnect
             #       and does not reconnect to start_CAN_thread(). Need to restart the application to fix
             #       DONT USE BOTH PAGE IN THE SAME SESSION FOR NOW
+            
+            # Set Enable in 2 seconds
+            enable_thread = threading.Timer(1,self.enable_RDM)
+            enable_thread.daemon = True
+            enable_thread.start()
 
             # Start progress bar
             show_progress_thread = threading.Thread(target=self.show_progress, args=())
