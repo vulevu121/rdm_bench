@@ -203,7 +203,7 @@ class EPBControl(object):
         # CRC
         #BrakeStatus1CRC                   = self.crc8(self.BrakeStatus1.data[:2],2)
         BrakeStatus1CRC                   = crc8_PTECT_BRAKE_STATUS_TRAVEL(self.BrakeStatus1)
-        self.BrakeStatus1.data[1]         = (BrakeStatus1CRC & 0x300) >> 8
+        self.BrakeStatus1.data[1]         = self.BrakeStatus1.data[1] & 0xFC | ((BrakeStatus1CRC & 0x300) >> 8)
         self.BrakeStatus1.data[2]         = (BrakeStatus1CRC & 0x0FF)
         
         #self.EPBCommand.data[0]           = self.crc8(self.EPBCommand.data[1:],2)
