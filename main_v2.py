@@ -39,7 +39,7 @@ torque_value = 10
 vehicle_in_test_num = 0
 num_test_performed = 0
 Tx_Rx_Timestamp_offset = None
-duration           =  15
+duration           =  20
 
 #path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
 path_to_storage     = '/mnt/Sdrive'
@@ -84,7 +84,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Progress bar
         self.progressBar.setMinimum(0)
         self.progressBar.setMaximum(duration)
-
+        self.progressBar.hide()
+        
         # Change vehicle number
         # RDM Page
         self.veh_num_down.clicked.connect      (lambda:self.veh_num_down_func())
@@ -160,7 +161,12 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Close any opened log session and write to file
         logger.stop()
         # Start a new log file
-        create_log()
+        status = create_log()
+        # Update status box on RDM page
+        self.save_file_status.setText(status)
+        # Update status box on Operator page
+        self.op_save_file_status.setText(status)
+
         
 
     def msgBtn(self):
@@ -175,7 +181,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             # Start Tx and Rx thread
             self.start_CAN_thread()
             # Set Enable in 2 seconds
-            enable_thread = threading.Timer(2,self.enable_RDM)
+            enable_thread = threading.Timer(1,self.enable_RDM)
             enable_thread.daemon = True
             enable_thread.start()
             # Start another thread to run autotest and prevent read thread frozen
@@ -207,13 +213,17 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.stop_transmit()
 
     def show_progress(self):
+        # show progress bar
+        self.progressBar.show()
+        # progress increasing for 15 seconds
         self.completed = 0
         while self.completed < duration:
             self.completed = self.completed + 1 
             self.progressBar.setValue(self.completed)
             time.sleep(1)
         self.progressBar.reset()
-        
+        self.progressBar.hide()
+
     def run_mode(self,mode):
         global EnableFlag
         if EnableFlag != True:
@@ -486,16 +496,18 @@ def create_log():
     file_name = create_file_name(vehicle_in_test_num,num_test_performed)
     # Check if path to storage is valid
     if not path.exists(path_to_storage):
-        print('"{}" is not a valid path. Please try again'.format(path_to_storage))
-    # Change path according to locations of log files
-    while path.exists('{}/{}'.format(path_to_storage,file_name)) :
-        # file already exists, increase num_test_performed by 1
-        num_test_performed = num_test_performed + 1
-        file_name = create_file_name(vehicle_in_test_num,num_test_performed)
-    logger  = can.ASCWriter('{}/{}'.format(path_to_storage,file_name))
-    listener = can.BufferedReader()
-    notifier = can.Notifier(bus, [listener,logger])
-    print('log file {} is created'.format(file_name))
+        msg = '"{}" is not a valid path. Please try again'.format(path_to_storage)
+    else:
+        # Change path according to locations of log files
+        while path.exists('{}/{}'.format(path_to_storage,file_name)) :
+            # file already exists, increase num_test_performed by 1
+            num_test_performed = num_test_performed + 1
+            file_name = create_file_name(vehicle_in_test_num,num_test_performed)
+        logger  = can.ASCWriter('{}/{}'.format(path_to_storage,file_name))
+        listener = can.BufferedReader()
+        notifier = can.Notifier(bus, [listener,logger])
+        msg = 'log file {} is created'.format(file_name)
+    return msg
               
 def msg2str(msg):
     ID = msg.arbitration_id
