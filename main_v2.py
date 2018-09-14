@@ -55,10 +55,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Show default torque cmd value
         global torque_value
         self.torqueCmdBox.setText('{} Nm'.format(torque_value))
-        # Show default vehicle in test number
-        global vehicle_in_test_num
-        self.vehicle_number.setValue(vehicle_in_test_num)
-
+  
         # Buttons
         self.enableBtn.setEnabled(False)
         self.Both_radio_btn.setChecked(True)
@@ -75,7 +72,14 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.Both_radio_btn.clicked.connect     (lambda:self.run_mode(0))
         self.TM1_radio_btn.clicked.connect      (lambda:self.run_mode(1))
         self.TM2_radio_btn.clicked.connect      (lambda:self.run_mode(2))
-        self.vehicle_number.valueChanged.connect(lambda:self.veh_num_change())
+
+        
+        # Show default vehicle in test number
+        self.veh_num_label.setText(str(vehicle_in_test_num))
+        # Change vehicle number
+        self.veh_num_down.clicked.connect      (lambda:self.veh_num_down_func())
+        self.veh_num_up.clicked.connect        (lambda:self.veh_num_up_func())
+        self.veh_num_save_btn.clicked.connect  (lambda:self.veh_num_save())
 
         # Page switch
         self.epbBtn.clicked.connect             (lambda:self.change_page('EPB page'))
@@ -89,7 +93,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.CAN_adapter_msg.setWindowTitle("PEAK CAN connection")
         self.CAN_adapter_msg.setStyleSheet('background-color: rgb(59, 56, 56)')
         self.CAN_adapter_msg.setStandardButtons(QMessageBox.Retry| QMessageBox.Abort)        
-        #self.CAN_adapter_msg.buttonClicked.connect(msgBtn)
+        self.CAN_adapter_msg.buttonClicked.connect(self.msgBtn)
 
         # Check PEAK CAN connection
         global PEAK_CAN_connected
@@ -108,7 +112,30 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
     ############# GUI methods #############           
     #######################################
 
-    def msgBtb(self):
+    def veh_num_up_func(self):
+        global vehicle_in_test_num
+        vehicle_in_test_num =  limit(vehicle_in_test_num + 1,0,1000)
+        self.veh_num_label.setText(str(vehicle_in_test_num))
+
+    def veh_num_down_func(self):
+        global vehicle_in_test_num
+        vehicle_in_test_num =  limit(vehicle_in_test_num - 1,0,1000)
+        self.veh_num_label.setText(str(vehicle_in_test_num))
+
+    def veh_num_save(self):
+        global vehicle_in_test_num
+        print('Vehicle in test number: {}'.format(vehicle_in_test_num))
+        # When test a new vehicle, reset num of test performed
+        global num_test_performed
+        num_test_performed = 0
+        # Close any opened log session and write to file
+        logger.stop()
+        # Start a new log file
+        create_log()
+
+        
+
+    def msgBtn(self):
         ret = self.CAN_adapter_msg.exec_()
 
     def change_page(self,target = 'EPB page'):
@@ -122,17 +149,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         if test == 2:
             pass
         
-    def veh_num_change(self):
-        global vehicle_in_test_num
-        vehicle_in_test_num = self.vehicle_number.value()
-        print('Vehicle in test number: {}'.format(vehicle_in_test_num))
-        # When test a new vehicle, reset num of test performed
-        global num_test_performed
-        num_test_performed = 0
-        # Close any opened log session and write to file
-        logger.stop()
-        # Start a new log file
-        create_log()
                 
     def run_mode(self,mode):
         global EnableFlag
@@ -152,22 +168,22 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
            
     def minus_torque(self):
         global torque_value
-        print('Torque command minus 1...')
         # Decrease torque command by 1 and ensure it is within (0,14)
         torque_value = limit(torque_value - 1, 0, 14)   
         self.rdm.set_torque(torque_value)
         # Update torque display
         self.torqueCmdBox.setText('{} Nm'.format(torque_value))
+        print('Torque command: {}'.format(torque_value))
 
     def plus_torque(self):
         global torque_value
-        print('Torque command plus 1...')
+       
         # Increase torque command by 1 and ensure it is within (0,14)
         torque_value = limit(torque_value + 1, 0, 14)   
         self.rdm.set_torque(torque_value)
         # Update torque display
         self.torqueCmdBox.setText('{} Nm'.format(torque_value))
-
+        print('Torque command: {}'.format(torque_value))
                     
     def update_gui(self):
         #print('Updating GUI...\n')
@@ -329,7 +345,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.rdm.disable(bus, logger, Tx_Rx_Timestamp_offset, msg2str)
 
         # Turn OFF PS output
-        #power_supply_control(output = 'OFF', voltage = 0.1, current  = 0.1)
+        power_supply_control(output = 'OFF', voltage = 0.1, current  = 0.1)
 
 
         # Set this flag to stop reading  inverter status
@@ -468,7 +484,7 @@ def main():
     ## Timer need to start in Main Thread i.e in main()
     timer = QTimer()
     timer.timeout.connect(form.update_gui)
-    timer.start(1000)
+    timer.start(500)
 
     ## Start App ##
     app.exec_()

@@ -117,7 +117,7 @@ class RDM:
             startTime = time.time()
             self.enable_cmd = step
            
-            while(time.time() - startTime < 0.7):
+            while(time.time() - startTime < 1):
                 # update in the loop to ensure ARC increment correctly
                 self.update_CAN_msg()
                 for msg in self.msg_list: 
@@ -150,7 +150,6 @@ class RDM:
             startTime = time.time()
             self.enable_cmd = step
             while(time.time() - startTime < 1):
-
                 # update in the loop to ensure ARC increment correctly
                 self.update_CAN_msg()
                 for msg in self.msg_list:
@@ -160,22 +159,25 @@ class RDM:
                         logger.log_event(line, timestamp = time.time()+time_offset)
                 time.sleep(0.008)
                 
-        # After enable_cmd becomes zero, send shutdown request for ab+it more time (2 seconds)
+        # After enable_cmd becomes zero, send shutdown request for about more time (2 seconds)
         # shutdown requested
         self.legacy_shutdown_cmd = 0x1
         # shutdown w/ active discharge
         self.shutdown_cmd = 0x2
         # not enabled
-        self.legacy_enable_cmd = 0x5       
-        while(True):
+        self.legacy_enable_cmd = 0x5
+        # timer
+        startTime = time.time()
+        while(time.time() - startTime < 1):
             # update in the loop to ensure ARC increment correctly
             self.update_CAN_msg()
-            for msg in self.msg_list: 
-                bus.send(msg,0.1)
+            for msg in self.msg_list:
+                bus.send(msg)
+                if logger != None:
+                    line = msg2str(msg)
+                    logger.log_event(line, timestamp = time.time()+time_offset)
             time.sleep(0.008)
-            if time.time() - startTime > 2:
-                break
-        
+       
         # Finally, reset all shutdown command to default value
         self.legacy_enable_cmd   = 0x5
         self.legacy_shutdown_cmd = 0x0
