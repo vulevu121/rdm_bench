@@ -156,7 +156,11 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
     def enable_RDM(self):
         print("Enable RDM...")
         global EnableFlag
-        EnableFlag = True        
+        global torque_value
+        # Enable RDM
+        EnableFlag = True
+        # Set torque value to 10
+        self.rdm.set_torque(torque_value)
         # change button to disabled mode
         self.enableBtn.setEnabled(False)
 
@@ -171,6 +175,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
         line = ''
         epoch = time.time()
+        
         # May need to change when adding processing time between Rx and Tx
         # Take the time stamp of 1 Rx message for reference
         sample_rx = bus.recv(timeout = 0.05)
@@ -178,8 +183,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             # An average delay
             Tx_Rx_Timestamp_offset = 22
         else:
+            # CAN time stamp is recorded time since EPOCH. Therefore we need to recalculate the offset
             Tx_Rx_Timestamp_offset = sample_rx.timestamp - epoch
-        #print(Tx_Rx_Timestamp_offset)
             
         # Unlock Enable Button
         self.enableBtn.setEnabled(True)
