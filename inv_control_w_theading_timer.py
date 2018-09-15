@@ -72,32 +72,6 @@ class RDM:
     def set_torque(self,target_torque):                            
         self.torque_cmd = target_torque
      
-##    # Enable with logging
-##    def enable(self,bus, logger = None, time_offset = None, msg2str = None):
-##        # pull WUP2 high
-##        self.WUP2('ON')
-##        # no commmand
-##        self.legacy_shutdown_cmd = 0x0
-##        self.shutdown_cmd = 0x0
-##        # enable command
-##        self.legacy_enable_cmd = 0xA
-##        # Must enable in the following sequence
-##        
-##        enable_seq = [0x0, 0x1, 0x2, 0x3]
-##
-##        for step in enable_seq:        
-##            startTime = time.time()
-##            self.enable_cmd = step
-##           
-##            while(time.time() - startTime < 1):
-##                # update in the loop to ensure ARC increment correctly
-##                self.update_CAN_msg()
-##                for msg in self.msg_list: 
-##                    bus.send(msg,0.1)
-##                    if logger != None:
-##                        line = msg2str(msg)
-##                        logger.log_event(line, timestamp = time.time()+time_offset)
-##                time.sleep(0.007)
         
     # Enable with logging & threading timer
     def enable(self):
@@ -108,10 +82,12 @@ class RDM:
         self.shutdown_cmd = 0x0
         # enable command
         self.legacy_enable_cmd = 0xA
+        # torque command set to 0 is required to enable
+        self.torque_cmd = 0
         # Must enable in the following sequence
         
-        enable_seq = [0x1, 0x2, 0x3]
-        for step in enable_seq:
+        seq = [0x0, 0x1, 0x2, 0x3]
+        for step in seq:
             enable_thread = threading.Timer(1,self.enable_seq,args=[step,])
             enable_thread.daemon = True
             enable_thread.start()
@@ -119,8 +95,10 @@ class RDM:
 
     def enable_seq(self,step):
         self.enable_cmd = step
-        print('enable cmd: {}'.format(self.enable_cmd))
+        #print('enable cmd: {}'.format(self.enable_cmd))
                 
+
+
     def WUP2(self,command = 'ON'):
         if command == 'OFF':
         # send logic LOW
@@ -128,51 +106,37 @@ class RDM:
         else:
         # send logic HIGH
             pass
+
+
+    def disable_seq(self,step):
+        self.enable_cmd = step
+        #print('enable cmd: {}'.format(self.enable_cmd))
+       
     
-    def disable(self,bus, logger = None, time_offset = None, msg2str = None):
+    def disable(self):
         # TODO: PULL WUP LINE LOW
         self.WUP2('OFF')
         # set torque command to zero
         self.set_torque(0)
         # disable with the following sequence
         
-        disable_seq = [0x3, 0x2, 0x1, 0x0]
-
-        # Wait 0.1 second before transition to next step
-        for step in disable_seq:
-            startTime = time.time()
-            self.enable_cmd = step
-            while(time.time() - startTime < 1):
-                # update in the loop to ensure ARC increment correctly
-                self.update_CAN_msg()
-                for msg in self.msg_list:
-                    bus.send(msg)
-                    if logger != None:
-                        line = msg2str(msg)
-                        logger.log_event(line, timestamp = time.time()+time_offset)
-                time.sleep(0.008)
-                
-        # After enable_cmd becomes zero, send shutdown request for about more time (2 seconds)
+        seq = [0x3, 0x2, 0x1, 0x0]
+        
+        for step in seq:
+            disable_thread = threading.Timer(1,self.disable_seq,args=[step,])
+            disable_thread.daemon = True
+            disable_thread.start()
+            time.sleep(1)
+            
+        # After enable_cmd becomes zero, send shutdown request for abit more time (2 seconds)
         # shutdown requested
         self.legacy_shutdown_cmd = 0x1
         # shutdown w/ active discharge
         self.shutdown_cmd = 0x2
         # not enabled
         self.legacy_enable_cmd = 0x5
-        # timer
-        startTime = time.time()
-        while(time.time() - startTime < 1):
-            # update in the loop to ensure ARC increment correctly
-            self.update_CAN_msg()
-            for msg in self.msg_list:
-                bus.send(msg)
-                if logger != None:
-                    line = msg2str(msg)
-                    logger.log_event(line, timestamp = time.time()+time_offset)
-            time.sleep(0.008)
-       
+        time.sleep(1)
         # Finally, reset all shutdown command to default value
-        self.legacy_enable_cmd   = 0x5
         self.legacy_shutdown_cmd = 0x0
         self.shutdown_cmd = 0x0 
 
@@ -517,6 +481,8 @@ if __name__ == "__main__":
     initCAN()
     rdm = RDM()
     #rdm.assign_id(bus,'DEFAULT')
-    time.sleep(2)              
+    time.sleep(1)              
     rdm.enable()
+    time.sleep(1)
+    rdm.disable()
  

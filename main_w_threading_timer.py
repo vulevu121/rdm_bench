@@ -40,7 +40,7 @@ torque_value = 10
 vehicle_in_test_num = 0
 num_test_performed = 0
 Tx_Rx_Timestamp_offset = None
-duration           =  15
+duration           =  20
 
 #path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
 path_to_storage     = '/mnt/Sdrive'
@@ -183,7 +183,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             self.start_CAN_thread()
             # Start another thread to run autotest and prevent read thread frozen
             ## Start RDM, run for 15 seconds, Stop ##
-            auto_test_thread = threading.Timer(duration - 2,self.complete_test)
+            auto_test_thread = threading.Timer(duration,self.complete_test)
             auto_test_thread.daemon = True
             print('Start auto test')
             # Auto test LED default to grey
@@ -310,6 +310,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         power_supply_control(output = 'ON', voltage = 340, current = 1.5)
         # Enable RDM
         self.rdm.enable()
+        self.rdm.set_torque(torque_value)
+
         # change button to disabled mode
         self.enableBtn.setEnabled(False)
 
