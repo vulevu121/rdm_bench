@@ -1,4 +1,5 @@
 #Bring in the VISA library
+#import pyvisa
 import visa
 #Create a resource manager
 
@@ -75,22 +76,26 @@ def PSquery(inst, mode):
 
     
 if __name__ == '__main__':
-#Finds the different resources connected to computer
-    rm = visa.ResourceManager()
+###Finds the different resources connected to computer
+##    rm = visa.ResourceManager()
+##    print(rm.list_resources())
+##    #Value here may change depending upon raspberry pi's resource identification
+##    inst = rm.open_resource('USB0::0x0957::0xA907::US17M5344R::INSTR')
+##
+##
+##    print(inst.query("*IDN?"))
+##    PSwrite(inst,'VSET', 400)
+##    PSwrite(inst,'CSET', 2.5)
+##
+##    print(PSquery(inst, 'OUTP'))
+##    print(PSquery(inst, 'VSET'))
+##
+##    PSwrite(inst, 'ON')
+
+
+
+    rm = visa.ResourceManager('@py')
     print(rm.list_resources())
-    #Value here may change depending upon raspberry pi's resource identification
-    inst = rm.open_resource('USB0::0x0957::0xA907::US17M5344R::INSTR')
-
-
-    print(inst.query("*IDN?"))
-    PSwrite(inst,'VSET', 400)
-    PSwrite(inst,'CSET', 2.5)
-
-    print(PSquery(inst, 'OUTP'))
-    print(PSquery(inst, 'VSET'))
-
-    PSwrite(inst, 'ON')
-
-
-        
-
+    inst = rm.open_resource('USB0::2391::43271::US17M5344R::0::INSTR')
+    print(inst.query("*IDN?"))      
+    #PSwrite(inst, 'ON')

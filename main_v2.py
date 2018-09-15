@@ -10,15 +10,15 @@ import sys
 import threading
 import re
 import logging
-import PS_Control
-import visa
+#import PS_Control
+#import visa
 import os.path
 from os import path
 
 # import the file with EPB page
 from rdm_gui_stackedpages import *
 from inv_control_v2 import *
-from PS_Control import *
+#from PS_Control import *
 
 # Flags
 TransmitFlag = False
@@ -35,8 +35,8 @@ logger      = None
 torque_value = 10
 vehicle_in_test_num = 0
 
-#path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
-path_to_storage     = '/mnt/Sdrive'
+path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
+#path_to_storage     = '/mnt/Sdrive'
 
 
 #logging.basicConfig(level=logging.DEBUG,format='(%(threadName)-9s) %(message)s',)
@@ -399,21 +399,21 @@ def numberFromString(string):
     ######Power Supply functions ##########          
     #######################################
 
-def power_supply_control(output = 'OFF', voltage = 0, current = 0):
-    rm = visa.ResourceManager()
-    print(rm.list_resources())
-    #Value here may change depending upon raspberry pi's resource identification
-    inst = rm.open_resource('USB0::0x0957::0xA907::US17M5344R::INSTR')
-    print(inst.query("*IDN?"))
-
-    print(inst.query("*IDN?"))
-    PSwrite(inst,'VSET', voltage)
-    PSwrite(inst,'CSET', current)
-
-    print(PSquery(inst, 'OUTP'))
-    print(PSquery(inst, 'VSET'))
-
-    PSwrite(inst, output)
+##def power_supply_control(output = 'OFF', voltage = 0, current = 0):
+##    rm = visa.ResourceManager()
+##    print(rm.list_resources())
+##    #Value here may change depending upon raspberry pi's resource identification
+##    inst = rm.open_resource('USB0::0x0957::0xA907::US17M5344R::INSTR')
+##    print(inst.query("*IDN?"))
+##
+##    print(inst.query("*IDN?"))
+##    PSwrite(inst,'VSET', voltage)
+##    PSwrite(inst,'CSET', current)
+##
+##    print(PSquery(inst, 'OUTP'))
+##    print(PSquery(inst, 'VSET'))
+##
+##    PSwrite(inst, output)
 
 def main():
 
