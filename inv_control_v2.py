@@ -398,9 +398,11 @@ class RDM:
                        'TM2': 0x2,
                        'GEN': 0x0}
         
-        if not goal_ID in Inv_Diag_Msg_ID.key():
+        if not goal_ID in Inv_Diag_Msg_ID.keys():
             print('Invalid ID\n Exiting...')
             return
+        else:
+            print('Assigning ' + goal_ID)
 
         curr_ID = None
         b100_resp = []
