@@ -304,7 +304,7 @@ def msg2str(msg):
     data_str = ''
     for d in data:
         data_str = data_str +'{:x} '.format(d)
-    line =  '{} {} {:x} Tx d {} '.format(t,c,ID,dlc) + data_str
+    line =  '{} {:x} Tx d {} '.format(c,ID,dlc) + data_str
     return line
 
 
