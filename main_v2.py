@@ -9,7 +9,7 @@ import sys
 import os.path
 from os import path
 
-from rdm_gui import *
+from rdm_gui_stackedpages import *
 from inv_control_v2 import *
 import threading
 import re
@@ -79,6 +79,15 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
     #######################################        
     ############# GUI methods #############           
     #######################################
+
+
+    def profile_test(test = 1):
+        if test == 1:
+            ## Start RDM, run for 10 seconds, Stop
+            pass
+        if test == 2:
+            pass
+        
     def veh_num_change(self):
         global vehicle_in_test_num
         vehicle_in_test_num = self.vehicle_number.value()
