@@ -91,7 +91,7 @@ class RDM:
             enable_thread = threading.Timer(1,self.enable_seq,args=[step,])
             enable_thread.daemon = True
             enable_thread.start()
-            time.sleep(0.5)
+            time.sleep(1)
 
     def enable_seq(self,step):
         self.enable_cmd = step
@@ -126,7 +126,7 @@ class RDM:
             disable_thread = threading.Timer(1,self.disable_seq,args=[step,])
             disable_thread.daemon = True
             disable_thread.start()
-            #time.sleep(0.1)
+
             
         # After enable_cmd becomes zero, send shutdown request for abit more time (2 seconds)
         # shutdown requested

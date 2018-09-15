@@ -32,6 +32,7 @@ TM2_Fault_Flag = False
 # CAN objects 
 bus         = None
 listener    = None
+
 notifier    = None
 lock        = None
 timer       = None
@@ -221,6 +222,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         elif self.rdm.TM1_status_sig == 'NORMAL_ENABLE' and abs(self.rdm.TM1_speed_sens) < 10:
             self.LED.setPixmap(self.red_led)
         elif self.rdm.TM2_status_sig == 'NORMAL_ENABLE' and abs(self.rdm.TM2_speed_sens) < 10:
+            self.LED.setPixmap(self.red_led)
+        elif self.rdm.TM1_status_sig == 'SHUTDWN' or self.rdm.TM2_status_sig == 'SHUTDWN':
+        # if this signal is shutdown before disable cmd is sent. that means it fails the test
             self.LED.setPixmap(self.red_led)
         else:
             self.LED.setPixmap(self.green_led)
