@@ -288,7 +288,7 @@ def initCAN():
         global notifier
         global logger
         # Logging Rx message 
-        logger   = can.ASCWriter('TxRx.asc')
+        logger   = can.ASCWriter('Tx_and_Rx.asc')
         listener = can.BufferedReader()
         notifier = can.Notifier(bus, [listener,logger])
 
@@ -298,7 +298,7 @@ def initCAN():
 def msg2str(msg):
     t = msg.timestamp
     ID = msg.arbitration_id
-    c = msg.channel
+    c = 1
     dlc = msg.dlc
     data = msg.data
     data_str = ''
