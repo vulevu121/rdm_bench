@@ -288,10 +288,10 @@ def initCAN():
         global notifier
         global logger
         # Logging Rx message 
-        logger   = can.ASCWriter('Tx_and_Rx.asc')
+        logger   = can.ASCWriter('Tx_Only.asc')
         listener = can.BufferedReader()
-        notifier = can.Notifier(bus, [listener,logger])
-
+        #notifier = can.Notifier(bus, [listener,logger])
+        notifier = can.Notifier(bus, [listener])
     except:
         print('No can0 device ')
 
