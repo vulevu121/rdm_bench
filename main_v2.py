@@ -1,4 +1,4 @@
-""" Author: Khuong Nguyen, Vu Le
+""" Author: Khuong Nguyen, Vu Le, Tai
     2.0 RDM Application Script"""
 
 
@@ -22,6 +22,7 @@ listener    = None
 notifier    = None
 lock        = None
 timer       = None
+logger      = None
 
 torque_value = 10
 
@@ -153,7 +154,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global cycle_time
         global EnableFlag 
         global logger
-        
+
+        line = ''
         # Unlock Enable Button
         self.enableBtn.setEnabled(True)
 
@@ -169,11 +171,12 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                 self.rdm.update_CAN_msg()               
                 for msg in self.rdm.msg_list:
                     bus.send(msg,0.1)
-                    # Logging Tx message 
-                    logger.log_event(msg)
+                    # Logging Tx message
+                    line = msg2str(msg)
+                    logger.log_event(line)
                 # Send messages every 10 ms    
                 time.sleep(0.007)
-                logging.debug('sending...')
+
             except:
                 print('Unable to send on CAN bus...\n')
                 break
@@ -285,13 +288,24 @@ def initCAN():
         global notifier
         global logger
         # Logging Rx message 
-        logger   = can.ASCWriter('log.asc')
+        logger   = can.ASCWriter('TxRx.asc')
         listener = can.BufferedReader()
         notifier = can.Notifier(bus, [listener,logger])
 
     except:
         print('No can0 device ')
 
+def msg2str(msg):
+    t = msg.timestamp
+    ID = msg.arbitration_id
+    c = msg.channel
+    dlc = msg.dlc
+    data = msg.data
+    data_str = ''
+    for d in data:
+        data_str = data_str +'{:x} '.format(d)
+    line =  '{} {} {:x} Tx d {} '.format(t,c,ID,dlc) + data_str
+    return line
 
 
 def numberFromString(string):
