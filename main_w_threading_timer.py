@@ -114,6 +114,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.CAN_adapter_msg = QMessageBox()
         self.CAN_adapter_msg.resize(400,300)
         self.CAN_adapter_msg.setIcon(QMessageBox.Critical)
+        self.CAN_adapter_msg.resize(400,300)
         self.CAN_adapter_msg.setText('CAN bus can not be found.')
         self.CAN_adapter_msg.setInformativeText('Please check PEAK CAN adapter and try again.')
         self.CAN_adapter_msg.setWindowTitle("PEAK CAN connection")

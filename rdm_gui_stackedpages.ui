@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>799</width>
-    <height>506</height>
+    <height>500</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,6 +21,12 @@
 	color: rgb(218, 218, 218);
 	font: 10pt &quot;MS Shell Dlg 2&quot;;
 }
+
+QMessageBox{
+	color: rgb(218, 218, 218);
+	font: 10pt &quot;MS Shell Dlg 2&quot;;
+}
+
 QStackedWidget{
 	background-color: red;
 	color: rgb(218, 218, 218);
@@ -212,7 +218,7 @@ QLineEdit#save_file_statusl{
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="RDM_page">
      <widget class="QGroupBox" name="groupBox_3">
@@ -503,7 +509,7 @@ QPushButton:hover {
       <property name="title">
        <string>Status</string>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
          <x>12</x>
@@ -1593,9 +1599,12 @@ QPushButton:hover {
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_20">
         <item>
-         <widget class="QRadioButton" name="radioButton_3">
+         <widget class="QLabel" name="label_14">
           <property name="text">
-           <string>RDM Test #1</string>
+           <string>  TEST RESULT:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
@@ -1918,7 +1927,7 @@ QPushButton:hover {
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>450</y>
+        <y>440</y>
         <width>751</width>
         <height>41</height>
        </rect>
@@ -1996,7 +2005,7 @@ QPushButton:hover {
       <property name="title">
        <string/>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
          <x>12</x>
@@ -2179,9 +2188,6 @@ QPushButton:hover {
         </item>
        </layout>
       </widget>
-      <zorder>layoutWidget_20</zorder>
-      <zorder>bgLabel_7</zorder>
-      <zorder>status_box</zorder>
      </widget>
      <widget class="QPushButton" name="shut_down_btn">
       <property name="geometry">
