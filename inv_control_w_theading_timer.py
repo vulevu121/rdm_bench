@@ -480,9 +480,6 @@ def initCAN():
 if __name__ == "__main__":
     initCAN()
     rdm = RDM()
-    #rdm.assign_id(bus,'DEFAULT')
-    time.sleep(1)              
-    rdm.enable()
-    time.sleep(1)
-    rdm.disable()
+    rdm.assign_id(bus,'TM1')
+
  
