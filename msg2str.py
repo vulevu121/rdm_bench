@@ -11,7 +11,7 @@ def msg2str(msg):
     data = msg.data
     data_str = ''
     for d in data:
-        data_str = data_str +'{:x} '.format(d)
+        data_str = data_str +'{:02x} '.format(d)
     line =  '{} {} {:x} Tx d {} '.format(t,c,ID,dlc) + data_str
     return line
 

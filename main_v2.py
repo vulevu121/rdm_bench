@@ -156,6 +156,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global logger
 
         line = ''
+        Tx_Rx_Timestamp_offset = 5
         # Unlock Enable Button
         self.enableBtn.setEnabled(True)
 
@@ -173,7 +174,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                     bus.send(msg,0.1)
                     # Logging Tx message
                     line = msg2str(msg)
-                    logger.log_event(line)
+                    # Need to figure out the time to add to EPOCh
+                    #print(time.time())
+                    logger.log_event(line,timestamp = time.time() + Tx_Rx_Timestamp_offset)
                 # Send messages every 10 ms    
                 time.sleep(0.007)
 
@@ -296,15 +299,15 @@ def initCAN():
         print('No can0 device ')
 
 def msg2str(msg):
-    t = msg.timestamp
+    #t = msg.timestamp (timestamp is already handled by the log_event function)
     ID = msg.arbitration_id
     c = 1
     dlc = msg.dlc
     data = msg.data
     data_str = ''
     for d in data:
-        data_str = data_str +'{:x} '.format(d)
-    line =  '{} {:x} Tx d {} '.format(c,ID,dlc) + data_str
+        data_str = data_str +'{:02x} '.format(d)
+    line =  '{}  {:03x}             Tx   d {} '.format(c,ID,dlc) + data_str
     return line
 
 
