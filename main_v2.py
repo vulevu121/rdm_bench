@@ -6,6 +6,9 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5.QtCore import QTimer
 import sys
 
+import os.path
+from os import path
+
 from rdm_gui import *
 from inv_control_v2 import *
 import threading
@@ -25,7 +28,7 @@ timer       = None
 logger      = None
 
 torque_value = 10
-
+vehicle_in_test_num = 0
 
 
 #logging.basicConfig(level=logging.DEBUG,format='(%(threadName)-9s) %(message)s',)
@@ -36,9 +39,14 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         super(self.__class__, self).__init__()
         self.setupUi(self)
 
-        # Add items to combo box
+        # Show default torque cmd value
         global torque_value
         self.torqueCmdBox.setText('{} Nm'.format(torque_value))
+        # Show default vehicle in test number
+        global vehicle_in_test_num
+        self.vehicle_number.setValue(vehicle_in_test_num)
+
+        # Buttons
         self.enableBtn.setEnabled(False)
         self.Both_radio_btn.setChecked(True)
         self.radio_btns = [self.Both_radio_btn, self.TM1_radio_btn, self.TM2_radio_btn]
@@ -54,7 +62,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.Both_radio_btn.clicked.connect     (lambda:self.run_mode(0))
         self.TM1_radio_btn.clicked.connect      (lambda:self.run_mode(1))
         self.TM2_radio_btn.clicked.connect      (lambda:self.run_mode(2))
-
+        self.vehicle_number.valueChanged.connect(lambda:self.veh_num_change())
 
         
         # Pop Up meassage box
@@ -69,7 +77,11 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
     #######################################        
     ############# GUI methods #############           
     #######################################
-
+    def veh_num_change(self):
+        global vehicle_in_test_num
+        vehicle_in_test_num = self.vehicle_number.value()
+        print('Vehicle in test number: {}'.format(vehicle_in_test_num))
+                
     def run_mode(self,mode):
         global EnableFlag
         if EnableFlag != True:
@@ -85,12 +97,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                 btn.setEnabled(True)
         print("Mode buttons are {}...\n".format(state))
 
-    def enable_RDM(self):
-        print("Enable RDM...")
-        global EnableFlag
-        EnableFlag = True        
-        # change button to disabled mode
-        self.enableBtn.setEnabled(False)
            
     def minus_torque(self):
         global torque_value
@@ -145,6 +151,12 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
     #######################################
         
 
+    def enable_RDM(self):
+        print("Enable RDM...")
+        global EnableFlag
+        EnableFlag = True        
+        # change button to disabled mode
+        self.enableBtn.setEnabled(False)
 
     def start_transmit(self):
         print("Start CAN transmit...\n")
@@ -285,18 +297,39 @@ def initCAN():
         can.rc['channel'] = 'can0'
         bus = Bus()
         bus.flush_tx_buffer()
+
         ## CAN listerner ##
         global listener
         global notifier
         global logger
         # Logging Rx message 
-        logger   = can.ASCWriter('Tx_Rx.asc')
+        logger   = can.ASCWriter(log_file_name())
         listener = can.BufferedReader()
         notifier = can.Notifier(bus, [listener,logger])
         #notifier = can.Notifier(bus, [listener])
     except:
         print('No can0 device ')
 
+
+def create_file_name(vehicle_number = 0):
+    if isinstance(vehicle_number,int):
+        file_name = 'PV{:02d}.asc'.format(vehicle_number)
+    else:
+        # file name range from .1 to .9
+        file_name = 'PV{:02.1f}.asc'.format(vehicle_number)
+    return file_name
+
+def log_file_name():
+    global vehicle_in_test_num
+    file_name = create_file_name(vehicle_in_test_num)
+    while path.exists(file_name) :
+        print (file_name)
+        # file already exists, add 0.1 to vehicle test number
+        vehicle_in_test_num = vehicle_in_test_num + 0.1
+        file_name = create_file_name(vehicle_in_test_num) 
+    return file_name
+
+              
 def msg2str(msg):
     #t = msg.timestamp (timestamp is already handled by the log_event function)
     ID = msg.arbitration_id

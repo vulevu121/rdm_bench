@@ -1,7 +1,7 @@
 
 import can
 import os.path
-from os import path
+from os import path  # path.exists only check for file in the current directory
 
 vehicle_in_test_num = 10
 
@@ -18,7 +18,8 @@ def create_file_name(vehicle_number = 10):
 def log_file_name():
     global vehicle_in_test_num
     file_name = create_file_name(vehicle_in_test_num)
-    if path.exists(file_name):
+    while path.exists(file_name) :
+        print (file_name)
         # file already exists, add 0.1 to vehicle test number
         vehicle_in_test_num = vehicle_in_test_num + 0.1
         file_name = create_file_name(vehicle_in_test_num) 
@@ -41,5 +42,6 @@ def msg2str(msg):
 if __name__ == "__main__":
     s = can.Message(arbitration_id = 0x47,channel = 1, extended_id = False, dlc = 3, data=[0x2,0x5a,0x5f])
     line = msg2str(s)
-    print(line)
-    print(log_file_name())
+    #print(line)
+    log_file_name()
+    #print(create_file_name(10.02))
