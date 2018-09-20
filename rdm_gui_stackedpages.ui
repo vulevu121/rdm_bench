@@ -162,7 +162,7 @@ image: url(:/checkbox/graphics/checkbox_hover.png);
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="RDM_page">
      <widget class="QGroupBox" name="groupBox">
@@ -434,6 +434,9 @@ QPushButton:hover {
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
          <widget class="QRadioButton" name="TM1_radio_btn">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>TM1 Only</string>
           </property>
@@ -441,6 +444,9 @@ QPushButton:hover {
         </item>
         <item row="0" column="1">
          <widget class="QRadioButton" name="Both_radio_btn">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="text">
            <string>Both</string>
           </property>
@@ -448,6 +454,9 @@ QPushButton:hover {
         </item>
         <item row="1" column="0">
          <widget class="QRadioButton" name="TM2_radio_btn">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>TM2 Only</string>
           </property>
