@@ -6,21 +6,25 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5.QtCore import QTimer
 import sys
 
+# system import
+import threading
+import re
+import logging
+import PS_Control
+import visa
 import os.path
 from os import path
 
 # import the file with EPB page
 from rdm_gui_stackedpages import *
 from inv_control_v2 import *
-import threading
-import re
-import logging
+from PS_Control import *
 
-
+# Flags
 TransmitFlag = False
 EnableFlag   = False                                                                                                                                   
 ReadFlag     = False
-
+# CAN objects 
 bus         = None
 listener    = None
 notifier    = None
@@ -30,6 +34,7 @@ logger      = None
 
 torque_value = 10
 vehicle_in_test_num = 0
+
 #path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
 path_to_storage     = '/mnt/Sdrive'
 
@@ -390,8 +395,26 @@ def numberFromString(string):
     # just need to access the first item
     return numbers[0]                
 
+    #######################################        
+    ######Power Supply functions ##########          
+    #######################################
 
-	
+def power_supply_control(output = 'OFF', voltage = 0, current = 0):
+    rm = visa.ResourceManager()
+    print(rm.list_resources())
+    #Value here may change depending upon raspberry pi's resource identification
+    inst = rm.open_resource('USB0::0x0957::0xA907::US17M5344R::INSTR')
+    print(inst.query("*IDN?"))
+
+    print(inst.query("*IDN?"))
+    PSwrite(inst,'VSET', voltage)
+    PSwrite(inst,'CSET', current)
+
+    print(PSquery(inst, 'OUTP'))
+    print(PSquery(inst, 'VSET'))
+
+    PSwrite(inst, output)
+
 def main():
 
     app = QApplication(sys.argv)

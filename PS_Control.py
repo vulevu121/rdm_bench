@@ -73,21 +73,23 @@ def PSquery(inst, mode):
         print ('Query Mode not Found')
         return 'ERROR'
 
+    
+if __name__ == '__main__':
 #Finds the different resources connected to computer
-rm = visa.ResourceManager()
-print(rm.list_resources())
-#Value here may change depending upon raspberry pi's resource identification
-inst = rm.open_resource('USB0::0x0957::0xA907::US17M5344R::INSTR')
+    rm = visa.ResourceManager()
+    print(rm.list_resources())
+    #Value here may change depending upon raspberry pi's resource identification
+    inst = rm.open_resource('USB0::0x0957::0xA907::US17M5344R::INSTR')
 
 
-print(inst.query("*IDN?"))
-PSwrite(inst,'VSET', 400)
-PSwrite(inst,'CSET', 2.5)
+    print(inst.query("*IDN?"))
+    PSwrite(inst,'VSET', 400)
+    PSwrite(inst,'CSET', 2.5)
 
-print(PSquery(inst, 'OUTP'))
-print(PSquery(inst, 'VSET'))
+    print(PSquery(inst, 'OUTP'))
+    print(PSquery(inst, 'VSET'))
 
-PSwrite(inst, 'ON')
+    PSwrite(inst, 'ON')
 
 
         
