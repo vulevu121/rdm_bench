@@ -119,7 +119,13 @@ QLineEdit {
 QLCDNumber {
 	border:1px solid gray;
 	border-radius: 5px;
-}</string>
+}
+QSpinBox {
+	color: rgb(218, 218, 218);
+	font: 10pt &quot;MS Shell Dlg 2&quot;;
+   color: black
+}
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="startStopBtn">

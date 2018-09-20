@@ -115,7 +115,13 @@ class Ui_MainWindow(object):
 "QLCDNumber {\n"
 "    border:1px solid gray;\n"
 "    border-radius: 5px;\n"
-"}")
+"}\n"
+"QSpinBox {\n"
+"    color: rgb(218, 218, 218);\n"
+"    font: 10pt \"MS Shell Dlg 2\";\n"
+"   color: black\n"
+"}\n"
+"")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.startStopBtn = QtWidgets.QPushButton(self.centralwidget)
