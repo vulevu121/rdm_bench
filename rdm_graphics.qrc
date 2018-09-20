@@ -2,6 +2,11 @@
   <qresource prefix="background">
     <file>graphics/revero_800.png</file>
   </qresource>
+  <qresource prefix="checkbox">
+    <file>graphics/checkbox_checked.png</file>
+    <file>graphics/checkbox_hover.png</file>
+    <file>graphics/checkbox_unchecked.png</file>
+  </qresource>
   <qresource prefix="titlebar">
     <file>graphics/titlebar.png</file>
   </qresource>
@@ -12,5 +17,9 @@
   <qresource prefix="menu_graphics">
     <file>graphics/menu_normal.png</file>
     <file>graphics/menu_pressed.png</file>
+  </qresource>
+  <qresource prefix="rdm_graphics">
+    <file>graphics/rdm_normal.png</file>
+    <file>graphics/rdm_pressed.png</file>
   </qresource>
 </RCC>

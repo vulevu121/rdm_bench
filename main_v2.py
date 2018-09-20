@@ -9,6 +9,7 @@ import sys
 import os.path
 from os import path
 
+# import the file with EPB page
 from rdm_gui_stackedpages import *
 from inv_control_v2 import *
 import threading
@@ -66,7 +67,10 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.TM2_radio_btn.clicked.connect      (lambda:self.run_mode(2))
         self.vehicle_number.valueChanged.connect(lambda:self.veh_num_change())
 
-        
+        # Page switch
+        self.epbBtn.clicked.connect             (lambda:self.change_page('EPB page'))
+        self.rdmBtn.clicked.connect             (lambda:self.change_page('RDM page'))
+
         # Pop Up meassage box
         self.mode_msg_box = QMessageBox()
         self.mode_msg_box.setIcon(QMessageBox.Information)
@@ -80,8 +84,11 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
     ############# GUI methods #############           
     #######################################
 
+    def change_page(self,target = 'EPB page'):
+        pages = {'EPB page': self.EPB_page, 'RDM page': self.RDM_page}
+        self.stackedWidget.setCurrentWidget(pages[target])
 
-    def profile_test(test = 1):
+    def profile_test(self,test = 1):
         if test == 1:
             ## Start RDM, run for 10 seconds, Stop
             pass
