@@ -312,7 +312,7 @@ class Ui_MainWindow(object):
         self.TM2_radio_btn.setObjectName("TM2_radio_btn")
         self.gridLayout_2.addWidget(self.TM2_radio_btn, 1, 0, 1, 1)
         self.groupBox_3 = QtWidgets.QGroupBox(self.centralwidget)
-        self.groupBox_3.setGeometry(QtCore.QRect(410, 340, 361, 91))
+        self.groupBox_3.setGeometry(QtCore.QRect(410, 340, 361, 81))
         self.groupBox_3.setObjectName("groupBox_3")
         self.layoutWidget3 = QtWidgets.QWidget(self.groupBox_3)
         self.layoutWidget3.setGeometry(QtCore.QRect(20, 30, 71, 27))
