@@ -121,13 +121,13 @@ class EPBControl(object):
             # confirm ID before processing
             if msg.arbitration_id == EPB_STATUS_ID:
                 self.lt_actr_state = actuator_state_decode(msg.data[3] & 0x7)
-                self.rt_actr_state = actuator_state_decode(msg.data[3] & 0x70)
-                self.lt_actr_fault = epb_fault_decode(msg.data[3] & 0x8)
-                self.rt_actr_fault = epb_fault_decode(msg.data[3] & 0x80)
-                self.epb_sw_state  = epb_sw_decode(msg.data[2] & 0xC0)
-                self.epb_fault     = epb_fault_decode(msg.data[0] & 0x30)
+                self.rt_actr_state = actuator_state_decode((msg.data[3] & 0x70) >> 4)
+                self.lt_actr_fault = epb_fault_decode((msg.data[3] & 0x8) >> 3)
+                self.rt_actr_fault = epb_fault_decode((msg.data[3] & 0x80)>>7)
+                self.epb_sw_state  = epb_sw_decode((msg.data[2] & 0xC0)>>6)
+                self.epb_fault     = epb_fault_decode((msg.data[0] & 0x30)>>4)
                 self.pgear         = actuator_state_decode(msg.data[2] & 0x7)
-                self.pbrake        = actuator_state_decode(msg.data[2] & 0x38)
+                self.pbrake        = actuator_state_decode((msg.data[2] & 0x38)>> 3)
         except:
             print('Error reading EPB status')
             return

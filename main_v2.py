@@ -18,7 +18,7 @@ from os import path
 # import the file with EPB page
 from rdm_gui_stackedpages import *
 from inv_control_v2 import *
-from PS_Control import *
+#from PS_Control import *
 
 # Flags
 TransmitFlag = False
@@ -34,7 +34,7 @@ logger      = None
 
 torque_value = 10
 vehicle_in_test_num = 0
-
+num_test_performed = 0
 #path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
 path_to_storage     = '/mnt/Sdrive'
 
@@ -349,27 +349,27 @@ def initCAN():
     except:
         print('No can0 device ')
 
-
-def create_file_name(vehicle_number = 0):
-    if isinstance(vehicle_number,int):
-        file_name = 'PV{:02d}.asc'.format(vehicle_number)
-    else:
-        # file name range from .1 to .9
-        file_name = 'PV{:02.1f}.asc'.format(vehicle_number)
+def create_file_name(vehicle_number = 0, num_test_performed = 0):
+##    if isinstance(vehicle_number,int):
+##        file_name = 'PV{:02d}.asc'.format(vehicle_number)
+##    else:
+##        # file name range from .1 to .9
+##        file_name = 'PV{:02.1f}.asc'.format(vehicle_number)
+    file_name = 'PV{:02d}.{:d}.asc'.format(vehicle_number,num_test_performed)
     return file_name
-
 
 
 def log_file_name():
     global vehicle_in_test_num
+    global num_test_performed 
     global path_to_storage
-    file_name = create_file_name(vehicle_in_test_num)
+    file_name = create_file_name(vehicle_in_test_num,num_test_performed)
     # Change path according to locations of log files
     while path.exists('{}/{}'.format(path_to_storage,file_name)) :
         #print (file_name)
-        # file already exists, add 0.1 to vehicle test number
-        vehicle_in_test_num = vehicle_in_test_num + 0.1
-        file_name = create_file_name(vehicle_in_test_num)
+        # file already exists, increase num_test_performed by 1
+        num_test_performed = num_test_performed + 1
+        file_name = create_file_name(vehicle_in_test_num,num_test_performed)
     print(file_name)
     return file_name
 
