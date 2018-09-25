@@ -35,14 +35,11 @@ logger      = None
 torque_value = 10
 vehicle_in_test_num = 0
 
-path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
-#path_to_storage     = '/mnt/Sdrive'
-
 num_test_performed = 0
 #path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
-path_to_storage     = '/mnt/Sdrive'
+#path_to_storage     = '/mnt/Sdrive'
 
-
+path_to_storage     = '/mnt/Ddrive'
 
 #logging.basicConfig(level=logging.DEBUG,format='(%(threadName)-9s) %(message)s',)
 
@@ -369,9 +366,14 @@ def log_file_name():
     global num_test_performed 
     global path_to_storage
     file_name = create_file_name(vehicle_in_test_num,num_test_performed)
+    # Check if path to storage is valid
+    try:
+        isValid =  path.exists(path_to_storage)
+    except:
+        print('{} is not a valid path. Please try again')
+        
     # Change path according to locations of log files
     while path.exists('{}/{}'.format(path_to_storage,file_name)) :
-        #print (file_name)
         # file already exists, increase num_test_performed by 1
         num_test_performed = num_test_performed + 1
         file_name = create_file_name(vehicle_in_test_num,num_test_performed)
