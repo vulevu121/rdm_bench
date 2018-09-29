@@ -452,7 +452,9 @@ def main():
     form.show()
     #form.showFullScreen()   
 
-
+    # Mount S Drive
+    call('sudo mount -t cifs -o username=RDM_Bench,password="AqAErT4AJ@&Rq6KQ",sec=ntlmsspi //fafs02/Engineering/Khuong\ Nguyen/Raspberry\ Pi /mnt/Sdrive', shell=True)
+    
     ## Thread Rlock for thread safety for
     ## read/write status to GUI
     global lock
