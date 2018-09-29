@@ -83,8 +83,6 @@ class RDM:
         self.shutdown_cmd = 0x0
         # enable command
         self.legacy_enable_cmd = 0xA
-        # set torque command to zero
-        self.set_torque(0)
         # Must enable in the following sequence
         
         enable_seq = [0x0, 0x1, 0x2, 0x3]
