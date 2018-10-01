@@ -251,19 +251,6 @@ QLineEdit#veh_num_label{
       <property name="title">
        <string>Vehicle in Test</string>
       </property>
-      <widget class="QSpinBox" name="vehicle_number">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>90</y>
-         <width>43</width>
-         <height>25</height>
-        </rect>
-       </property>
-       <property name="frame">
-        <bool>true</bool>
-       </property>
-      </widget>
       <widget class="QWidget" name="">
        <property name="geometry">
         <rect>
