@@ -36,7 +36,7 @@ QPushButton {
 }
 
 QPushButton:disabled {
-	background-color: rgb(59, 56, 56);
+	background-color: transparent;
 	color: rgb(100, 95, 95);
 }
 
@@ -314,7 +314,7 @@ QLabel#label_5{
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit">
+         <widget class="QLineEdit" name="veh_num_label">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -333,7 +333,7 @@ QLabel#label_5{
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="veh_num_minus">
+         <widget class="QPushButton" name="veh_num_down">
           <property name="minimumSize">
            <size>
             <width>45</width>
@@ -367,7 +367,7 @@ QLabel#label_5{
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="veh_num_plus">
+         <widget class="QPushButton" name="veh_num_up">
           <property name="minimumSize">
            <size>
             <width>45</width>
