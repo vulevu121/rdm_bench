@@ -40,6 +40,33 @@ QPushButton:disabled {
 	color: rgb(100, 95, 95);
 }
 
+QPushButton {
+               background-color: rgb(59, 56, 56, 80);
+               height: 40px;
+               padding: 0px 5px 0px 5px;
+}
+
+QPushButton {
+               background-color: transparent;
+               border: 1px solid gray;
+               border-radius: 5px;
+}
+
+QPushButton:flat {
+               border: 1px solid gray;
+               border-radius: 5px;
+}
+
+QPushButton:pressed {
+               background-color: gray;
+               color: rgb(255, 255, 255);
+}
+
+QPushButton:hover {
+               border: 1px solid white;
+               border-radius: 5px;
+}
+
 QGroupBox {
 	background-color: transparent;
     border: 1px solid gray;
@@ -146,7 +173,10 @@ image: url(:/checkbox/graphics/checkbox_checked.png);
 QRadioButton::indicator:unchecked:hover {
 image: url(:/checkbox/graphics/checkbox_hover.png);
 }
-</string>
+
+QLabel#label_5{
+	font: 14pt &quot;MS Shell Dlg 2&quot;;
+}</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QStackedWidget" name="stackedWidget">
@@ -208,21 +238,21 @@ image: url(:/checkbox/graphics/checkbox_hover.png);
       <property name="geometry">
        <rect>
         <x>410</x>
-        <y>340</y>
+        <y>326</y>
         <width>361</width>
-        <height>131</height>
+        <height>141</height>
        </rect>
       </property>
       <property name="title">
        <string>Vehicle in Test</string>
       </property>
-      <widget class="QPushButton" name="veh_num_minus_2">
+      <widget class="QPushButton" name="veh_num_save_btn">
        <property name="geometry">
         <rect>
-         <x>160</x>
-         <y>80</y>
-         <width>191</width>
-         <height>39</height>
+         <x>248</x>
+         <y>90</y>
+         <width>101</width>
+         <height>41</height>
         </rect>
        </property>
        <property name="font">
@@ -257,25 +287,65 @@ image: url(:/checkbox/graphics/checkbox_hover.png);
       <widget class="QWidget" name="">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>18</x>
          <y>20</y>
-         <width>351</width>
-         <height>51</height>
+         <width>331</width>
+         <height>61</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QLabel" name="label_5">
+          <property name="font">
+           <font>
+            <family>MS Shell Dlg 2</family>
+            <pointsize>14</pointsize>
+            <weight>50</weight>
+            <italic>false</italic>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
            <string>PV</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit"/>
+         <widget class="QLineEdit" name="lineEdit">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="veh_num_minus">
+          <property name="minimumSize">
+           <size>
+            <width>45</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
           <property name="font">
            <font>
             <family>MS Shell Dlg 2</family>
@@ -298,6 +368,18 @@ image: url(:/checkbox/graphics/checkbox_hover.png);
         </item>
         <item>
          <widget class="QPushButton" name="veh_num_plus">
+          <property name="minimumSize">
+           <size>
+            <width>45</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>45</height>
+           </size>
+          </property>
           <property name="font">
            <font>
             <family>MS Shell Dlg 2</family>
@@ -451,7 +533,7 @@ QPushButton:hover {
      </widget>
      <widget class="QPushButton" name="enableBtn">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="geometry">
        <rect>
