@@ -2,6 +2,11 @@
   <qresource prefix="background">
     <file>graphics/revero_800.png</file>
   </qresource>
+  <qresource prefix="LED">
+    <file>graphics/green_led.png</file>
+    <file>graphics/grey_led.png</file>
+    <file>graphics/red_led.png</file>
+  </qresource>
   <qresource prefix="checkbox">
     <file>graphics/checkbox_checked.png</file>
     <file>graphics/checkbox_hover.png</file>

@@ -42,8 +42,6 @@ Tx_Rx_Timestamp_offset = None
 #path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
 path_to_storage     = '/mnt/Sdrive'
 
-#path_to_storage     = '/mnt/Ddrive'
-
 #logging.basicConfig(level=logging.DEBUG,format='(%(threadName)-9s) %(message)s',)
 
 
@@ -84,7 +82,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Page switch
         self.epbBtn.clicked.connect             (lambda:self.change_page('EPB page'))
         self.rdmBtn.clicked.connect             (lambda:self.change_page('RDM page'))
-
+        self.menuBtn.clicked.connect            (lambda:self.change_page('Operator page'))
+    
         # Pop Up meassage box
         self.CAN_adapter_msg = QMessageBox()
         self.CAN_adapter_msg.setIcon(QMessageBox.Critical)
@@ -132,14 +131,13 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         logger.stop()
         # Start a new log file
         create_log()
-
         
 
     def msgBtn(self):
         ret = self.CAN_adapter_msg.exec_()
 
     def change_page(self,target = 'EPB page'):
-        pages = {'EPB page': self.EPB_page, 'RDM page': self.RDM_page}
+        pages = {'EPB page': self.EPB_page, 'RDM page': self.RDM_page,'Operator page': self.Operator_page}
         self.stackedWidget.setCurrentWidget(pages[target])
 
     def profile_test(self,test = 1):
@@ -191,8 +189,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         with lock:
             self.tm1StatusBox.setText(self.rdm.TM1_status_sig)
             self.tm2StatusBox.setText(self.rdm.TM2_status_sig)
-            self.rpmLCD.display(self.rdm.TM1_speed_sens)
-            self.torqueLCD.display(self.rdm.TM1_torque_sens)
+            self.tm1_temp_LCD.display(self.rdm.TM1_inv_temp_sens)
+            self.tm2_temp_LCD.display(self.rdm.TM2_inv_temp_sens)
             
   
     def reset_gui(self):
@@ -271,7 +269,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                     bus.send(msg,0.1)
                     # Logging Tx message
                     line = msg2str(msg)
-                    # Need to figure out the time to add to EPOCH
                     logger.log_event(line,timestamp = time.time() + Tx_Rx_Timestamp_offset)
                 # Send messages every 10 ms    
                 time.sleep(0.007)
