@@ -70,17 +70,20 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.Both_radio_btn.clicked.connect     (lambda:self.run_mode(0))
         self.TM1_radio_btn.clicked.connect      (lambda:self.run_mode(1))
         self.TM2_radio_btn.clicked.connect      (lambda:self.run_mode(2))
-
+        self.profile_test_btn.clicked.connect   (lambda:self.profile_test(1))
         
         # Show default vehicle in test number
         self.veh_num_label.setText(str(vehicle_in_test_num))
+        
         # Change vehicle number
         self.veh_num_down.clicked.connect      (lambda:self.veh_num_down_func())
         self.veh_num_up.clicked.connect        (lambda:self.veh_num_up_func())
         self.veh_num_save_btn.clicked.connect  (lambda:self.veh_num_save())
 
-        # Page switch
+        # Default page
         self.change_page('RDM page')
+
+        # Page switch
         self.epbBtn.clicked.connect             (lambda:self.change_page('EPB page'))
         self.rdmBtn.clicked.connect             (lambda:self.change_page('RDM page'))
         self.menuBtn.clicked.connect            (lambda:self.change_page('Operator page'))
@@ -144,8 +147,16 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
     def profile_test(self,test = 1):
         if test == 1:
-            ## Start RDM, run for 10 seconds, Stop
-            pass
+            ## Start RDM, run for 10 seconds, Stop ##
+            # Start Tx and Rx thread
+            self.start_CAN_thread()
+            time.sleep(1)
+            # Run motor for 10 seconds
+            self.enable_RDM()
+            time.sleep(10)
+            # Stop motor
+            self.stop_transmit()
+            
         if test == 2:
             pass
         

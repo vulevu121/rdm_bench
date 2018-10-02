@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 505)
+        MainWindow.resize(799, 504)
         MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet("QWidget {\n"
 "    color: rgb(218, 218, 218);\n"
@@ -458,6 +458,17 @@ class Ui_MainWindow(object):
         self.enableBtn.setStyleSheet("")
         self.enableBtn.setObjectName("enableBtn")
         self.horizontalLayout_6.addWidget(self.enableBtn)
+        self.profile_test_btn = QtWidgets.QPushButton(self.RDM_page)
+        self.profile_test_btn.setGeometry(QtCore.QRect(40, 430, 351, 31))
+        font = QtGui.QFont()
+        font.setFamily("MS Shell Dlg 2")
+        font.setPointSize(10)
+        font.setBold(False)
+        font.setItalic(False)
+        font.setWeight(50)
+        self.profile_test_btn.setFont(font)
+        self.profile_test_btn.setStyleSheet("")
+        self.profile_test_btn.setObjectName("profile_test_btn")
         self.bgLabel.raise_()
         self.groupBox_3.raise_()
         self.label_3.raise_()
@@ -468,6 +479,7 @@ class Ui_MainWindow(object):
         self.inverterGroupdBox.raise_()
         self.TorqueGroupdBox.raise_()
         self.groupBox_5.raise_()
+        self.profile_test_btn.raise_()
         self.stackedWidget.addWidget(self.RDM_page)
         self.EPB_page = QtWidgets.QWidget()
         self.EPB_page.setObjectName("EPB_page")
@@ -848,7 +860,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusBar)
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -877,6 +889,7 @@ class Ui_MainWindow(object):
         self.groupBox_5.setTitle(_translate("MainWindow", "Control"))
         self.startStopBtn.setText(_translate("MainWindow", "Start"))
         self.enableBtn.setText(_translate("MainWindow", "Enable"))
+        self.profile_test_btn.setText(_translate("MainWindow", "Profile Test"))
         self.bgLabel_2.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><img src=\":/background/graphics/revero_800.png\"/></p></body></html>"))
         self.groupBox_4.setTitle(_translate("MainWindow", "EPB Status"))
         self.LtActrStateLabel.setText(_translate("MainWindow", "LT_ACTR_STATE"))

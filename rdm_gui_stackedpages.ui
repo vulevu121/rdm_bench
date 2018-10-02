@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>505</height>
+    <width>799</width>
+    <height>504</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -198,7 +198,7 @@ QLineEdit#veh_num_label{
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="RDM_page">
      <widget class="QGroupBox" name="groupBox_3">
@@ -858,6 +858,31 @@ QPushButton:hover {
        </layout>
       </widget>
      </widget>
+     <widget class="QPushButton" name="profile_test_btn">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>430</y>
+        <width>351</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>MS Shell Dlg 2</family>
+        <pointsize>10</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Profile Test</string>
+      </property>
+     </widget>
      <zorder>bgLabel</zorder>
      <zorder>groupBox_3</zorder>
      <zorder>label_3</zorder>
@@ -868,6 +893,7 @@ QPushButton:hover {
      <zorder>inverterGroupdBox</zorder>
      <zorder>TorqueGroupdBox</zorder>
      <zorder>groupBox_5</zorder>
+     <zorder>profile_test_btn</zorder>
     </widget>
     <widget class="QWidget" name="EPB_page">
      <widget class="QLabel" name="bgLabel_2">
