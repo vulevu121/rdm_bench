@@ -3,12 +3,15 @@ import can.interfaces
 from can.interface import Bus
 from can import Message
 import subprocess
+from subprocess import call
+
 import datetime
 
 import getByte
 import numpy as np
 import sched,time
 import threading
+
 
 bus = None
 printFlag = False
@@ -19,7 +22,7 @@ counter3 = 0
 EPB_STATUS_ID = 0x1B0
 All_Node_Request_ID =0x101
 AXLE_Torque_Data_ID =0x194
-Brake_Status1_ID =0x1B3
+Brake_Status1_ID =0x1B3       # add counter and CRC
 Brake_Status_HCU_ID =0x330
 CCP1_ID =0x6FD
 CCP2_ID =0x6FB
@@ -27,21 +30,21 @@ Climate_Status_ID =0x290
 Diag_Request_ID =0x756
 EBCM_Brake_Torque_ID =0xF5
 EPB_Comm_ID =0x1AF
-Gear_Position_ID =0x196
+Gear_Position_ID =0x196      # add CRC
 HCU_PNM12V_ID =0x432
 HCU_Regen_Feedback_ID = 0xC6
 HCU2_PT_Status_ID = 0x197
 Long_Accel_ID =0x189
 Power_Mode_ID =0x104
-Vehicle_Speed_ID =0x410
+Vehicle_Speed_ID =0x410        # add counter and CRC
 Steering_Angle_ID = 0x180
 Time_Status_RTC_ID =0x491
 Total_Milage_ID =0x421
-Wheel_GND_Driven_ID =0x348
-Wheel_GND_Non_Driven_ID =0x34A
-Wheel_Velocity_ID =0x347
-Wheel_Rotat_UNDriven_ID =0xC5
-Wheel_Rotat_Driven_ID =0xC1
+Wheel_GND_Driven_ID =0x348     # add counter and CRC
+Wheel_GND_Non_Driven_ID =0x34A # add counter and CRC
+Wheel_Velocity_ID =0x347       # add counter and CRC
+Wheel_Rotat_UNDriven_ID =0xC5  # add counter
+Wheel_Rotat_Driven_ID =0xC1    # add counter
 
 
 class EPBControl(object):
@@ -50,10 +53,6 @@ class EPBControl(object):
         ## print flag
         self.printFlag = False
 
-        ## Counter
-##        counter  = 0
-##        counter1 = 0
-##        counter2 = 0
 
         ## EPB status ##
         self.lt_actr_state = ''
@@ -87,9 +86,9 @@ class EPBControl(object):
         self.EPBCommand         =  can.Message( arbitration_id =EPB_Comm_ID, extended_id =False,              data =[0x00,0x04,0x00])   
         self.GearPosition       =  can.Message( arbitration_id =Gear_Position_ID, extended_id =False,         data =[0x03,0x00,0x00,0x00])
        
-
         # Group 2
         self.Powermode          =  can.Message( arbitration_id =Power_Mode_ID, extended_id =False,            data =[0x00,0x00,0x00,0x04])
+
         # Group 3
         self.HCURegenFeedback   =  can.Message( arbitration_id =HCU_Regen_Feedback_ID, extended_id =False,    data =[0x00,0x00,0x0,0x0,0x0,0x0,0x0,0x0])  
         self.HCU2PTStatus       =  can.Message( arbitration_id =HCU2_PT_Status_ID, extended_id =False,        data =[0x38,0x00,0x80,0x00])
@@ -103,17 +102,11 @@ class EPBControl(object):
         self.WheelRotatDriven   =  can.Message( arbitration_id =Wheel_Rotat_Driven_ID, extended_id =False,    data =[0x00,0x00,0xA4,0x2A,0x00,0x00,0xA4,0xBA])
         self.EBCMBrake          =  can.Message( arbitration_id =EBCM_Brake_Torque_ID, extended_id =False,     data =[0x00,0x03,0xEF,0x0,0x0,0x0,0x0])
         self.AXLETorqueData     =  can.Message( arbitration_id =AXLE_Torque_Data_ID, extended_id =False,      data =[0x0,0x80,0x43,0x80,0x3A,0x00,0x00,0x00])
+
         # Add messages to list
         self.update_gp1()
         self.update_gp2()
         self.update_gp3()
-
-##        # TO DO: TAI to check cycle time
-##        ALLNodeRequest     =  can.Message( arbitration_id =All_Node_Request_ID, extended_id =False,      data =[0x00,0x0,0x0,0x0,0x0,0x0,0x00,0x00])     
-##        CCPREQSIG1         =  can.Message( arbitration_id =CCP1_ID, extended_id =False,                  data =[0x00,0x00,0x00,0x0,0x0,0x0,0x0,0x0])
-##        CCPREQSIG2         =  can.Message( arbitration_id =CCP2_ID, extended_id =False,                  data =[0x00,0x00,0x00,0x0,0x0,0x0,0x0,0x0])
-##        TimeStatusRTC      =  can.Message( arbitration_id =Time_Status_RTC_ID, extended_id =False,       data =[0x00,0x00,0x00,0x0,0x0,0x0,0x0])
-##        DiagRequest        =  can.Message( arbitration_id =Diag_Request_ID, extended_id =False,          data =[0x00,0x00,0x00,0x0,0x0,0x0,0x0,0x0])
 
 
     def get_epb_status(self,msg):
@@ -206,13 +199,19 @@ class EPBControl(object):
         self.EPBCommand.data[1]           = (self.EPBCommand.data[1]           & 0xFC)  | counter
         self.GearPosition.data[2]         = (self.GearPosition.data[2]         & 0)     |(counter<<6)
         # CRC
+        BrakeStatus1CRC                   = self.crc8(self.BrakeStatus1.data[:2],2)
+        self.BrakeStatus1.data[1]         = (BrakeStatus1CRC & 0x300) >> 8
+        self.BrakeStatus1.data[2]         = (BrakeStatus1CRC & 0x0FF)
+        
         self.EPBCommand.data[0]           = self.crc8(self.EPBCommand.data[1:],2)    
         self.BrakeStatusHCU.data[1]       = self.crc8(self.BrakeStatusHCU.data[0],1)
         self.GearPosition.data[3]         = self.crc8(self.GearPosition.data[0:3],3)
 
+        # CRC for BrakeStatus1
+        
+    
  
         self.group1_msg_list    = [self.BrakeStatus1, self.BrakeStatusHCU, self.ClimateStatus, self.TotalMilage, self.HCUPNM12V, self.EPBCommand, self.GearPosition ]
-        #self.group1_msg_list    = [self.BrakeStatus1, self.BrakeStatusHCU, self.ClimateStatus, self.TotalMilage, self.EPBCommand, self.GearPosition ]
 
        
         # Update all message in each group
@@ -221,7 +220,7 @@ class EPBControl(object):
         global counter2
         counter2 = (counter2+ 1) % 256
         #group 2
-        self.Powermode.data[0]      = (self.Powermode.data[0]            & 0)     | counter2
+        self.Powermode.data[0]      = (self.Powermode.data[0]    & 0)     | counter2
         self.group2_msg_list        = [self.Powermode]
    
                                     
@@ -258,6 +257,15 @@ class EPBControl(object):
         self.WheelGDriven.data[5]         = self.crc8(self.WheelGDriven.data[0:5],5)
         self.WheelGNONDriven.data[5]      = self.crc8(self.WheelGNONDriven.data[0:5],5)
         self.WheelVelocity.data[3]        = self.crc8(self.WheelVelocity.data[0:3],3)
+
+##        Vehicle_Speed_ID counter and CRC - DONE
+##        Wheel_GND_Driven_ID =0x348     # add counter and CRC
+##        Wheel_GND_Non_Driven_ID =0x34A # add counter and CRC
+##        Wheel_Velocity_ID =0x347       # add counter and CRC
+##        Wheel_Rotat_UNDriven_ID =0xC5  # add counter
+##        Wheel_Rotat_Driven_ID =0xC1    # add counter
+
+
         
         
         self.group3_msg_list    = [self.HCURegenFeedback, self.HCU2PTStatus, self.LongACCEL, self.VehicleSpeed, self.SteeringAngle, self.WheelGDriven,
@@ -306,41 +314,11 @@ class EPBControl(object):
         msg.data[5] = (curr_num & 0xFF00) >> 8
         msg.data[6] = (curr_num & 0xFF)
 
-        #brake_msg.data[5] = byte5
-        #brake_msg.data[6] = byte6
 
         return msg
 
- # HCU2PTStatus message
 
-##    def HCU2PTSTATUS(self, msg):
-##        curr_num = msg.data[0]
-##        if curr_num ==56:
-##            curr_num =183
-##        elif curr_num == 183:
-##            curr_num =59
-##        elif curr_num ==59:
-##            curr_num =180
-##        elif curr_num == 180:
-##            curr_num =56
-##
-##        msg.data[0] = (curr_num & 0xFF)
-##
-##        
-##        return(msg)
-
-    # HCUREGENFEEDBACK message
-##    HCUREGENFEEDBACK_Index = 0
-##    values = [0, 65535, 65534, 65533]
-##    def hcu_regen_feedback(self, msg):
-##        global HCUREGENFEEDBACK_Index
-##        curr_num = values[HCUREGENFEEDBACK_Index]
-##        msg.data[5] = (curr_num & 0xFF00) >> 8
-##        msg.data[6] = (curr_num & 0xFF)
-##        HCUREGENFEEDBACK_Index = (HCUREGENFEEDBACK_Index +1) %4
-##
-##        return(msg)
-        
+      
 
     def HCUREGENFEEDBACK(self, msg):
         curr_num = msg.data[6] << 8 |msg.data[7] # reading the message(combine byte 6 and 7)
@@ -359,11 +337,13 @@ class EPBControl(object):
         return msg
 
     def initCAN(self):
+        # Initial can0
+        call('sudo ip link set can0 up', shell=True)
         global bus
         can.rc['interface'] ='socketcan_native'
         can.rc['bitrate'] = 500000
         can.rc['channel'] ='can0'
-        bus =TheadSafeBus()
+        bus = can.ThreadSafeBus()
 
     
 if __name__== '__main__':
@@ -373,7 +353,5 @@ if __name__== '__main__':
     EPB.printFlag = False
     EPB.start_threads()
     ##EPB.end_threads()
-##    while True:
-##        print(EPB.EPBCommand.data[1]& 0xFC)
 
         
