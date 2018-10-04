@@ -147,19 +147,25 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
     def profile_test(self,test = 1):
         if test == 1:
-            ## Start RDM, run for 10 seconds, Stop ##
             # Start Tx and Rx thread
             self.start_CAN_thread()
-            time.sleep(1)
             # Run motor for 10 seconds
             self.enable_RDM()
-            time.sleep(10)
-            # Stop motor
-            self.stop_transmit()
+            # Start another thread to run autotest and prevent read thread frozen
+            ## Start RDM, run for 10 seconds, Stop ##
+            auto_test_thread = threading.Thread(target= self.test_for, args=([15]))
+            auto_test_thread.daemon = True
+            print('Start auto test')
+            auto_test_thread.start()
             
         if test == 2:
             pass
-        
+
+    def test_for(self,duration):
+        time.sleep(duration)
+        print('End auto test')
+        # Stop motor
+        self.stop_transmit()
                 
     def run_mode(self,mode):
         global EnableFlag
