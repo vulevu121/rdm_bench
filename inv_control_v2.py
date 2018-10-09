@@ -397,6 +397,10 @@ class RDM:
         B100_Values = {'TM1': 0x1,
                        'TM2': 0x2,
                        'GEN': 0x0}
+        
+        if not goal_ID in Inv_Diag_Msg_ID.key():
+            print('Invalid ID\n Exiting...')
+            return
 
         curr_ID = None
         b100_resp = []

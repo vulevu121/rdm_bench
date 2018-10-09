@@ -142,7 +142,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         ret = self.CAN_adapter_msg.exec_()
 
     def change_page(self,target = 'EPB page'):
-        pages = {'EPB page': self.EPB_page, 'RDM page': self.RDM_page,'Operator page': self.Operator_page}
+        pages = {'EPB page': self.EPB_page, 'RDM page': self.RDM_page,'Operator page': self.Operator_page, 'Assign ID page': self.Assign_ID_page}
         self.stackedWidget.setCurrentWidget(pages[target])
 
     def profile_test(self,test = 1):
