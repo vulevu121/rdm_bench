@@ -54,48 +54,18 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         super(self.__class__, self).__init__()
         self.setupUi(self)
 
-##        # Show default torque cmd value
-##        global torque_value
-##        self.torqueCmdBox.setText('{} Nm'.format(torque_value))
-##  
-##        # Buttons
-##        self.enableBtn.setEnabled(False)
-##        self.Both_radio_btn.setChecked(True)
-##        self.radio_btns = [self.Both_radio_btn, self.TM1_radio_btn, self.TM2_radio_btn]
-##        
+        
         # Create RDM object
         self.rdm = RDM()
+        self.ID_to_assign.setText(inverters[id_index])
         self.ID_down_btn.clicked.connect      (lambda:self.ID_up())
         self.ID_up_btn.clicked.connect        (lambda:self.ID_down())
         self.OK_btn.clicked.connect           (lambda:self.ID_assign_cmd())
         
-##        # Event handlers
-##        self.startStopBtn.clicked.connect       (lambda:self.start_CAN_thread())
-##        self.enableBtn.clicked.connect          (lambda:self.enable_RDM())
-##        self.torqueCmdMinus.clicked.connect     (lambda:self.minus_torque())
-##        self.torqueCmdPlus.clicked.connect      (lambda:self.plus_torque())
-##        self.Both_radio_btn.clicked.connect     (lambda:self.run_mode(0))
-##        self.TM1_radio_btn.clicked.connect      (lambda:self.run_mode(1))
-##        self.TM2_radio_btn.clicked.connect      (lambda:self.run_mode(2))
-##        self.profile_test_btn.clicked.connect   (lambda:self.profile_test(1))
-##        
-##        # Show default vehicle in test number
-##        self.veh_num_label.setText(str(vehicle_in_test_num))
-##        
-##        # Change vehicle number
-##        self.veh_num_down.clicked.connect      (lambda:self.veh_num_down_func())
-##        self.veh_num_up.clicked.connect        (lambda:self.veh_num_up_func())
-##        self.veh_num_save_btn.clicked.connect  (lambda:self.veh_num_save())
 
         # Default page
         self.change_page('Assign ID page')
-
-##        # Page switch
-##        self.epbBtn.clicked.connect             (lambda:self.change_page('EPB page'))
-##        self.rdmBtn.clicked.connect             (lambda:self.change_page('RDM page'))
-##        self.menuBtn.clicked.connect            (lambda:self.change_page('Operator page'))
-##        self.op_epbBtn.clicked.connect          (lambda:self.change_page('EPB page'))
-##    
+   
         # Pop Up meassage box
         self.CAN_adapter_msg = QMessageBox()
         self.CAN_adapter_msg.setIcon(QMessageBox.Critical)
@@ -137,8 +107,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
     def ID_assign_cmd(self):
         global id_index
-        self.rdm.assign_id(bus, inverters[id_index])
-
+        result = self.rdm.assign_id(bus, inverters[id_index])
+        self.status_box.setText(result)
 
 ##    def veh_num_up_func(self):
 ##        global vehicle_in_test_num

@@ -444,13 +444,20 @@ class RDM:
                 if len(b100_resp) != 0:
                     for resp in b100_resp:
                         if resp.data[0] == 0x3 and resp.data[1] == 0x6E and resp.data[2] == 0xB1 and resp.data[3] == 0x0:
-                            print('...DID $B100 Written Successfully...\nPlease Cycle Power\n')
-                            b100_pos_resp = True           
+                            b100_pos_resp = True
+                            msg = '...DID $B100 Written Successfully...\nPlease Cycle Power\n'
+                            print(msg)
+                            return msg
                 else:
-                    print('...DID $B100 Not Written...\nPlease Cycle Power And Try Again\n...')
+                    msg = '...DID $B100 Not Written...\nPlease Cycle Power And Try Again...'
+                    print(msg)
+                    return msg
                 
         else:
-            print('...Programming mode no response...\n')        
+            msg = '...Programming mode no response...'
+            print(msg)
+            return msg
+            
 
 #################################   RDM methods END ########################################################
 
