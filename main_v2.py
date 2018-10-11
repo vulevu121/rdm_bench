@@ -3,6 +3,7 @@
 
 
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import QTimer
 import sys
 
@@ -99,6 +100,13 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.CAN_adapter_msg.setStandardButtons(QMessageBox.Retry| QMessageBox.Abort)        
         self.CAN_adapter_msg.buttonClicked.connect(self.msgBtn)
 
+        # LED indicator for Operator Page
+        self.green_led = QPixmap('graphics/green_led.png')
+        self.red_led = QPixmap('graphics/red_led.png')
+        self.grey_led = QPixmap('graphics/grey_led.png')
+        # default LED
+        self.LED.setPixmap(self.grey_led)
+
         # Check PEAK CAN connection
         global PEAK_CAN_connected
         check_PEAK_CAN_connection()
@@ -115,6 +123,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
     #######################################        
     ############# GUI methods #############           
     #######################################
+
+
 
     def veh_num_up_func(self):
         global vehicle_in_test_num
@@ -152,19 +162,25 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             # Run motor for 10 seconds
             self.enable_RDM()
             # Start another thread to run autotest and prevent read thread frozen
+            # test for duration 15s
+            duration = 15 
             ## Start RDM, run for 10 seconds, Stop ##
-            auto_test_thread = threading.Thread(target= self.test_for, args=([15]))
+            auto_test_thread = threading.Timer(duration,self.complete_test)
             auto_test_thread.daemon = True
             print('Start auto test')
+            # Auto test LED default to grey
+            self.LED.setPixmap(self.grey_led)
             auto_test_thread.start()
-            
-        if test == 2:
-            pass
 
-    def test_for(self,duration):
-        time.sleep(duration)
+
+    def complete_test(self):
         print('End auto test')
-        # Stop motor
+        # Auto Test LED 
+        if self.rdm.TM1_status_sig == 0x8 or self.rdm.TM2_status_sig == 0x8:
+            self.LED.setPixmap(self.red_led)
+        else:
+            self.LED.setPixmap(self.green_led)
+        # Stop RDM
         self.stop_transmit()
                 
     def run_mode(self,mode):
@@ -210,7 +226,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             self.tm2StatusBox.setText(self.rdm.TM2_status_sig)
             self.tm1_temp_LCD.display(self.rdm.TM1_inv_temp_sens)
             self.tm2_temp_LCD.display(self.rdm.TM2_inv_temp_sens)
-            
+
   
     def reset_gui(self):
         print('Reset GUI...\n')

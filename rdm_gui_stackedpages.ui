@@ -198,7 +198,7 @@ QLineEdit#veh_num_label{
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="RDM_page">
      <widget class="QGroupBox" name="groupBox_3">
@@ -858,31 +858,6 @@ QPushButton:hover {
        </layout>
       </widget>
      </widget>
-     <widget class="QPushButton" name="profile_test_btn">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>430</y>
-        <width>351</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>MS Shell Dlg 2</family>
-        <pointsize>10</pointsize>
-        <weight>50</weight>
-        <italic>false</italic>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
-      <property name="text">
-       <string>Profile Test</string>
-      </property>
-     </widget>
      <zorder>bgLabel</zorder>
      <zorder>groupBox_3</zorder>
      <zorder>label_3</zorder>
@@ -893,7 +868,6 @@ QPushButton:hover {
      <zorder>inverterGroupdBox</zorder>
      <zorder>TorqueGroupdBox</zorder>
      <zorder>groupBox_5</zorder>
-     <zorder>profile_test_btn</zorder>
     </widget>
     <widget class="QWidget" name="EPB_page">
      <widget class="QLabel" name="bgLabel_2">
@@ -1532,7 +1506,7 @@ QPushButton:hover {
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="LED_3">
+         <widget class="QLabel" name="LED">
           <property name="maximumSize">
            <size>
             <width>100</width>
@@ -1546,7 +1520,7 @@ QPushButton:hover {
 </string>
           </property>
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/LED/graphics/grey_led.png&quot;/&gt;&lt;img src=&quot;:/LED/graphics/green_led.png&quot;/&gt;&lt;img src=&quot;:/LED/graphics/red_led.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/LED/graphics/grey_led.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1731,7 +1705,7 @@ QPushButton:hover {
        </layout>
       </widget>
      </widget>
-     <widget class="QPushButton" name="op_startStopBtn">
+     <widget class="QPushButton" name="profile_test_btn">
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -1753,7 +1727,7 @@ QPushButton:hover {
        <string notr="true"/>
       </property>
       <property name="text">
-       <string>Start</string>
+       <string>Auto Test</string>
       </property>
      </widget>
      <widget class="QPushButton" name="op_epbBtn">
@@ -1814,14 +1788,31 @@ QPushButton:hover {
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/titlebar/graphics/titlebar.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
+     <widget class="QProgressBar" name="progressBar">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>380</y>
+        <width>321</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="value">
+       <number>24</number>
+      </property>
+      <property name="textVisible">
+       <bool>false</bool>
+      </property>
+     </widget>
      <zorder>bgLabel_6</zorder>
      <zorder>groupBox_16</zorder>
      <zorder>groupBox_14</zorder>
      <zorder>groupBox_15</zorder>
-     <zorder>op_startStopBtn</zorder>
+     <zorder>profile_test_btn</zorder>
      <zorder>label_10</zorder>
      <zorder>label_6</zorder>
      <zorder>op_epbBtn</zorder>
+     <zorder>progressBar</zorder>
     </widget>
     <widget class="QWidget" name="Assign_ID_page">
      <widget class="QLabel" name="label_7">
