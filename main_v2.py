@@ -39,6 +39,7 @@ torque_value = 10
 vehicle_in_test_num = 0
 num_test_performed = 0
 Tx_Rx_Timestamp_offset = None
+duration           =  15
 
 #path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
 path_to_storage     = '/mnt/Sdrive'
@@ -74,12 +75,25 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.profile_test_btn.clicked.connect   (lambda:self.profile_test(1))
         
         # Show default vehicle in test number
+        # RDM Page
         self.veh_num_label.setText(str(vehicle_in_test_num))
+        # Operator Page
+        self.op_veh_num_label.setText(str(vehicle_in_test_num))
         
+
+        # Progress bar
+        self.progressBar.setMinimum(0)
+        self.progressBar.setMaximum(duration)
+
         # Change vehicle number
+        # RDM Page
         self.veh_num_down.clicked.connect      (lambda:self.veh_num_down_func())
         self.veh_num_up.clicked.connect        (lambda:self.veh_num_up_func())
         self.veh_num_save_btn.clicked.connect  (lambda:self.veh_num_save())
+        # Operator Page
+        self.op_veh_num_down.clicked.connect      (lambda:self.veh_num_down_func())
+        self.op_veh_num_up.clicked.connect        (lambda:self.veh_num_up_func())
+        self.op_veh_num_save_btn.clicked.connect  (lambda:self.veh_num_save())
 
         # Default page
         self.change_page('RDM page')
@@ -164,9 +178,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             enable_thread.daemon = True
             enable_thread.start()
             # Start another thread to run autotest and prevent read thread frozen
-            # test for duration 15s
-            duration = 15 
-            ## Start RDM, run for 10 seconds, Stop ##
+            ## Start RDM, run for 15 seconds, Stop ##
             auto_test_thread = threading.Timer(duration,self.complete_test)
             auto_test_thread.daemon = True
             print('Start auto test')
@@ -176,7 +188,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # NOTE: For some reason, auto test causes the SSB on the Engineer Control Page to disconnect
         #       and does not reconnect to start_CAN_thread(). Need to restart the application to fix
         #       DONT USE BOTH PAGE IN THE SAME SESSION FOR NOW
-
+            # Start progress bar
 
     def complete_test(self):
         print('End auto test')
@@ -188,8 +200,13 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Stop RDM
         self.stop_transmit()
 
-
-                
+    def progress_bar(self):
+        self.completed = 0           
+        while self.completed < 15:
+            self.completed = self.completed + 0.01
+            self.progressBar.setValue(self.completed)
+        self.progressBar.reset()
+        
     def run_mode(self,mode):
         global EnableFlag
         if EnableFlag != True:
@@ -229,12 +246,19 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         #print('Updating GUI...\n')
         global lock
         with lock:
+            # Update RDM page 
             self.tm1StatusBox.setText(self.rdm.TM1_status_sig)
             self.tm2StatusBox.setText(self.rdm.TM2_status_sig)
             self.tm1_temp_LCD.display(self.rdm.TM1_inv_temp_sens)
             self.tm2_temp_LCD.display(self.rdm.TM2_inv_temp_sens)
-
-  
+            # Update Operator Page
+            self.op_tm1StatusBox.setText(self.rdm.TM1_status_sig)
+            self.op_tm2StatusBox.setText(self.rdm.TM2_status_sig)
+            self.op_tm1_temp_LCD.display(self.rdm.TM1_inv_temp_sens)
+            self.op_tm2_temp_LCD.display(self.rdm.TM2_inv_temp_sens)
+            self.op_tm1_motor_temp_LCD.display(self.rdm.TM1_motor_temp_sens)
+            self.op_tm2_motor_temp_LCD.display(self.rdm.TM2_motor_temp_sens)
+            
     def reset_gui(self):
         print('Reset GUI...\n')
         # reset torque command box
