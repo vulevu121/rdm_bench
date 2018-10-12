@@ -144,11 +144,12 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global vehicle_in_test_num
         vehicle_in_test_num =  limit(vehicle_in_test_num + 1,0,1000)
         self.veh_num_label.setText(str(vehicle_in_test_num))
-
+        self.op_veh_num_label.setText(str(vehicle_in_test_num))
     def veh_num_down_func(self):
         global vehicle_in_test_num
         vehicle_in_test_num =  limit(vehicle_in_test_num - 1,0,1000)
         self.veh_num_label.setText(str(vehicle_in_test_num))
+        self.op_veh_num_label.setText(str(vehicle_in_test_num))
 
     def veh_num_save(self):
         global vehicle_in_test_num
@@ -260,8 +261,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             # Update Operator Page
             self.op_tm1StatusBox.setText(self.rdm.TM1_status_sig)
             self.op_tm2StatusBox.setText(self.rdm.TM2_status_sig)
-            self.op_tm1_temp_LCD.display(self.rdm.TM1_inv_temp_sens)
-            self.op_tm2_temp_LCD.display(self.rdm.TM2_inv_temp_sens)
+            self.op_tm1_inv_temp_LCD.display(self.rdm.TM1_inv_temp_sens)
+            self.op_tm2_inv_temp_LCD.display(self.rdm.TM2_inv_temp_sens)
             self.op_tm1_motor_temp_LCD.display(self.rdm.TM1_motor_temp_sens)
             self.op_tm2_motor_temp_LCD.display(self.rdm.TM2_motor_temp_sens)
             
