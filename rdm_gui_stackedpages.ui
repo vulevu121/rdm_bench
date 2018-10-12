@@ -190,7 +190,13 @@ QLineEdit#op_veh_num_label{
 	font: 14pt &quot;MS Shell Dlg 2&quot;;
 	alignment: AlignHCenter;
 }
-</string>
+
+QLineEdit#op_save_file_statusl{
+	alignment: AlignHCenter;
+}
+QLineEdit#save_file_statusl{
+	alignment: AlignHCenter;
+}</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QStackedWidget" name="stackedWidget">
@@ -206,7 +212,7 @@ QLineEdit#op_veh_num_label{
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="RDM_page">
      <widget class="QGroupBox" name="groupBox_3">
@@ -1289,7 +1295,7 @@ QPushButton:hover {
         <x>373</x>
         <y>90</y>
         <width>401</width>
-        <height>341</height>
+        <height>321</height>
        </rect>
       </property>
       <property name="title">
@@ -1558,9 +1564,9 @@ QPushButton:hover {
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>180</y>
+        <y>190</y>
         <width>321</width>
-        <height>131</height>
+        <height>141</height>
        </rect>
       </property>
       <property name="title">
@@ -1734,7 +1740,7 @@ QPushButton:hover {
          <x>10</x>
          <y>80</y>
          <width>301</width>
-         <height>41</height>
+         <height>51</height>
         </rect>
        </property>
        <property name="text">
@@ -1749,9 +1755,9 @@ QPushButton:hover {
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>340</y>
+        <y>359</y>
         <width>321</width>
-        <height>50</height>
+        <height>51</height>
        </rect>
       </property>
       <property name="font">

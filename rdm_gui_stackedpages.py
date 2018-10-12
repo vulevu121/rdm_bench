@@ -186,7 +186,13 @@ class Ui_MainWindow(object):
 "    font: 14pt \"MS Shell Dlg 2\";\n"
 "    alignment: AlignHCenter;\n"
 "}\n"
-"")
+"\n"
+"QLineEdit#op_save_file_statusl{\n"
+"    alignment: AlignHCenter;\n"
+"}\n"
+"QLineEdit#save_file_statusl{\n"
+"    alignment: AlignHCenter;\n"
+"}")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.stackedWidget = QtWidgets.QStackedWidget(self.centralwidget)
@@ -271,6 +277,7 @@ class Ui_MainWindow(object):
         self.save_file_status = QtWidgets.QLineEdit(self.groupBox_3)
         self.save_file_status.setGeometry(QtCore.QRect(10, 80, 331, 41))
         self.save_file_status.setText("")
+        self.save_file_status.setAlignment(QtCore.Qt.AlignCenter)
         self.save_file_status.setObjectName("save_file_status")
         self.menuBtn = QtWidgets.QPushButton(self.RDM_page)
         self.menuBtn.setGeometry(QtCore.QRect(20, 6, 40, 40))
@@ -302,10 +309,10 @@ class Ui_MainWindow(object):
         self.bgLabel.setMouseTracking(True)
         self.bgLabel.setObjectName("bgLabel")
         self.groupBox_2 = QtWidgets.QGroupBox(self.RDM_page)
-        self.groupBox_2.setGeometry(QtCore.QRect(410, 70, 361, 381))
+        self.groupBox_2.setGeometry(QtCore.QRect(410, 70, 361, 391))
         self.groupBox_2.setObjectName("groupBox_2")
         self.layoutWidget1 = QtWidgets.QWidget(self.groupBox_2)
-        self.layoutWidget1.setGeometry(QtCore.QRect(20, 40, 321, 301))
+        self.layoutWidget1.setGeometry(QtCore.QRect(20, 30, 321, 331))
         self.layoutWidget1.setObjectName("layoutWidget1")
         self.gridLayout = QtWidgets.QGridLayout(self.layoutWidget1)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
@@ -632,7 +639,7 @@ class Ui_MainWindow(object):
         self.bgLabel_6.setMouseTracking(True)
         self.bgLabel_6.setObjectName("bgLabel_6")
         self.groupBox_16 = QtWidgets.QGroupBox(self.Operator_page)
-        self.groupBox_16.setGeometry(QtCore.QRect(373, 90, 401, 341))
+        self.groupBox_16.setGeometry(QtCore.QRect(373, 90, 401, 321))
         self.groupBox_16.setObjectName("groupBox_16")
         self.layoutWidget_19 = QtWidgets.QWidget(self.groupBox_16)
         self.layoutWidget_19.setGeometry(QtCore.QRect(10, 20, 381, 291))
@@ -736,7 +743,7 @@ class Ui_MainWindow(object):
         self.LED.setObjectName("LED")
         self.horizontalLayout_20.addWidget(self.LED)
         self.groupBox_15 = QtWidgets.QGroupBox(self.Operator_page)
-        self.groupBox_15.setGeometry(QtCore.QRect(30, 180, 321, 131))
+        self.groupBox_15.setGeometry(QtCore.QRect(30, 190, 321, 141))
         self.groupBox_15.setObjectName("groupBox_15")
         self.layoutWidget_18 = QtWidgets.QWidget(self.groupBox_15)
         self.layoutWidget_18.setGeometry(QtCore.QRect(10, 25, 307, 46))
@@ -809,11 +816,12 @@ class Ui_MainWindow(object):
         self.op_veh_num_save_btn.setObjectName("op_veh_num_save_btn")
         self.horizontalLayout_21.addWidget(self.op_veh_num_save_btn)
         self.op_save_file_status = QtWidgets.QLineEdit(self.groupBox_15)
-        self.op_save_file_status.setGeometry(QtCore.QRect(10, 80, 301, 41))
+        self.op_save_file_status.setGeometry(QtCore.QRect(10, 80, 301, 51))
         self.op_save_file_status.setText("")
+        self.op_save_file_status.setAlignment(QtCore.Qt.AlignCenter)
         self.op_save_file_status.setObjectName("op_save_file_status")
         self.profile_test_btn = QtWidgets.QPushButton(self.Operator_page)
-        self.profile_test_btn.setGeometry(QtCore.QRect(30, 340, 321, 50))
+        self.profile_test_btn.setGeometry(QtCore.QRect(30, 359, 321, 51))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
         font.setPointSize(10)
@@ -958,7 +966,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusBar)
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
