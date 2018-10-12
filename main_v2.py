@@ -192,7 +192,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             #       and does not reconnect to start_CAN_thread(). Need to restart the application to fix
             #       DONT USE BOTH PAGE IN THE SAME SESSION FOR NOW
             
-            # Set Enable in 2 seconds
+            # Set Enable in 1 seconds
             enable_thread = threading.Timer(1,self.enable_RDM)
             enable_thread.daemon = True
             enable_thread.start()
