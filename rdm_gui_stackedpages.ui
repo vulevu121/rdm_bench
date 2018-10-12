@@ -206,7 +206,7 @@ QLineEdit#op_veh_num_label{
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="RDM_page">
      <widget class="QGroupBox" name="groupBox_3">
@@ -488,7 +488,7 @@ QPushButton:hover {
         <x>410</x>
         <y>70</y>
         <width>361</width>
-        <height>381</height>
+        <height>391</height>
        </rect>
       </property>
       <property name="title">
@@ -498,9 +498,9 @@ QPushButton:hover {
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>40</y>
+         <y>30</y>
          <width>321</width>
-         <height>301</height>
+         <height>331</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
