@@ -186,15 +186,6 @@ class Ui_MainWindow(object):
 "    font: 14pt \"MS Shell Dlg 2\";\n"
 "    alignment: AlignHCenter;\n"
 "}\n"
-"\n"
-"QLineEdit#save_file_status{\n"
-"    font: 14pt \"MS Shell Dlg 2\";\n"
-"    alignment: AlignHCenter;\n"
-"}\n"
-"QLineEdit#op_save_file_status{\n"
-"    font: 14pt \"MS Shell Dlg 2\";\n"
-"    alignment: AlignHCenter;\n"
-"}\n"
 "")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -641,7 +632,7 @@ class Ui_MainWindow(object):
         self.bgLabel_6.setMouseTracking(True)
         self.bgLabel_6.setObjectName("bgLabel_6")
         self.groupBox_16 = QtWidgets.QGroupBox(self.Operator_page)
-        self.groupBox_16.setGeometry(QtCore.QRect(380, 90, 401, 341))
+        self.groupBox_16.setGeometry(QtCore.QRect(373, 90, 401, 341))
         self.groupBox_16.setObjectName("groupBox_16")
         self.layoutWidget_19 = QtWidgets.QWidget(self.groupBox_16)
         self.layoutWidget_19.setGeometry(QtCore.QRect(10, 20, 381, 291))
@@ -853,7 +844,7 @@ class Ui_MainWindow(object):
         self.label_10.setGeometry(QtCore.QRect(0, 0, 800, 81))
         self.label_10.setObjectName("label_10")
         self.progressBar = QtWidgets.QProgressBar(self.Operator_page)
-        self.progressBar.setGeometry(QtCore.QRect(30, 450, 751, 23))
+        self.progressBar.setGeometry(QtCore.QRect(30, 450, 741, 23))
         self.progressBar.setProperty("value", 24)
         self.progressBar.setTextVisible(False)
         self.progressBar.setObjectName("progressBar")
@@ -967,7 +958,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusBar)
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

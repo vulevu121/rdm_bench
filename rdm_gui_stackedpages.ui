@@ -190,15 +190,6 @@ QLineEdit#op_veh_num_label{
 	font: 14pt &quot;MS Shell Dlg 2&quot;;
 	alignment: AlignHCenter;
 }
-
-QLineEdit#save_file_status{
-	font: 14pt &quot;MS Shell Dlg 2&quot;;
-	alignment: AlignHCenter;
-}
-QLineEdit#op_save_file_status{
-	font: 14pt &quot;MS Shell Dlg 2&quot;;
-	alignment: AlignHCenter;
-}
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -215,7 +206,7 @@ QLineEdit#op_save_file_status{
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="RDM_page">
      <widget class="QGroupBox" name="groupBox_3">
@@ -1292,7 +1283,7 @@ QPushButton:hover {
      <widget class="QGroupBox" name="groupBox_16">
       <property name="geometry">
        <rect>
-        <x>380</x>
+        <x>373</x>
         <y>90</y>
         <width>401</width>
         <height>341</height>
@@ -1836,7 +1827,7 @@ QPushButton:hover {
        <rect>
         <x>30</x>
         <y>450</y>
-        <width>751</width>
+        <width>741</width>
         <height>23</height>
        </rect>
       </property>
