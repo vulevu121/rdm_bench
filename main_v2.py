@@ -185,11 +185,16 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             # Auto test LED default to grey
             self.LED.setPixmap(self.grey_led)
             auto_test_thread.start()
-        # NOTE: For some reason, auto test causes the SSB on the Engineer Control Page to disconnect
-        #       and does not reconnect to start_CAN_thread(). Need to restart the application to fix
-        #       DONT USE BOTH PAGE IN THE SAME SESSION FOR NOW
-            # Start progress bar
+            # NOTE: For some reason, auto test causes the SSB on the Engineer Control Page to disconnect
+            #       and does not reconnect to start_CAN_thread(). Need to restart the application to fix
+            #       DONT USE BOTH PAGE IN THE SAME SESSION FOR NOW
 
+            # Start progress bar
+            show_progress_thread = threading.Thread(target=self.show_progress, args=())
+            show_progress_thread.daemon = True
+            show_progress_thread.start()
+
+            
     def complete_test(self):
         print('End auto test')
         # Auto Test LED 
@@ -200,11 +205,12 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Stop RDM
         self.stop_transmit()
 
-    def progress_bar(self):
-        self.completed = 0           
-        while self.completed < 15:
-            self.completed = self.completed + 0.01
+    def show_progress(self):
+        self.completed = 0
+        while self.completed < duration:
+            self.completed = self.completed + 1 
             self.progressBar.setValue(self.completed)
+            time.sleep(1)
         self.progressBar.reset()
         
     def run_mode(self,mode):
