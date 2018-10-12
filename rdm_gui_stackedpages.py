@@ -173,11 +173,19 @@ class Ui_MainWindow(object):
 "QLabel#label_5{\n"
 "    font: 14pt \"MS Shell Dlg 2\";\n"
 "}\n"
+"\n"
+"QLabel#label_27{\n"
+"    font: 14pt \"MS Shell Dlg 2\";\n"
+"}\n"
 "QLineEdit#veh_num_label{\n"
 "    font: 14pt \"MS Shell Dlg 2\";\n"
 "    alignment: AlignHCenter;\n"
 "}\n"
 "\n"
+"QLineEdit#op_veh_num_label{\n"
+"    font: 14pt \"MS Shell Dlg 2\";\n"
+"    alignment: AlignHCenter;\n"
+"}\n"
 "")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -727,7 +735,7 @@ class Ui_MainWindow(object):
         self.groupBox_15.setGeometry(QtCore.QRect(30, 190, 321, 81))
         self.groupBox_15.setObjectName("groupBox_15")
         self.layoutWidget_18 = QtWidgets.QWidget(self.groupBox_15)
-        self.layoutWidget_18.setGeometry(QtCore.QRect(10, 25, 301, 46))
+        self.layoutWidget_18.setGeometry(QtCore.QRect(10, 25, 307, 46))
         self.layoutWidget_18.setObjectName("layoutWidget_18")
         self.horizontalLayout_21 = QtWidgets.QHBoxLayout(self.layoutWidget_18)
         self.horizontalLayout_21.setContentsMargins(0, 0, 0, 0)
@@ -738,7 +746,7 @@ class Ui_MainWindow(object):
         self.label_27.setMaximumSize(QtCore.QSize(50, 16777215))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(10)
+        font.setPointSize(14)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
