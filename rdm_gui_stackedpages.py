@@ -186,6 +186,15 @@ class Ui_MainWindow(object):
 "    font: 14pt \"MS Shell Dlg 2\";\n"
 "    alignment: AlignHCenter;\n"
 "}\n"
+"\n"
+"QLineEdit#save_file_status{\n"
+"    font: 14pt \"MS Shell Dlg 2\";\n"
+"    alignment: AlignHCenter;\n"
+"}\n"
+"QLineEdit#op_save_file_status{\n"
+"    font: 14pt \"MS Shell Dlg 2\";\n"
+"    alignment: AlignHCenter;\n"
+"}\n"
 "")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -196,7 +205,7 @@ class Ui_MainWindow(object):
         self.RDM_page = QtWidgets.QWidget()
         self.RDM_page.setObjectName("RDM_page")
         self.groupBox_3 = QtWidgets.QGroupBox(self.RDM_page)
-        self.groupBox_3.setGeometry(QtCore.QRect(37, 250, 351, 81))
+        self.groupBox_3.setGeometry(QtCore.QRect(37, 330, 351, 131))
         self.groupBox_3.setObjectName("groupBox_3")
         self.layoutWidget = QtWidgets.QWidget(self.groupBox_3)
         self.layoutWidget.setGeometry(QtCore.QRect(10, 25, 331, 46))
@@ -268,6 +277,10 @@ class Ui_MainWindow(object):
         self.veh_num_save_btn.setFlat(False)
         self.veh_num_save_btn.setObjectName("veh_num_save_btn")
         self.horizontalLayout_5.addWidget(self.veh_num_save_btn)
+        self.save_file_status = QtWidgets.QLineEdit(self.groupBox_3)
+        self.save_file_status.setGeometry(QtCore.QRect(10, 80, 331, 41))
+        self.save_file_status.setText("")
+        self.save_file_status.setObjectName("save_file_status")
         self.menuBtn = QtWidgets.QPushButton(self.RDM_page)
         self.menuBtn.setGeometry(QtCore.QRect(20, 6, 40, 40))
         self.menuBtn.setMouseTracking(False)
@@ -298,10 +311,10 @@ class Ui_MainWindow(object):
         self.bgLabel.setMouseTracking(True)
         self.bgLabel.setObjectName("bgLabel")
         self.groupBox_2 = QtWidgets.QGroupBox(self.RDM_page)
-        self.groupBox_2.setGeometry(QtCore.QRect(410, 70, 361, 351))
+        self.groupBox_2.setGeometry(QtCore.QRect(410, 70, 361, 381))
         self.groupBox_2.setObjectName("groupBox_2")
         self.layoutWidget1 = QtWidgets.QWidget(self.groupBox_2)
-        self.layoutWidget1.setGeometry(QtCore.QRect(20, 32, 321, 301))
+        self.layoutWidget1.setGeometry(QtCore.QRect(20, 40, 321, 301))
         self.layoutWidget1.setObjectName("layoutWidget1")
         self.gridLayout = QtWidgets.QGridLayout(self.layoutWidget1)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
@@ -389,7 +402,7 @@ class Ui_MainWindow(object):
         self.Both_radio_btn.setObjectName("Both_radio_btn")
         self.horizontalLayout_2.addWidget(self.Both_radio_btn)
         self.TorqueGroupdBox = QtWidgets.QGroupBox(self.RDM_page)
-        self.TorqueGroupdBox.setGeometry(QtCore.QRect(37, 340, 351, 81))
+        self.TorqueGroupdBox.setGeometry(QtCore.QRect(37, 240, 351, 81))
         self.TorqueGroupdBox.setObjectName("TorqueGroupdBox")
         self.layoutWidget3 = QtWidgets.QWidget(self.TorqueGroupdBox)
         self.layoutWidget3.setGeometry(QtCore.QRect(15, 23, 321, 47))
@@ -732,7 +745,7 @@ class Ui_MainWindow(object):
         self.LED.setObjectName("LED")
         self.horizontalLayout_20.addWidget(self.LED)
         self.groupBox_15 = QtWidgets.QGroupBox(self.Operator_page)
-        self.groupBox_15.setGeometry(QtCore.QRect(30, 190, 321, 81))
+        self.groupBox_15.setGeometry(QtCore.QRect(30, 180, 321, 131))
         self.groupBox_15.setObjectName("groupBox_15")
         self.layoutWidget_18 = QtWidgets.QWidget(self.groupBox_15)
         self.layoutWidget_18.setGeometry(QtCore.QRect(10, 25, 307, 46))
@@ -804,8 +817,12 @@ class Ui_MainWindow(object):
         self.op_veh_num_save_btn.setFlat(False)
         self.op_veh_num_save_btn.setObjectName("op_veh_num_save_btn")
         self.horizontalLayout_21.addWidget(self.op_veh_num_save_btn)
+        self.op_save_file_status = QtWidgets.QLineEdit(self.groupBox_15)
+        self.op_save_file_status.setGeometry(QtCore.QRect(10, 80, 301, 41))
+        self.op_save_file_status.setText("")
+        self.op_save_file_status.setObjectName("op_save_file_status")
         self.profile_test_btn = QtWidgets.QPushButton(self.Operator_page)
-        self.profile_test_btn.setGeometry(QtCore.QRect(30, 290, 321, 51))
+        self.profile_test_btn.setGeometry(QtCore.QRect(30, 340, 321, 50))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
         font.setPointSize(10)
@@ -836,7 +853,7 @@ class Ui_MainWindow(object):
         self.label_10.setGeometry(QtCore.QRect(0, 0, 800, 81))
         self.label_10.setObjectName("label_10")
         self.progressBar = QtWidgets.QProgressBar(self.Operator_page)
-        self.progressBar.setGeometry(QtCore.QRect(30, 380, 321, 23))
+        self.progressBar.setGeometry(QtCore.QRect(30, 450, 751, 23))
         self.progressBar.setProperty("value", 24)
         self.progressBar.setTextVisible(False)
         self.progressBar.setObjectName("progressBar")
@@ -950,7 +967,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusBar)
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
