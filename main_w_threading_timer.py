@@ -208,14 +208,23 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             
     def complete_test(self):
         print('End auto test')
+
+        global TM2_Fault_Flag
+        global TM1_Fault_Flag
+
         # Auto Test LED 
         if TM1_Fault_Flag == True or TM2_Fault_Flag == True:
             self.LED.setPixmap(self.red_led)
+            # reset flag for next run
+            TM1_Fault_Flag = False
+            TM2_Fault_Flag = False
+        elif self.rdm.TM1_status_sig == 'NORMAL_ENABLE' and abs(self.rdm.TM1_speed_sens) < 10:
+            self.LED.setPixmap(self.red_led)
+        elif self.rdm.TM2_status_sig == 'NORMAL_ENABLE' and abs(self.rdm.TM2_speed_sens) < 10:
+            self.LED.setPixmap(self.red_led)
         else:
             self.LED.setPixmap(self.green_led)
-        # Check RPM as well!
-
-            
+                        
         # Stop RDM
         self.stop_transmit()
 
@@ -276,14 +285,14 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             self.tm1_temp_LCD.display(self.rdm.TM1_inv_temp_sens)
             self.tm2_temp_LCD.display(self.rdm.TM2_inv_temp_sens)
             self.tm1_motor_rpm_LCD.display(self.rdm.TM1_speed_sens)
-            self.tm2_motor_rpm_LCD.display(self.rdm.TM2_speed_sens)
+            self.tm2_motor_rpm_LCD.display(abs(self.rdm.TM2_speed_sens))
             # Update Operator Page
             self.op_tm1StatusBox.setText(self.rdm.TM1_status_sig)
             self.op_tm2StatusBox.setText(self.rdm.TM2_status_sig)
             self.op_tm1_inv_temp_LCD.display(self.rdm.TM1_inv_temp_sens)
             self.op_tm2_inv_temp_LCD.display(self.rdm.TM2_inv_temp_sens)
             self.op_tm1_motor_rpm_LCD.display(self.rdm.TM1_speed_sens)
-            self.op_tm2_motor_rpm_LCD.display(self.rdm.TM2_speed_sens)
+            self.op_tm2_motor_rpm_LCD.display(abs(self.rdm.TM2_speed_sens))
             
     def reset_gui(self):
         print('Reset GUI...\n')
