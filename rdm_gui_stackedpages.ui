@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>802</width>
+    <width>799</width>
     <height>504</height>
    </rect>
   </property>
@@ -503,16 +503,26 @@ QPushButton:hover {
       <property name="title">
        <string>Status</string>
       </property>
-      <widget class="QWidget" name="layoutWidget">
+      <widget class="QWidget" name="">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>30</y>
-         <width>321</width>
-         <height>331</height>
+         <x>12</x>
+         <y>27</y>
+         <width>331</width>
+         <height>351</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="tm1Label">
+          <property name="text">
+           <string>TM1 Status</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="1">
          <widget class="QLineEdit" name="tm1StatusBox">
           <property name="mouseTracking">
@@ -532,20 +542,10 @@ QPushButton:hover {
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="tm1Label">
-          <property name="text">
-           <string>TM1 Status</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label">
           <property name="text">
-           <string>TM1 Inv Temp</string>
+           <string>TM1 Temp</string>
           </property>
          </widget>
         </item>
@@ -574,7 +574,75 @@ QPushButton:hover {
           </property>
          </widget>
         </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_13">
+          <property name="text">
+           <string>TM1 RPM</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLCDNumber" name="tm1_motor_rpm_LCD">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <property name="lineWidth">
+           <number>1</number>
+          </property>
+          <property name="smallDecimalPoint">
+           <bool>false</bool>
+          </property>
+          <property name="digitCount">
+           <number>15</number>
+          </property>
+          <property name="segmentStyle">
+           <enum>QLCDNumber::Flat</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="tm2Label">
+          <property name="text">
+           <string>TM2 Status</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
         <item row="3" column="1">
+         <widget class="QLineEdit" name="tm2StatusBox">
+          <property name="mouseTracking">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">font: 75 18pt &quot;MS Shell Dlg 2&quot;;</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>TM2 Inv Temp</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
          <widget class="QLCDNumber" name="tm2_temp_LCD">
           <property name="maximumSize">
            <size>
@@ -596,39 +664,35 @@ QPushButton:hover {
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="tm2Label">
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_12">
           <property name="text">
-           <string>TM2 Status</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           <string>TM2 RPM</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="tm2StatusBox">
-          <property name="mouseTracking">
+        <item row="5" column="1">
+         <widget class="QLCDNumber" name="tm2_motor_rpm_LCD">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <property name="lineWidth">
+           <number>1</number>
+          </property>
+          <property name="smallDecimalPoint">
            <bool>false</bool>
           </property>
-          <property name="styleSheet">
-           <string notr="true">font: 75 18pt &quot;MS Shell Dlg 2&quot;;</string>
+          <property name="digitCount">
+           <number>15</number>
           </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>TM2 Inv Temp</string>
+          <property name="segmentStyle">
+           <enum>QLCDNumber::Flat</enum>
           </property>
          </widget>
         </item>
@@ -1341,7 +1405,7 @@ QPushButton:hover {
          </widget>
         </item>
         <item row="5" column="1">
-         <widget class="QLCDNumber" name="op_tm2_motor_temp_LCD">
+         <widget class="QLCDNumber" name="op_tm2_motor_rpm_LCD">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -1417,7 +1481,7 @@ QPushButton:hover {
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QLCDNumber" name="op_tm1_motor_temp_LCD">
+         <widget class="QLCDNumber" name="op_tm1_motor_rpm_LCD">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -1476,7 +1540,7 @@ QPushButton:hover {
         <item row="2" column="0">
          <widget class="QLabel" name="label_29">
           <property name="text">
-           <string>TM1 Motor Temp</string>
+           <string>TM1 Motor RPM</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -1496,7 +1560,7 @@ QPushButton:hover {
         <item row="5" column="0">
          <widget class="QLabel" name="label_31">
           <property name="text">
-           <string>TM2 Motor Temp</string>
+           <string>TM2 Motor RPM</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>

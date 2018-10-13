@@ -27,6 +27,8 @@ from PS_Control import *
 TransmitFlag = False
 EnableFlag   = False                                                                                                                                   
 ReadFlag     = False
+TM1_Fault_Flag = False
+TM2_Fault_Flag = False
 # CAN objects 
 bus         = None
 listener    = None
@@ -207,10 +209,13 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
     def complete_test(self):
         print('End auto test')
         # Auto Test LED 
-        if self.rdm.TM1_status_sig == 0x8 or self.rdm.TM2_status_sig == 0x8:
+        if TM1_Fault_Flag == True or TM2_Fault_Flag == True:
             self.LED.setPixmap(self.red_led)
         else:
             self.LED.setPixmap(self.green_led)
+        # Check RPM as well!
+
+            
         # Stop RDM
         self.stop_transmit()
 
@@ -275,8 +280,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             self.op_tm2StatusBox.setText(self.rdm.TM2_status_sig)
             self.op_tm1_inv_temp_LCD.display(self.rdm.TM1_inv_temp_sens)
             self.op_tm2_inv_temp_LCD.display(self.rdm.TM2_inv_temp_sens)
-            self.op_tm1_motor_temp_LCD.display(self.rdm.TM1_motor_temp_sens)
-            self.op_tm2_motor_temp_LCD.display(self.rdm.TM2_motor_temp_sens)
+            self.op_tm1_motor_rpm_LCD.display(self.rdm.TM1_speed_sens)
+            self.op_tm2_motor_rpm_LCD.display(self.rdm.TM2_speed_sens)
             
     def reset_gui(self):
         print('Reset GUI...\n')
@@ -363,6 +368,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
     def start_read(self):
         print('Start CAN read...')
         global ReadFlag
+        global TM2_Fault_Flag
+        global TM1_Fault_Flag
         global listener
         global notifier
         global lock
@@ -373,8 +380,11 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
                     self.rdm.get_inverters_status(msg)
             except:
                 print('Unable to read on CAN bus')
-
                 
+            # Check for inverter fault
+            if self.rdm.TM1_status_sig == 'FAULT': TM1_Fault_Flag = True
+            if self.rdm.TM2_status_sig == 'FAULT': TM2_Fault_Flag = True
+
     def start_CAN_thread(self):
         global TransmitFlag
         TransmitFlag = True
