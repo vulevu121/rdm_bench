@@ -284,14 +284,14 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             self.tm2StatusBox.setText(self.rdm.TM2_status_sig)
             self.tm1_temp_LCD.display(self.rdm.TM1_inv_temp_sens)
             self.tm2_temp_LCD.display(self.rdm.TM2_inv_temp_sens)
-            self.tm1_motor_rpm_LCD.display(self.rdm.TM1_speed_sens)
+            self.tm1_motor_rpm_LCD.display(abs(self.rdm.TM1_speed_sens))
             self.tm2_motor_rpm_LCD.display(abs(self.rdm.TM2_speed_sens))
             # Update Operator Page
             self.op_tm1StatusBox.setText(self.rdm.TM1_status_sig)
             self.op_tm2StatusBox.setText(self.rdm.TM2_status_sig)
             self.op_tm1_inv_temp_LCD.display(self.rdm.TM1_inv_temp_sens)
             self.op_tm2_inv_temp_LCD.display(self.rdm.TM2_inv_temp_sens)
-            self.op_tm1_motor_rpm_LCD.display(self.rdm.TM1_speed_sens)
+            self.op_tm1_motor_rpm_LCD.display(abs(self.rdm.TM1_speed_sens))
             self.op_tm2_motor_rpm_LCD.display(abs(self.rdm.TM2_speed_sens))
             
     def reset_gui(self):
