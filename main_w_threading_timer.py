@@ -5,7 +5,7 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import QTimer
-import sys
+import sys,os
 
 # system import
 import threading
@@ -29,10 +29,10 @@ EnableFlag   = False
 ReadFlag     = False
 TM1_Fault_Flag = False
 TM2_Fault_Flag = False
+Test_Result    = None
 # CAN objects 
 bus         = None
 listener    = None
-
 notifier    = None
 lock        = None
 timer       = None
@@ -44,6 +44,7 @@ vehicle_in_test_num = 0
 num_test_performed = 0
 Tx_Rx_Timestamp_offset = None
 duration           =  20
+file_name          = None
 
 #path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
 path_to_storage     = '/mnt/Sdrive'
@@ -158,12 +159,18 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
     def veh_num_save(self):
         global vehicle_in_test_num
+        global Test_Result
+        global file_name
         print('Vehicle in test number: {}'.format(vehicle_in_test_num))
         # When test a new vehicle, reset num of test performed
         global num_test_performed
         num_test_performed = 0
         # Close any opened log session and write to file
         logger.stop()
+        # Append FAILED to file name if Test failed
+        if Test_Result == 'FAILED':
+            os.rename(file_name, 'FAILED_' + file_name)
+            Test_Result = None
         # Start a new log file
         status = create_log()
         # Update status box on RDM page
@@ -212,23 +219,29 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
         global TM2_Fault_Flag
         global TM1_Fault_Flag
-
+        global Test_Result
+        
         # Auto Test LED 
         if TM1_Fault_Flag == True or TM2_Fault_Flag == True:
             self.LED.setPixmap(self.red_led)
+            Test_Result = 'FAILED'
             # reset flag for next run
             TM1_Fault_Flag = False
             TM2_Fault_Flag = False
         elif self.rdm.TM1_status_sig == 'NORMAL_ENABLE' and abs(self.rdm.TM1_speed_sens) < 10:
             self.LED.setPixmap(self.red_led)
+            Test_Result = 'FAILED'
         elif self.rdm.TM2_status_sig == 'NORMAL_ENABLE' and abs(self.rdm.TM2_speed_sens) < 10:
             self.LED.setPixmap(self.red_led)
+            Test_Result = 'FAILED'
         elif self.rdm.TM1_status_sig == 'SHUTDWN' or self.rdm.TM2_status_sig == 'SHUTDWN':
-        # if this signal is shutdown before disable cmd is sent. that means it fails the test
+        # if this signal is shutdown before disable cmd is sent. that means it failed the test
             self.LED.setPixmap(self.red_led)
+            Test_Result = 'FAILED'
         else:
             self.LED.setPixmap(self.green_led)
-                        
+            Test_Result = 'PASSED'
+            
         # Stop RDM
         self.stop_transmit()
 
@@ -501,9 +514,11 @@ def initCAN():
     bus.flush_tx_buffer()
 
     # Logging 
-    create_log()
-
-
+    status = create_log()
+    # Update status box on RDM page
+    self.save_file_status.setText(status)
+    # Update status box on Operator page
+    self.op_save_file_status.setText(status)
 
 def create_file_name(vehicle_number = 0, num_test_performed = 0):
     file_name = 'PV{:02d}.{:d}.asc'.format(vehicle_number,num_test_performed)
@@ -517,6 +532,7 @@ def create_log():
     global logger
     global listener
     global notifier
+    global file_name
     file_name = create_file_name(vehicle_in_test_num,num_test_performed)
     # Check if path to storage is valid
     if not path.exists(path_to_storage):
