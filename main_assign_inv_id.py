@@ -59,7 +59,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.ID_down_btn.clicked.connect      (lambda:self.ID_up())
         self.ID_up_btn.clicked.connect        (lambda:self.ID_down())
         self.OK_btn.clicked.connect           (lambda:self.ID_assign_cmd())
-        
+        self.shut_down_btn.clicked.connect  (lambda:self.exit())
 
         # Default page
         self.change_page('Assign ID page')
@@ -117,6 +117,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         pages = {'EPB page': self.EPB_page, 'RDM page': self.RDM_page,'Operator page': self.Operator_page, 'Assign ID page': self.Assign_ID_page}
         self.stackedWidget.setCurrentWidget(pages[target])
 
+    def exit(self):
+        call("sudo nohup shutdown -h now", shell=True)
 
                                   
     #######################################        
@@ -146,8 +148,6 @@ def main():
     form = ExampleApp()
     form.show()
     #form.showFullScreen()   
-
-
 
     ## Start App ##
     app.exec_()
