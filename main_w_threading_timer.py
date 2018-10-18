@@ -193,7 +193,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             print('Start auto test')
             # Auto test LED default to grey
             self.LED.setPixmap(self.grey_led)
-
+            # Clear test result label
+            self.test_result_label.clear()
             # Lock Auto Start Button           
             self.profile_test_btn.setEnabled(False)
 
@@ -225,27 +226,34 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         if TM1_Fault_Flag == True or TM2_Fault_Flag == True:
             self.LED.setPixmap(self.red_led)
             Test_Result = 'FAILED'
+            self.test_result_label.setText(Test_Result)
             # reset flag for next run
             TM1_Fault_Flag = False
             TM2_Fault_Flag = False
+
         elif self.rdm.TM1_status_sig == 'NORMAL_ENABLE' and abs(self.rdm.TM1_speed_sens) < 10:
             self.LED.setPixmap(self.red_led)
+            self.test_result_label.setText(Test_Result)
             Test_Result = 'FAILED'
             print('no RPM on TM1')
+
         elif self.rdm.TM2_status_sig == 'NORMAL_ENABLE' and abs(self.rdm.TM2_speed_sens) < 10:
             self.LED.setPixmap(self.red_led)
             Test_Result = 'FAILED'
+            self.test_result_label.setText(Test_Result)
             print('no RPM on TM2')
 
         elif self.rdm.TM1_status_sig == 'SHUTDWN' or self.rdm.TM2_status_sig == 'SHUTDWN':
         # if this signal is shutdown before disable cmd is sent. that means it failed the test
             self.LED.setPixmap(self.red_led)
             Test_Result = 'FAILED'
+            self.test_result_label.setText(Test_Result)
             print('Stuck in SHUTDOWN status')
 
         else:
             self.LED.setPixmap(self.green_led)
             Test_Result = 'PASSED'
+            self.test_result_label.setText(Test_Result)
             
         # Stop RDM
         self.stop_transmit()
@@ -281,7 +289,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
     def show_progress(self):
         # show progress bar
         self.progressBar.show()
-        # progress increasing for 15 seconds
+        # initialization
         self.completed = 0
         while self.completed < duration:
             self.completed = self.completed + 1 
