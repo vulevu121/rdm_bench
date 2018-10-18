@@ -404,11 +404,11 @@ class RDM:
                     for resp in b100_resp:
                         if resp.data[0] == 0x3 and resp.data[1] == 0x6E and resp.data[2] == 0xB1 and resp.data[3] == 0x0:
                             b100_pos_resp = True
-                            msg ='{} Responded. New ID {} Is Written Successfully. Please Cycle Power'.format(ID_to_name[curr_ID],goal_ID)
+                            msg ='{} Responded. New ID {} Is Written Successfully.'.format(ID_to_name[curr_ID],goal_ID)
                             print(msg)
                             return msg
                 else:
-                    msg = 'New ID Is Not Written. Please Cycle Power And Try Again...'
+                    msg = 'New ID Is Not Written. Please Try Again...'
                     print(msg)
                     return msg
                 
