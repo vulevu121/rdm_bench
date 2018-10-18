@@ -193,6 +193,11 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             print('Start auto test')
             # Auto test LED default to grey
             self.LED.setPixmap(self.grey_led)
+
+            # Lock Auto Start Button           
+            self.profile_test_btn.setEnabled(False)
+
+            # Start Test
             auto_test_thread.start()
             # NOTE: For some reason, auto test causes the SSB on the Engineer Control Page to disconnect
             #       and does not reconnect to start_CAN_thread(). Need to restart the application to fix
@@ -226,17 +231,17 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         elif self.rdm.TM1_status_sig == 'NORMAL_ENABLE' and abs(self.rdm.TM1_speed_sens) < 10:
             self.LED.setPixmap(self.red_led)
             Test_Result = 'FAILED'
-            print('1')
+            print('no RPM on TM1')
         elif self.rdm.TM2_status_sig == 'NORMAL_ENABLE' and abs(self.rdm.TM2_speed_sens) < 10:
             self.LED.setPixmap(self.red_led)
             Test_Result = 'FAILED'
-            print('2')
+            print('no RPM on TM2')
 
         elif self.rdm.TM1_status_sig == 'SHUTDWN' or self.rdm.TM2_status_sig == 'SHUTDWN':
         # if this signal is shutdown before disable cmd is sent. that means it failed the test
             self.LED.setPixmap(self.red_led)
             Test_Result = 'FAILED'
-            print('3')
+            print('Stuck in SHUTDOWN status')
 
         else:
             self.LED.setPixmap(self.green_led)
@@ -245,6 +250,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Stop RDM
         self.stop_transmit()
 
+        # Unlock Auto Start Button           
+        self.profile_test_btn.setEnabled(True)
 
 ##        # If test failed, stop logging, rename file and start a new log
 ##        if Test_Result == 'FAILED':
