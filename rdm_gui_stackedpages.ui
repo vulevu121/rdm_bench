@@ -212,7 +212,7 @@ QLineEdit#save_file_statusl{
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="RDM_page">
      <widget class="QGroupBox" name="groupBox_3">
@@ -1815,7 +1815,7 @@ QPushButton:hover {
        </property>
       </widget>
      </widget>
-     <widget class="QPushButton" name="profile_test_btn">
+     <widget class="QPushButton" name="auto_test_btn">
       <property name="geometry">
        <rect>
         <x>30</x>
@@ -1914,7 +1914,7 @@ QPushButton:hover {
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="msg_label">
+     <widget class="QLabel" name="test_result_label">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -1934,12 +1934,12 @@ QPushButton:hover {
      <zorder>groupBox_16</zorder>
      <zorder>groupBox_14</zorder>
      <zorder>groupBox_15</zorder>
-     <zorder>profile_test_btn</zorder>
+     <zorder>auto_test_btn</zorder>
      <zorder>label_10</zorder>
      <zorder>label_6</zorder>
      <zorder>op_epbBtn</zorder>
      <zorder>progressBar</zorder>
-     <zorder>msg_label</zorder>
+     <zorder>test_result_label</zorder>
     </widget>
     <widget class="QWidget" name="Assign_ID_page">
      <widget class="QLabel" name="label_7">

@@ -77,7 +77,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.Both_radio_btn.clicked.connect     (lambda:self.run_mode(0))
         self.TM1_radio_btn.clicked.connect      (lambda:self.run_mode(1))
         self.TM2_radio_btn.clicked.connect      (lambda:self.run_mode(2))
-        self.profile_test_btn.clicked.connect   (lambda:self.profile_test(1))
+        self.auto_test_btn.clicked.connect   (lambda:self.auto_test(1))
         
         # Show default vehicle in test number
         # RDM Page
@@ -182,7 +182,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         pages = {'EPB page': self.EPB_page, 'RDM page': self.RDM_page,'Operator page': self.Operator_page, 'Assign ID page': self.Assign_ID_page}
         self.stackedWidget.setCurrentWidget(pages[target])
 
-    def profile_test(self,test = 1):
+    def auto_test(self,test = 1):
         if test == 1:
             # Start Tx and Rx thread
             self.start_CAN_thread()
