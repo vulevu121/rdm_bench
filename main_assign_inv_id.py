@@ -147,7 +147,7 @@ def main():
     app = QApplication(sys.argv)
     form = ExampleApp()
     form.show()
-    #form.showFullScreen()   
+    form.showFullScreen()   
 
     ## Start App ##
     app.exec_()
