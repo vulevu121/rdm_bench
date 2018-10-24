@@ -236,7 +236,6 @@ class EPBControl(object):
         counter3                     = (counter3 + 1) % 4
         counter1                     = (counter1+ 1) % 16
         #group 3
-        self.EBCMBrake                    = self.EBCMBRAKE(self.EBCMBrake)
         self.HCURegenFeedback             = self.HCUREGENFEEDBACK(self.HCURegenFeedback)
         
         self.HCURegenFeedback.data[0]     = (self.HCURegenFeedback.data[0]     & 0)     | counter3
@@ -269,26 +268,6 @@ class EPBControl(object):
                                self.WheelGNONDriven, self.WheelVelocity, self.WheelRotatUnDriven, self.WheelRotatDriven, self.EBCMBrake,self.AXLETorqueData]
    
   
-                
-    #EBCM_Brake_Torque message.
-
-    def EBCMBRAKE(self, msg):
-        curr_num = msg.data[5] << 8 | msg.data[6] # reading the message(combine byte 5 and 6)
-        if curr_num == 0: # byte 5 and 6 follow this pattern below.
-            curr_num = 65535
-        elif curr_num == 65535:
-            curr_num = 65534
-        elif curr_num == 65534:
-            curr_num = 65533
-        elif curr_num == 65533:
-            curr_num = 0
-        msg.data[5] = (curr_num & 0xFF00) >> 8
-        msg.data[6] = (curr_num & 0xFF)
-
-
-        return msg
-
-
       
 
     def HCUREGENFEEDBACK(self, msg):
