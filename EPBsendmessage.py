@@ -195,7 +195,7 @@ class EPBControl(object):
         global counter
         counter                      = (counter + 1) % 4
         #group 1
-        self.BrakeStatus1.data[1]         = (self.BrakeStatus1.data[1]         & 0x03)  |(counter<<2)
+        self.BrakeStatus1.data[1]         = (self.BrakeStatus1.data[1]         & 0xF3)  |(counter<<2)
         self.BrakeStatusHCU.data[0]       = (self.BrakeStatusHCU.data[0]       & 0x3F)  |(counter<<6)  
         self.EPBCommand.data[1]           = (self.EPBCommand.data[1]           & 0xFC)  | counter
         self.GearPosition.data[2]         = (self.GearPosition.data[2]         & 0)     |(counter<<6)
@@ -233,7 +233,7 @@ class EPBControl(object):
         global counter3
         global counter1
         
-        counter3                     = (counter + 1) % 4
+        counter3                     = (counter3 + 1) % 4
         counter1                     = (counter1+ 1) % 16
         #group 3
         self.EBCMBrake                    = self.EBCMBRAKE(self.EBCMBrake)
@@ -242,28 +242,21 @@ class EPBControl(object):
         self.HCURegenFeedback.data[0]     = (self.HCURegenFeedback.data[0]     & 0)     | counter3
         self.HCU2PTStatus.data[1]         = (self.HCU2PTStatus.data[1]         & 0)     | counter3
         self.LongACCEL.data[0]            = (self.LongACCEL.data[0]            & 0)     | counter1
-        self.VehicleSpeed.data  [6]       = (self.VehicleSpeed.data  [6]       & 0)     | counter1
-        self.SteeringAngle.data [4]       = (self.SteeringAngle.data [4]       & 0)     | counter1
+        self.VehicleSpeed.data[6]         = (self.VehicleSpeed.data[6]         & 0)     | counter1
+        self.SteeringAngle.data[4]        = (self.SteeringAngle.data[4]        & 0xF0)  | counter1
         self.WheelGDriven.data[4]         = (self.WheelGDriven.data[4]         & 0)     | counter3
         self.WheelGNONDriven.data[4]      = (self.WheelGNONDriven.data[4]      & 0)     | counter3
         self.WheelVelocity.data[2]        = (self.WheelVelocity.data[2]        & 0)     | counter3
-        self.WheelRotatUnDriven.data[0]   = (self.WheelRotatUnDriven.data[0]   & 0)     |(counter3<<4)                            
-        self.WheelRotatUnDriven.data[4]   = (self.WheelRotatUnDriven.data[4]   & 0)     |(counter3<<4)
-        self.WheelRotatDriven.data[0]     = (self.WheelRotatDriven.data[0]     & 0x0F)  |(counter3<<4)
-        self.WheelRotatDriven.data[4]     = (self.WheelRotatDriven.data[4]     & 0x0F)  |(counter3<<4)
+        self.WheelRotatUnDriven.data[0]   = (self.WheelRotatUnDriven.data[0]   & 0x3F)  |(counter3<<6)                            
+        self.WheelRotatDriven.data[0]     = (self.WheelRotatDriven.data[0]     & 0x3F)  |(counter3<<6)
         self.EBCMBrake.data[0]            = (self.EBCMBrake.data[0]            & 0)     | counter3
+        self.AXLETorqueData[0]            = (self.AXLETorqueData[0]            & 0xFC)  | counter3
         
         # CRC
         EBCMBrakeTorqueCRC              = crc8_PTECT_DRIV_INTEND_BRAKE_TORQ(self.EBCMBrake)
         self.EBCMBrake.data[5]          = (EBCMBrakeTorqueCRC & 0xF0) >> 8
         self.EBCMBrake.data[6]          = EBCMBrakeTorqueCRC & 0x0F
 
-##        self.HCU2PTStatus.data[0]         = self.crc8(self.HCU2PTStatus.data[1:],3)
-##        self.VehicleSpeed.data[7]         = self.crc8(self.VehicleSpeed.data[0:7],7)
-##        self.WheelGDriven.data[5]         = self.crc8(self.WheelGDriven.data[0:5],5)
-##        self.WheelGNONDriven.data[5]      = self.crc8(self.WheelGNONDriven.data[0:5],5)
-##        self.WheelVelocity.data[3]        = self.crc8(self.WheelVelocity.data[0:3],3)
-        
         self.HCU2PTStatus.data[0]         = crc8(self.HCU2PTStatus,0)
         self.VehicleSpeed.data[7]         = crc8(self.VehicleSpeed,7)
         self.WheelGDriven.data[5]         = crc8(self.WheelGDriven,5)
