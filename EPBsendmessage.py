@@ -4,6 +4,7 @@ from can.interface import Bus
 from can import Message
 import subprocess
 from subprocess import call
+from EPB_CRC import *
 
 import datetime
 
@@ -198,8 +199,10 @@ class EPBControl(object):
         self.BrakeStatusHCU.data[0]       = (self.BrakeStatusHCU.data[0]       & 0x3F)  |(counter<<6)  
         self.EPBCommand.data[1]           = (self.EPBCommand.data[1]           & 0xFC)  | counter
         self.GearPosition.data[2]         = (self.GearPosition.data[2]         & 0)     |(counter<<6)
+
         # CRC
-        BrakeStatus1CRC                   = self.crc8(self.BrakeStatus1.data[:2],2)
+        #BrakeStatus1CRC                   = self.crc8(self.BrakeStatus1.data[:2],2)
+        BrakeStatus1CRC                   = crc8(self.BrakeStatus1)
         self.BrakeStatus1.data[1]         = (BrakeStatus1CRC & 0x300) >> 8
         self.BrakeStatus1.data[2]         = (BrakeStatus1CRC & 0x0FF)
         
@@ -207,15 +210,10 @@ class EPBControl(object):
         self.BrakeStatusHCU.data[1]       = self.crc8(self.BrakeStatusHCU.data[0],1)
         self.GearPosition.data[3]         = self.crc8(self.GearPosition.data[0:3],3)
 
-        # CRC for BrakeStatus1
         
-    
- 
         self.group1_msg_list    = [self.BrakeStatus1, self.BrakeStatusHCU, self.ClimateStatus, self.TotalMilage, self.HCUPNM12V, self.EPBCommand, self.GearPosition ]
 
-       
-        # Update all message in each group
-   
+          
     def update_gp2(self):
         global counter2
         counter2 = (counter2+ 1) % 256
@@ -258,46 +256,12 @@ class EPBControl(object):
         self.WheelGNONDriven.data[5]      = self.crc8(self.WheelGNONDriven.data[0:5],5)
         self.WheelVelocity.data[3]        = self.crc8(self.WheelVelocity.data[0:3],3)
 
-##        Vehicle_Speed_ID counter and CRC - DONE
-##        Wheel_GND_Driven_ID =0x348     # add counter and CRC
-##        Wheel_GND_Non_Driven_ID =0x34A # add counter and CRC
-##        Wheel_Velocity_ID =0x347       # add counter and CRC
-##        Wheel_Rotat_UNDriven_ID =0xC5  # add counter
-##        Wheel_Rotat_Driven_ID =0xC1    # add counter
 
-
-        
         
         self.group3_msg_list    = [self.HCURegenFeedback, self.HCU2PTStatus, self.LongACCEL, self.VehicleSpeed, self.SteeringAngle, self.WheelGDriven,
                                self.WheelGNONDriven, self.WheelVelocity, self.WheelRotatUnDriven, self.WheelRotatDriven, self.EBCMBrake,self.AXLETorqueData]
-
-
-
-
-
-
-    
-    # recall function for CRC 
-
-    def crc8(self, RAW_DATA, size):
-        remainder = np.uint32(0xff)
-        CRCResult = 0 
-        for byte_index in range (0,size):
-            if size == 1:
-                remainder = remainder ^ RAW_DATA
-            else:
-                remainder = remainder ^ RAW_DATA[byte_index]
-
-            for bit_index in range (8,0,-1):
-                if remainder & 0x80:
-                    remainder =(remainder << 1) ^ 0x1d
-                else:
-                    remainder = (remainder << 1)
-
-            remainder = np.uint32(remainder)
-        CRCResult = ~remainder & 0x00FF
-        return CRCResult
-    
+   
+  
                 
     #EBCM_Brake_Torque message.
 
@@ -343,7 +307,7 @@ class EPBControl(object):
         can.rc['interface'] ='socketcan_native'
         can.rc['bitrate'] = 500000
         can.rc['channel'] ='can0'
-        bus = can.ThreadSafeBus()
+        bus = Bus()
 
     
 if __name__== '__main__':
