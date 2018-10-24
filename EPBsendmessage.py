@@ -202,13 +202,18 @@ class EPBControl(object):
 
         # CRC
         #BrakeStatus1CRC                   = self.crc8(self.BrakeStatus1.data[:2],2)
-        BrakeStatus1CRC                   = crc8(self.BrakeStatus1)
+        BrakeStatus1CRC                   = crc8_PTECT_BRAKE_STATUS_TRAVEL(self.BrakeStatus1)
         self.BrakeStatus1.data[1]         = (BrakeStatus1CRC & 0x300) >> 8
         self.BrakeStatus1.data[2]         = (BrakeStatus1CRC & 0x0FF)
         
-        self.EPBCommand.data[0]           = self.crc8(self.EPBCommand.data[1:],2)    
-        self.BrakeStatusHCU.data[1]       = self.crc8(self.BrakeStatusHCU.data[0],1)
-        self.GearPosition.data[3]         = self.crc8(self.GearPosition.data[0:3],3)
+        #self.EPBCommand.data[0]           = self.crc8(self.EPBCommand.data[1:],2)
+        self.EPBCommand.data[0]           = crc8(self.EPBCommand,0)    
+
+        #self.BrakeStatusHCU.data[1]       = self.crc8(self.BrakeStatusHCU.data[0],1)
+        self.BrakeStatusHCU.data[1]       = self.crc8(self.BrakeStatusHCU,1)
+
+        #self.GearPosition.data[3]         = self.crc8(self.GearPosition.data[0:3],3)
+        self.GearPosition.data[3]         = self.crc8(self.GearPosition,3)
 
         
         self.group1_msg_list    = [self.BrakeStatus1, self.BrakeStatusHCU, self.ClimateStatus, self.TotalMilage, self.HCUPNM12V, self.EPBCommand, self.GearPosition ]
@@ -220,8 +225,7 @@ class EPBControl(object):
         #group 2
         self.Powermode.data[0]      = (self.Powermode.data[0]    & 0)     | counter2
         self.group2_msg_list        = [self.Powermode]
-   
-                                    
+                                     
 
         
     def update_gp3(self):
@@ -233,7 +237,6 @@ class EPBControl(object):
         counter1                     = (counter1+ 1) % 16
         #group 3
         self.EBCMBrake                    = self.EBCMBRAKE(self.EBCMBrake)
-        #self.HCU2PTStatus                 = self.HCU2PTSTATUS(self.HCU2PTStatus)
         self.HCURegenFeedback             = self.HCUREGENFEEDBACK(self.HCURegenFeedback)
         
         self.HCURegenFeedback.data[0]     = (self.HCURegenFeedback.data[0]     & 0)     | counter3
@@ -249,12 +252,23 @@ class EPBControl(object):
         self.WheelRotatDriven.data[0]     = (self.WheelRotatDriven.data[0]     & 0x0F)  |(counter3<<4)
         self.WheelRotatDriven.data[4]     = (self.WheelRotatDriven.data[4]     & 0x0F)  |(counter3<<4)
         self.EBCMBrake.data[0]            = (self.EBCMBrake.data[0]            & 0)     | counter3
+        
         # CRC
-        self.HCU2PTStatus.data[0]         = self.crc8(self.HCU2PTStatus.data[1:],3)
-        self.VehicleSpeed.data[7]         = self.crc8(self.VehicleSpeed.data[0:7],7)
-        self.WheelGDriven.data[5]         = self.crc8(self.WheelGDriven.data[0:5],5)
-        self.WheelGNONDriven.data[5]      = self.crc8(self.WheelGNONDriven.data[0:5],5)
-        self.WheelVelocity.data[3]        = self.crc8(self.WheelVelocity.data[0:3],3)
+        EBCMBrakeTorqueCRC              = crc8_PTECT_DRIV_INTEND_BRAKE_TORQ(self.EBCMBrake)
+        self.EBCMBrake.data[5]          = (EBCMBrakeTorqueCRC & 0xF0) >> 8
+        self.EBCMBrake.data[6]          = EBCMBrakeTorqueCRC & 0x0F
+
+##        self.HCU2PTStatus.data[0]         = self.crc8(self.HCU2PTStatus.data[1:],3)
+##        self.VehicleSpeed.data[7]         = self.crc8(self.VehicleSpeed.data[0:7],7)
+##        self.WheelGDriven.data[5]         = self.crc8(self.WheelGDriven.data[0:5],5)
+##        self.WheelGNONDriven.data[5]      = self.crc8(self.WheelGNONDriven.data[0:5],5)
+##        self.WheelVelocity.data[3]        = self.crc8(self.WheelVelocity.data[0:3],3)
+        
+        self.HCU2PTStatus.data[0]         = crc8(self.HCU2PTStatus,0)
+        self.VehicleSpeed.data[7]         = self.crc8(self.VehicleSpeed,7)
+        self.WheelGDriven.data[5]         = self.crc8(self.WheelGDriven,5)
+        self.WheelGNONDriven.data[5]      = self.crc8(self.WheelGNONDriven,5)
+        self.WheelVelocity.data[3]        = self.crc8(self.WheelVelocity,3)
 
 
         
