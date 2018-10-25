@@ -204,7 +204,7 @@ QLineEdit#save_file_statusl{
 	alignment: AlignHCenter;
 }
 
-QGroupBox#number_pad, QPushButton, QLineEdit{
+QGroupBox#groupBox_15, QPushButton, QLineEdit{
 	font: 18pt &quot;MS Shell Dlg 2&quot;;
 }</string>
   </property>

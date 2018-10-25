@@ -200,7 +200,7 @@ class Ui_MainWindow(object):
 "    alignment: AlignHCenter;\n"
 "}\n"
 "\n"
-"QGroupBox#number_pad, QPushButton, QLineEdit{\n"
+"QGroupBox#groupBox_15, QPushButton, QLineEdit{\n"
 "    font: 18pt \"MS Shell Dlg 2\";\n"
 "}")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
