@@ -1609,6 +1609,16 @@ QPushButton:hover {
          </widget>
         </item>
         <item>
+         <widget class="QLabel" name="test_result_label">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="LED">
           <property name="maximumSize">
            <size>
@@ -1923,22 +1933,6 @@ QPushButton:hover {
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="test_result_label">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>440</y>
-        <width>751</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
      <zorder>bgLabel_6</zorder>
      <zorder>groupBox_16</zorder>
      <zorder>groupBox_14</zorder>
@@ -1948,7 +1942,6 @@ QPushButton:hover {
      <zorder>label_6</zorder>
      <zorder>op_epbBtn</zorder>
      <zorder>progressBar</zorder>
-     <zorder>test_result_label</zorder>
     </widget>
     <widget class="QWidget" name="Assign_ID_page">
      <widget class="QLabel" name="label_7">
