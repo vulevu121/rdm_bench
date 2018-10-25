@@ -81,8 +81,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.auto_test_btn.clicked.connect   (lambda:self.auto_test(1))
 
         # vin number buttons
-        self.op_veh_num_label.setReadOnly(True)
-        self.vin_num_box.setReadOnly(True)
         self.op_keypad_btn.clicked.connect  (lambda:self.change_page('VIN num page'))
         self.btn_1.clicked.connect      (lambda:self.edit_vin('1'))
         self.btn_2.clicked.connect      (lambda:self.edit_vin('2'))
@@ -195,7 +193,6 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         global vehicle_in_test_num
         global Test_Result
         global file_name
-        print('Vehicle in test number: {}'.format(vehicle_in_test_num))
         # When test a new vehicle, reset num of test performed
         global num_test_performed
         num_test_performed = 0
@@ -626,7 +623,7 @@ def create_log():
         logger  = can.ASCWriter('{}/{}'.format(path_to_storage,file_name))
         listener = can.BufferedReader()
         notifier = can.Notifier(bus, [listener,logger])
-        msg = 'log file {} is created'.format(file_name)
+        msg = 'log:{}'.format(file_name)
     return msg
               
 def msg2str(msg):
