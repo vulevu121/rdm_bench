@@ -195,6 +195,7 @@ QLineEdit#veh_num_label{
 QLineEdit#op_veh_num_label{
 	font: 14pt &quot;MS Shell Dlg 2&quot;;
 	alignment: AlignHCenter;
+    readOnly = 'true';
 }
 
 QLineEdit#op_save_file_statusl{
@@ -202,11 +203,9 @@ QLineEdit#op_save_file_statusl{
 }
 QLineEdit#save_file_statusl{
 	alignment: AlignHCenter;
+	font: 14pt &quot;MS Shell Dlg 2&quot;;
 }
-
-QGroupBox#groupBox_15, QPushButton, QLineEdit{
-	font: 18pt &quot;MS Shell Dlg 2&quot;;
-}</string>
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QStackedWidget" name="stackedWidget">
@@ -222,7 +221,7 @@ QGroupBox#groupBox_15, QPushButton, QLineEdit{
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="RDM_page">
      <widget class="QGroupBox" name="groupBox_3">
@@ -316,7 +315,7 @@ QGroupBox#groupBox_15, QPushButton, QLineEdit{
             <property name="font">
              <font>
               <family>MS Shell Dlg 2</family>
-              <pointsize>18</pointsize>
+              <pointsize>10</pointsize>
               <weight>50</weight>
               <italic>false</italic>
               <bold>false</bold>
@@ -350,7 +349,7 @@ QGroupBox#groupBox_15, QPushButton, QLineEdit{
             <property name="font">
              <font>
               <family>MS Shell Dlg 2</family>
-              <pointsize>18</pointsize>
+              <pointsize>10</pointsize>
               <weight>50</weight>
               <italic>false</italic>
               <bold>false</bold>
@@ -380,7 +379,7 @@ QGroupBox#groupBox_15, QPushButton, QLineEdit{
           <property name="font">
            <font>
             <family>MS Shell Dlg 2</family>
-            <pointsize>18</pointsize>
+            <pointsize>10</pointsize>
             <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
@@ -923,7 +922,7 @@ QPushButton:hover {
           <property name="font">
            <font>
             <family>MS Shell Dlg 2</family>
-            <pointsize>18</pointsize>
+            <pointsize>10</pointsize>
             <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
@@ -945,7 +944,7 @@ QPushButton:hover {
           <property name="font">
            <font>
             <family>MS Shell Dlg 2</family>
-            <pointsize>18</pointsize>
+            <pointsize>10</pointsize>
             <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
@@ -1259,7 +1258,7 @@ QPushButton:hover {
       <property name="font">
        <font>
         <family>MS Shell Dlg 2</family>
-        <pointsize>18</pointsize>
+        <pointsize>10</pointsize>
         <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
@@ -1680,6 +1679,9 @@ QPushButton:hover {
        <layout class="QHBoxLayout" name="horizontalLayout_7">
         <item>
          <widget class="QLineEdit" name="op_veh_num_label">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="minimumSize">
            <size>
             <width>150</width>
@@ -1701,6 +1703,9 @@ QPushButton:hover {
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
@@ -1720,7 +1725,7 @@ QPushButton:hover {
           <property name="font">
            <font>
             <family>MS Shell Dlg 2</family>
-            <pointsize>18</pointsize>
+            <pointsize>10</pointsize>
             <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
@@ -1754,7 +1759,7 @@ QPushButton:hover {
           <property name="font">
            <font>
             <family>MS Shell Dlg 2</family>
-            <pointsize>18</pointsize>
+            <pointsize>10</pointsize>
             <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
@@ -1774,6 +1779,9 @@ QPushButton:hover {
        </layout>
       </widget>
       <widget class="QLineEdit" name="op_save_file_status">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>11</x>
@@ -1787,6 +1795,9 @@ QPushButton:hover {
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
        </property>
       </widget>
      </widget>
@@ -1802,7 +1813,7 @@ QPushButton:hover {
       <property name="font">
        <font>
         <family>MS Shell Dlg 2</family>
-        <pointsize>18</pointsize>
+        <pointsize>10</pointsize>
         <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
@@ -1942,6 +1953,9 @@ QPushButton:hover {
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
        </property>
       </widget>
       <widget class="QWidget" name="layoutWidget">
@@ -2174,7 +2188,7 @@ QPushButton:hover {
           <property name="font">
            <font>
             <family>MS Shell Dlg 2</family>
-            <pointsize>18</pointsize>
+            <pointsize>10</pointsize>
             <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
@@ -2208,7 +2222,7 @@ QPushButton:hover {
           <property name="font">
            <font>
             <family>MS Shell Dlg 2</family>
-            <pointsize>18</pointsize>
+            <pointsize>10</pointsize>
             <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
@@ -2236,7 +2250,7 @@ QPushButton:hover {
           <property name="font">
            <font>
             <family>MS Shell Dlg 2</family>
-            <pointsize>18</pointsize>
+            <pointsize>10</pointsize>
             <weight>50</weight>
             <italic>false</italic>
             <bold>false</bold>
@@ -2299,7 +2313,7 @@ QPushButton:hover {
       <property name="font">
        <font>
         <family>MS Shell Dlg 2</family>
-        <pointsize>18</pointsize>
+        <pointsize>10</pointsize>
         <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
