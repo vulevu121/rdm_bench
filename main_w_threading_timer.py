@@ -592,8 +592,10 @@ def initCAN():
 
 def create_file_name(vehicle_number = 0, num_test_performed = 0):
     today = datetime.datetime.today()
-    today = today.strftime("%m/%d/%y")
-    file_name = '{}_VIN{:02d}.{:d}.asc'.format(today,vehicle_number,num_test_performed)
+    today = today.strftime("%m_%d_%y")
+    #file_name = '{}_VIN{:02d}.{:d}.asc'.format(today,vehicle_number,num_test_performed)
+    file_name = '{}_VIN{:02d}.{:d}.asc'.format(today,VIN_num,num_test_performed)
+
     return file_name
 
 
