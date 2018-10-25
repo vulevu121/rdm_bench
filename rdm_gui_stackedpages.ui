@@ -1940,8 +1940,8 @@ QPushButton:hover {
      <zorder>auto_test_btn</zorder>
      <zorder>label_10</zorder>
      <zorder>label_6</zorder>
-     <zorder>op_epbBtn</zorder>
      <zorder>progressBar</zorder>
+     <zorder>op_epbBtn</zorder>
     </widget>
     <widget class="QWidget" name="Assign_ID_page">
      <widget class="QLabel" name="label_7">
