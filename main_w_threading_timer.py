@@ -147,17 +147,17 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.LED.setPixmap(self.grey_led)
 
         # Check PEAK CAN connection
-##        global PEAK_CAN_connected
-##        check_PEAK_CAN_connection()
-##        while PEAK_CAN_connected == 1:
-##            ret = self.CAN_adapter_msg.exec_()
-##            if ret == 0x40000:
-##                # Abort
-##                exit()
-##            # if PEAK CAN is connected, loop will exit
-##            check_PEAK_CAN_connection()
-##        # Confirmed connection. Initialize CAN bus
-##        initCAN()
+        global PEAK_CAN_connected
+        check_PEAK_CAN_connection()
+        while PEAK_CAN_connected == 1:
+            ret = self.CAN_adapter_msg.exec_()
+            if ret == 0x40000:
+                # Abort
+                exit()
+            # if PEAK CAN is connected, loop will exit
+            check_PEAK_CAN_connection()
+        # Confirmed connection. Initialize CAN bus
+        initCAN()
         
     #######################################        
     ############# GUI methods #############           
@@ -230,7 +230,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             # Clear test result label
             self.test_result_label.clear()
             # Lock Auto Start Button           
-            self.profile_test_btn.setEnabled(False)
+            self.auto_test_btn.setEnabled(False)
 
             # Start Test
             auto_test_thread.start()
@@ -283,6 +283,12 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             Test_Result = 'FAILED'
             self.test_result_label.setText(Test_Result)
             print('Stuck in SHUTDOWN status')
+        elif self.rdm.TM1_status_sig == 'SHUTDWN' or self.rdm.TM2_status_sig == 'SHUTDWN':
+        # if this signal is always NONE
+            self.LED.setPixmap(self.red_led)
+            Test_Result = 'FAILED'
+            self.test_result_label.setText(Test_Result)
+            print('No status from INV')
 
         else:
             self.LED.setPixmap(self.green_led)
@@ -293,7 +299,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.stop_transmit()
 
         # Unlock Auto Start Button           
-        self.profile_test_btn.setEnabled(True)
+        self.auto_test_btn.setEnabled(True)
 
 ##        # If test failed, stop logging, rename file and start a new log
 ##        if Test_Result == 'FAILED':
@@ -594,7 +600,7 @@ def create_file_name(vehicle_number = 0, num_test_performed = 0):
     today = datetime.datetime.today()
     today = today.strftime("%m_%d_%y")
     #file_name = '{}_VIN{:02d}.{:d}.asc'.format(today,vehicle_number,num_test_performed)
-    file_name = '{}_VIN{:02d}.{:d}.asc'.format(today,VIN_num,num_test_performed)
+    file_name = '{}_VIN{}.{:d}.asc'.format(today,VIN_num,num_test_performed)
 
     return file_name
 
