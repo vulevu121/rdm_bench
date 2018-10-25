@@ -207,6 +207,10 @@ QLineEdit#op_save_file_statusl{
 QLineEdit#vin_num_box{
 	alignment: AlignHCenter;
 	font: 16pt &quot;MS Shell Dlg 2&quot;;
+}
+QGroupBox#number_pad QPushButton{
+	alignment: AlignHCenter;
+	font: 18pt &quot;MS Shell Dlg 2&quot;;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -223,7 +227,7 @@ QLineEdit#vin_num_box{
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="RDM_page">
      <widget class="QGroupBox" name="groupBox_3">

@@ -203,6 +203,10 @@ class Ui_MainWindow(object):
 "QLineEdit#vin_num_box{\n"
 "    alignment: AlignHCenter;\n"
 "    font: 16pt \"MS Shell Dlg 2\";\n"
+"}\n"
+"QGroupBox#number_pad QPushButton{\n"
+"    alignment: AlignHCenter;\n"
+"    font: 18pt \"MS Shell Dlg 2\";\n"
 "}")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -1065,7 +1069,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusBar)
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(4)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
