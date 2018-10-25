@@ -195,17 +195,19 @@ QLineEdit#veh_num_label{
 QLineEdit#op_veh_num_label{
 	font: 14pt &quot;MS Shell Dlg 2&quot;;
 	alignment: AlignHCenter;
-    readOnly = 'true';
 }
 
 QLineEdit#op_save_file_statusl{
 	alignment: AlignHCenter;
 }
-QLineEdit#save_file_statusl{
+QLineEdit#op_save_file_statusl{
 	alignment: AlignHCenter;
-	font: 14pt &quot;MS Shell Dlg 2&quot;;
+	font: 16pt &quot;MS Shell Dlg 2&quot;;
 }
-</string>
+QLineEdit#vin_num_box{
+	alignment: AlignHCenter;
+	font: 16pt &quot;MS Shell Dlg 2&quot;;
+}</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QStackedWidget" name="stackedWidget">

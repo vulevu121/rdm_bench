@@ -191,17 +191,19 @@ class Ui_MainWindow(object):
 "QLineEdit#op_veh_num_label{\n"
 "    font: 14pt \"MS Shell Dlg 2\";\n"
 "    alignment: AlignHCenter;\n"
-"    readOnly = \'true\';\n"
 "}\n"
 "\n"
 "QLineEdit#op_save_file_statusl{\n"
 "    alignment: AlignHCenter;\n"
 "}\n"
-"QLineEdit#save_file_statusl{\n"
+"QLineEdit#op_save_file_statusl{\n"
 "    alignment: AlignHCenter;\n"
-"    font: 14pt \"MS Shell Dlg 2\";\n"
+"    font: 16pt \"MS Shell Dlg 2\";\n"
 "}\n"
-"")
+"QLineEdit#vin_num_box{\n"
+"    alignment: AlignHCenter;\n"
+"    font: 16pt \"MS Shell Dlg 2\";\n"
+"}")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.stackedWidget = QtWidgets.QStackedWidget(self.centralwidget)
