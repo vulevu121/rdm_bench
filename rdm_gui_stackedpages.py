@@ -191,6 +191,7 @@ class Ui_MainWindow(object):
 "QLineEdit#op_veh_num_label{\n"
 "    font: 14pt \"MS Shell Dlg 2\";\n"
 "    alignment: AlignHCenter;\n"
+"    readOnly = \'true\';\n"
 "}\n"
 "\n"
 "QLineEdit#op_save_file_statusl{\n"
@@ -198,11 +199,9 @@ class Ui_MainWindow(object):
 "}\n"
 "QLineEdit#save_file_statusl{\n"
 "    alignment: AlignHCenter;\n"
+"    font: 14pt \"MS Shell Dlg 2\";\n"
 "}\n"
-"\n"
-"QGroupBox#groupBox_15, QPushButton, QLineEdit{\n"
-"    font: 18pt \"MS Shell Dlg 2\";\n"
-"}")
+"")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.stackedWidget = QtWidgets.QStackedWidget(self.centralwidget)
@@ -247,7 +246,7 @@ class Ui_MainWindow(object):
         self.veh_num_down.setMaximumSize(QtCore.QSize(70, 45))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(18)
+        font.setPointSize(10)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
@@ -261,7 +260,7 @@ class Ui_MainWindow(object):
         self.veh_num_up.setMaximumSize(QtCore.QSize(70, 45))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(18)
+        font.setPointSize(10)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
@@ -275,7 +274,7 @@ class Ui_MainWindow(object):
         self.veh_num_save_btn.setMinimumSize(QtCore.QSize(100, 0))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(18)
+        font.setPointSize(10)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
@@ -491,7 +490,7 @@ class Ui_MainWindow(object):
         self.startStopBtn = QtWidgets.QPushButton(self.layoutWidget4)
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(18)
+        font.setPointSize(10)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
@@ -503,7 +502,7 @@ class Ui_MainWindow(object):
         self.enableBtn.setEnabled(True)
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(18)
+        font.setPointSize(10)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
@@ -629,7 +628,7 @@ class Ui_MainWindow(object):
         self.EPB_startStopBtn.setGeometry(QtCore.QRect(70, 90, 93, 33))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(18)
+        font.setPointSize(10)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
@@ -799,11 +798,13 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
         self.op_veh_num_label = QtWidgets.QLineEdit(self.layoutWidget6)
+        self.op_veh_num_label.setEnabled(True)
         self.op_veh_num_label.setMinimumSize(QtCore.QSize(150, 0))
         self.op_veh_num_label.setMaximumSize(QtCore.QSize(80, 45))
         self.op_veh_num_label.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.op_veh_num_label.setText("")
         self.op_veh_num_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.op_veh_num_label.setReadOnly(True)
         self.op_veh_num_label.setObjectName("op_veh_num_label")
         self.horizontalLayout_7.addWidget(self.op_veh_num_label)
         self.op_keypad_btn = QtWidgets.QPushButton(self.layoutWidget6)
@@ -811,7 +812,7 @@ class Ui_MainWindow(object):
         self.op_keypad_btn.setMaximumSize(QtCore.QSize(70, 45))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(18)
+        font.setPointSize(10)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
@@ -825,7 +826,7 @@ class Ui_MainWindow(object):
         self.op_veh_num_save_btn.setMaximumSize(QtCore.QSize(70, 16777215))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(18)
+        font.setPointSize(10)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
@@ -835,15 +836,17 @@ class Ui_MainWindow(object):
         self.op_veh_num_save_btn.setObjectName("op_veh_num_save_btn")
         self.horizontalLayout_7.addWidget(self.op_veh_num_save_btn)
         self.op_save_file_status = QtWidgets.QLineEdit(self.groupBox_15)
+        self.op_save_file_status.setEnabled(True)
         self.op_save_file_status.setGeometry(QtCore.QRect(11, 79, 311, 51))
         self.op_save_file_status.setText("")
         self.op_save_file_status.setAlignment(QtCore.Qt.AlignCenter)
+        self.op_save_file_status.setReadOnly(True)
         self.op_save_file_status.setObjectName("op_save_file_status")
         self.auto_test_btn = QtWidgets.QPushButton(self.Operator_page)
         self.auto_test_btn.setGeometry(QtCore.QRect(30, 360, 331, 51))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(18)
+        font.setPointSize(10)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
@@ -899,6 +902,7 @@ class Ui_MainWindow(object):
         self.vin_num_box.setGeometry(QtCore.QRect(20, 20, 291, 51))
         self.vin_num_box.setText("")
         self.vin_num_box.setAlignment(QtCore.Qt.AlignCenter)
+        self.vin_num_box.setReadOnly(True)
         self.vin_num_box.setObjectName("vin_num_box")
         self.layoutWidget7 = QtWidgets.QWidget(self.number_pad)
         self.layoutWidget7.setGeometry(QtCore.QRect(20, 70, 291, 271))
@@ -990,7 +994,7 @@ class Ui_MainWindow(object):
         self.ID_down_btn.setMaximumSize(QtCore.QSize(70, 45))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(18)
+        font.setPointSize(10)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
@@ -1004,7 +1008,7 @@ class Ui_MainWindow(object):
         self.ID_up_btn.setMaximumSize(QtCore.QSize(70, 45))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(18)
+        font.setPointSize(10)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
@@ -1017,7 +1021,7 @@ class Ui_MainWindow(object):
         self.OK_btn.setMinimumSize(QtCore.QSize(150, 0))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(18)
+        font.setPointSize(10)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
@@ -1039,7 +1043,7 @@ class Ui_MainWindow(object):
         self.shut_down_btn.setMinimumSize(QtCore.QSize(150, 0))
         font = QtGui.QFont()
         font.setFamily("MS Shell Dlg 2")
-        font.setPointSize(18)
+        font.setPointSize(10)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)
@@ -1059,7 +1063,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusBar)
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(3)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
