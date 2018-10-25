@@ -115,8 +115,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.veh_num_up.clicked.connect        (lambda:self.veh_num_up_func())
         self.veh_num_save_btn.clicked.connect  (lambda:self.veh_num_save())
         # Operator Page
-        self.op_veh_num_down.clicked.connect      (lambda:self.veh_num_down_func())
-        self.op_veh_num_up.clicked.connect        (lambda:self.veh_num_up_func())
+        #self.op_veh_num_down.clicked.connect      (lambda:self.veh_num_down_func())
+        #self.op_veh_num_up.clicked.connect        (lambda:self.veh_num_up_func())
         self.op_veh_num_save_btn.clicked.connect  (lambda:self.veh_num_save())
 
         # Default page on start up
