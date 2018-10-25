@@ -222,7 +222,7 @@ QGroupBox#number_pad, QPushButton, QLineEdit{
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="RDM_page">
      <widget class="QGroupBox" name="groupBox_3">
@@ -1958,14 +1958,14 @@ QPushButton:hover {
       </property>
      </widget>
      <zorder>bgLabel_6</zorder>
+     <zorder>label_10</zorder>
+     <zorder>label_6</zorder>
      <zorder>groupBox_16</zorder>
      <zorder>groupBox_14</zorder>
      <zorder>groupBox_15</zorder>
      <zorder>auto_test_btn</zorder>
-     <zorder>label_10</zorder>
-     <zorder>op_epbBtn</zorder>
      <zorder>progressBar</zorder>
-     <zorder>label_6</zorder>
+     <zorder>op_epbBtn</zorder>
     </widget>
     <widget class="QWidget" name="VIN_num_page">
      <widget class="QLabel" name="bgLabel_8">

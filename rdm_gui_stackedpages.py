@@ -909,14 +909,14 @@ class Ui_MainWindow(object):
         self.label_6.setGeometry(QtCore.QRect(0, 0, 800, 70))
         self.label_6.setObjectName("label_6")
         self.bgLabel_6.raise_()
+        self.label_10.raise_()
+        self.label_6.raise_()
         self.groupBox_16.raise_()
         self.groupBox_14.raise_()
         self.groupBox_15.raise_()
         self.auto_test_btn.raise_()
-        self.label_10.raise_()
-        self.op_epbBtn.raise_()
         self.progressBar.raise_()
-        self.label_6.raise_()
+        self.op_epbBtn.raise_()
         self.stackedWidget.addWidget(self.Operator_page)
         self.VIN_num_page = QtWidgets.QWidget()
         self.VIN_num_page.setObjectName("VIN_num_page")
@@ -1092,7 +1092,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusBar)
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(3)
+        self.stackedWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
