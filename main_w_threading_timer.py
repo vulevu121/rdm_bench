@@ -41,6 +41,7 @@ PEAK_CAN_connected = 1   # 1 is not connected
 
 torque_value = 10
 vehicle_in_test_num = 0
+VIN_num             = ''
 num_test_performed = 0
 Tx_Rx_Timestamp_offset = None
 duration           =  20
@@ -78,14 +79,31 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.TM1_radio_btn.clicked.connect      (lambda:self.run_mode(1))
         self.TM2_radio_btn.clicked.connect      (lambda:self.run_mode(2))
         self.auto_test_btn.clicked.connect   (lambda:self.auto_test(1))
-        
+
+        # vin number buttons
+        self.op_veh_num_label.setReadOnly(True)
+        self.vin_num_box.setReadOnly(True)
+        self.op_keypad_btn.clicked.connect  (lambda:self.change_page('VIN num page'))
+        self.btn_1.clicked.connect      (lambda:self.edit_vin('1'))
+        self.btn_2.clicked.connect      (lambda:self.edit_vin('2'))
+        self.btn_3.clicked.connect      (lambda:self.edit_vin('3'))
+        self.btn_4.clicked.connect      (lambda:self.edit_vin('4'))
+        self.btn_5.clicked.connect      (lambda:self.edit_vin('5'))
+        self.btn_6.clicked.connect      (lambda:self.edit_vin('6'))
+        self.btn_7.clicked.connect      (lambda:self.edit_vin('7'))
+        self.btn_8.clicked.connect      (lambda:self.edit_vin('8'))
+        self.btn_9.clicked.connect      (lambda:self.edit_vin('9'))
+        self.btn_0.clicked.connect      (lambda:self.edit_vin('0'))
+        self.btn_DEL.clicked.connect    (lambda:self.del_vin())
+        self.btn_OK.clicked.connect     (lambda:self.ok_vin())
+
+         
         # Show default vehicle in test number
         # RDM Page
         self.veh_num_label.setText(str(vehicle_in_test_num))
         # Operator Page
         self.op_veh_num_label.setText(str(vehicle_in_test_num))
         
-
         # Progress bar
         self.progressBar.setMinimum(0)
         self.progressBar.setMaximum(duration)
@@ -102,7 +120,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.op_veh_num_save_btn.clicked.connect  (lambda:self.veh_num_save())
 
         # Default page on start up
-        self.change_page('RDM page')
+        self.change_page('Operator page')
 
         # Page switch
         self.epbBtn.clicked.connect             (lambda:self.change_page('EPB page'))
@@ -117,7 +135,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.CAN_adapter_msg.setText('CAN bus can not be found.')
         self.CAN_adapter_msg.setInformativeText('Please check PEAK CAN adapter and try again.')
         self.CAN_adapter_msg.setWindowTitle("PEAK CAN connection")
-        self.CAN_adapter_msg.setStyleSheet('background-color: rgb(59, 56, 56)')
+        self.CAN_adapter_msg.setStyleSheet('background-color: white')
         self.CAN_adapter_msg.setStandardButtons(QMessageBox.Retry| QMessageBox.Abort)        
         self.CAN_adapter_msg.buttonClicked.connect(self.msgBtn)
 
@@ -129,23 +147,38 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.LED.setPixmap(self.grey_led)
 
         # Check PEAK CAN connection
-        global PEAK_CAN_connected
-        check_PEAK_CAN_connection()
-        while PEAK_CAN_connected == 1:
-            ret = self.CAN_adapter_msg.exec_()
-            if ret == 0x40000:
-                # Abort
-                exit()
-            # if PEAK CAN is connected, loop will exit
-            check_PEAK_CAN_connection()
-        # Confirmed connection. Initialize CAN bus
-        initCAN()
+##        global PEAK_CAN_connected
+##        check_PEAK_CAN_connection()
+##        while PEAK_CAN_connected == 1:
+##            ret = self.CAN_adapter_msg.exec_()
+##            if ret == 0x40000:
+##                # Abort
+##                exit()
+##            # if PEAK CAN is connected, loop will exit
+##            check_PEAK_CAN_connection()
+##        # Confirmed connection. Initialize CAN bus
+##        initCAN()
         
     #######################################        
     ############# GUI methods #############           
     #######################################
 
 
+    def edit_vin(self,num):
+        global VIN_num
+        VIN_num = VIN_num + num
+        self.vin_num_box.setText(VIN_num)
+
+    def del_vin(self):
+        global VIN_num
+        VIN_num = VIN_num[:-1]
+        self.vin_num_box.setText(VIN_num)
+
+    def ok_vin(self):
+        global VIN_num
+        self.vin_num_box.clear()
+        self.change_page('Operator page')
+        self.op_veh_num_label.setText(VIN_num)
 
     def veh_num_up_func(self):
         global vehicle_in_test_num
@@ -180,7 +213,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         ret = self.CAN_adapter_msg.exec_()
 
     def change_page(self,target = 'EPB page'):
-        pages = {'EPB page': self.EPB_page, 'RDM page': self.RDM_page,'Operator page': self.Operator_page, 'Assign ID page': self.Assign_ID_page}
+        pages = {'VIN num page': self.VIN_num_page, 'EPB page': self.EPB_page, 'RDM page': self.RDM_page,'Operator page': self.Operator_page, 'Assign ID page': self.Assign_ID_page}
         self.stackedWidget.setCurrentWidget(pages[target])
 
     def auto_test(self,test = 1):
