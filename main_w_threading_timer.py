@@ -100,7 +100,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # RDM Page
         self.veh_num_label.setText(str(vehicle_in_test_num))
         # Operator Page
-        self.op_veh_num_label.setText(str(vehicle_in_test_num))
+        #self.op_veh_num_label.setText(str(vehicle_in_test_num))
         
         # Progress bar
         self.progressBar.setMinimum(0)
@@ -280,7 +280,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
             Test_Result = 'FAILED'
             self.test_result_label.setText(Test_Result)
             print('Stuck in SHUTDOWN status')
-        elif self.rdm.TM1_status_sig == 'SHUTDWN' or self.rdm.TM2_status_sig == 'SHUTDWN':
+        elif self.rdm.TM1_status_sig == 'None' or self.rdm.TM2_status_sig == 'None':
         # if this signal is always NONE
             self.LED.setPixmap(self.red_led)
             Test_Result = 'FAILED'
@@ -597,7 +597,7 @@ def create_file_name(vehicle_number = 0, num_test_performed = 0):
     today = datetime.datetime.today()
     today = today.strftime("%m_%d_%y")
     #file_name = '{}_VIN{:02d}.{:d}.asc'.format(today,vehicle_number,num_test_performed)
-    file_name = '{}_VIN{}.{:d}.asc'.format(today,VIN_num,num_test_performed)
+    file_name = '{}_VIN_{}.{:d}.asc'.format(today,VIN_num,num_test_performed)
 
     return file_name
 
@@ -623,7 +623,7 @@ def create_log():
         logger  = can.ASCWriter('{}/{}'.format(path_to_storage,file_name))
         listener = can.BufferedReader()
         notifier = can.Notifier(bus, [listener,logger])
-        msg = 'log:{}'.format(file_name)
+        msg = 'log file: {}'.format(file_name)
     return msg
               
 def msg2str(msg):
