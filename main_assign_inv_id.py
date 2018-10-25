@@ -70,7 +70,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         self.CAN_adapter_msg.setText('CAN bus can not be found.')
         self.CAN_adapter_msg.setInformativeText('Please check PEAK CAN adapter and try again.')
         self.CAN_adapter_msg.setWindowTitle("PEAK CAN connection")
-        self.CAN_adapter_msg.setStyleSheet('background-color: rgb(59, 56, 56)')
+        self.CAN_adapter_msg.setStyleSheet('background-color: white')
         self.CAN_adapter_msg.setStandardButtons(QMessageBox.Retry| QMessageBox.Abort)        
         self.CAN_adapter_msg.buttonClicked.connect(self.msgBtn)
 
