@@ -3,9 +3,10 @@ import datetime, time
 from apscheduler.scheduler import Scheduler
 
 file = 'C:/Users/knguyen/Desktop/2.0 Test Bench/2.0 RDM bench/Note.txt'
-src = 'C:/Users/knguyen/Desktop/2.0 Test Bench/2.0 RDM bench/new/temp'
-dest =  'C:/Users/knguyen/Desktop/2.0 Test Bench/2.0 RDM bench/new/curr'
-
+#src = 'C:/Users/knguyen/Desktop/2.0 Test Bench/2.0 RDM bench/new/temp'
+src = '/home/pi/CAN Logs'
+#dest =  'C:/Users/knguyen/Desktop/2.0 Test Bench/2.0 RDM bench/new/curr'
+dest = '/mnt/Sdrive'
 
 
 def move_CAN_log(source,destination):
@@ -40,6 +41,7 @@ def move_CAN_log(source,destination):
             if time < latest:
                 try:
                     shutil.copy2(path,destination)
+
                 except:
                     # Fail to copy file, just exit and print error message
                     print ('Unable to copy file. Exiting...')
@@ -79,8 +81,16 @@ if __name__ == "__main__":
     sched = Scheduler()
     sched.start()
     #sched.add_interval_job(job, seconds=5, args =['hello',])
-    sched.add_interval_job(move_CAN_log, seconds = 5, args = [src,dest,])
-    time.sleep(3)
-    sched.add_interval_job(directory_cleanup, seconds = 5, args = [src,dest,])
+    sched.add_interval_job(move_CAN_log, minutes = 5, args = [src,dest,])
+    #time.sleep(5)
+    sched.add_interval_job(directory_cleanup, minutes = 5, args = [src,dest,])
 
+##    for root, dirs, files in os.walk(src):
+##        for file in files:
+##            # make a dictionary of path to file and last modified time
+##            curr_path = os.path.join(src,file)
+##            print(curr_path)
+
+    #move_CAN_log(src,dest)
+    #directory_cleanup(src,dest)
 

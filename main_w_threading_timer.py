@@ -49,7 +49,9 @@ Tx_Rx_Timestamp_offset = None
 duration           =  20
 file_name          = None
 form            = None
-path_to_storage     = '/mnt/Sdrive'
+
+path_remote_storage     = '/mnt/Sdrive'
+path_local_storage      = '/home/pi/CAN Logs'
 
 #logging.basicConfig(level=logging.DEBUG,format='(%(threadName)-9s) %(message)s',)
 
@@ -179,7 +181,7 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
     def ok_vin(self):
         global VIN_num
-        self.vin_num_box.clear()
+        #self.vin_num_box.clear()
         self.change_page('Operator page')
         self.op_veh_num_label.setText(VIN_num)
 
@@ -322,8 +324,8 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
 
 
     def rename_failed(self):
-        path_to_file = '{}/{}'.format(path_to_storage,file_name)
-        path_to_new_file = '{}/FAILED_{}'.format(path_to_storage,file_name) 
+        path_to_file = '{}/{}'.format(path_remote_storage,file_name)
+        path_to_new_file = '{}/FAILED_{}'.format(path_remote_storage,file_name) 
         os.rename(path_to_file, path_to_new_file)
 
 
@@ -614,23 +616,22 @@ def create_file_name(vehicle_number = 0, num_test_performed = 0):
 def create_log():
     global vehicle_in_test_num
     global num_test_performed 
-    global path_to_storage
+    global path_remote_storage
     global logger
     global listener
     global notifier
     global file_name
     file_name = create_file_name(vehicle_in_test_num,num_test_performed)
     # Check if path to storage is valid
-    if not path.exists(path_to_storage):
-        msg = '"{}" is not a valid path. Please try again'.format(path_to_storage)
+    if not path.exists(path_local_storage):
+        msg = '"{}" is not a valid path. Please try again'.format(path_local_storage)
     else:
         # Change path according to locations of log files
-        while path.exists('{}/{}'.format(path_to_storage,file_name)) :
+        while path.exists('{}/{}'.format(path_local_storage,file_name)) :
             # file already exists, increase num_test_performed by 1
             num_test_performed = num_test_performed + 1
             file_name = create_file_name(vehicle_in_test_num,num_test_performed)
-        logger  = can.ASCWriter('{}/{}'.format(path_to_storage,file_name))
-            
+        logger  = can.ASCWriter('{}/{}'.format(path_local_storage,file_name))           
         listener = can.BufferedReader()
         notifier = can.Notifier(bus, [listener,logger])
         msg = 'log file: {}'.format(file_name)
@@ -685,10 +686,9 @@ def main():
     #form.showFullScreen()   
 
     # Mount S Drive
-    if os.path.ismount(path_to_storage) == False:
-        #call('sudo umount -a', shell=True)
-        call('sudo mount -t cifs -o username=RDM_Bench,password="AqAErT4AJ@&Rq6KQ",sec=ntlmsspi //fafs02/Engineering/Khuong\ Nguyen/Raspberry\ Pi /mnt/Sdrive', shell=True)
-        #call('sudo mount -t cifs -o username=RDM_Bench,password="AqAErT4AJ@&Rq6KQ",sec=ntlmsspi //fafs02/Engineering/Khuong\ Nguyen/K1\ 2.0\ RDM\ Test\ Bench\ CAN\ log /mnt/Sdrive', shell=True)    
+    if os.path.ismount(path_remote_storage) == False:
+        #call('sudo mount -t cifs -o username=RDM_Bench,password="AqAErT4AJ@&Rq6KQ",sec=ntlmsspi //fafs02/Engineering/Khuong\ Nguyen/Raspberry\ Pi /mnt/Sdrive', shell=True)
+        call('sudo mount -t cifs -o username=RDM_Bench,password="AqAErT4AJ@&Rq6KQ",sec=ntlmsspi //fafs02/Engineering/Khuong\ Nguyen/K1\ 2.0\ RDM\ Test\ Bench\ CAN\ log /mnt/Sdrive', shell=True)    
 
     ## Thread Rlock for thread safety for
     ## read/write status to GUI
