@@ -54,7 +54,7 @@ def job():
     print ("Hello")
 
 if __name__ == "__main__":
-    sched = apscheduler.schedulers()
+    sched = Scheduler()
     sched.start()
     sched.add_interval_job(job, seconds=5)
     #sched.add_interval_job(job_function, hours=2, start_date='2010-10-10 09:30')
