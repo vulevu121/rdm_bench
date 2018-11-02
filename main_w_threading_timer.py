@@ -630,6 +630,7 @@ def create_log():
             num_test_performed = num_test_performed + 1
             file_name = create_file_name(vehicle_in_test_num,num_test_performed)
         logger  = can.ASCWriter('{}/{}'.format(path_to_storage,file_name))
+            
         listener = can.BufferedReader()
         notifier = can.Notifier(bus, [listener,logger])
         msg = 'log file: {}'.format(file_name)
