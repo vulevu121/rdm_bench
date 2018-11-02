@@ -9,6 +9,13 @@ dest =  'C:/Users/knguyen/Desktop/2.0 Test Bench/2.0 RDM bench/new/curr'
 
 
 def move_CAN_log(source,destination):
+    if os.path.exists(source) == False:
+        print ('path to Source Directory is invalid')
+        return
+    if os.path.exists(destination) == False:
+        print ('path to Destination Directory is invalid')
+        return
+    
     root, dirs, files = next(os.walk(source))
     file_count = (len(files))
 
@@ -24,39 +31,56 @@ def move_CAN_log(source,destination):
                 curr_path = os.path.join(source,file)
                 last_modified = os.path.getmtime(curr_path)
                 paths[last_modified] = curr_path
+                # mark the file created most recently
                 if latest < last_modified:
                     latest = last_modified
 
-        # check if S drive path is valid
-        if os.path.exists(destination):
+        # if the file is not the newest, copy the file to network drive
+        for time, path in paths.items():
+            if time < latest:
+                try:
+                    shutil.copy2(path,destination)
+                except:
+                    # Fail to copy file, just exit and print error message
+                    print ('Unable to copy file. Exiting...')
+                    return
+                
+        print ('Files moved successfully')
 
-            # if the file is not the newest, copy the file to network drive
-            for time, path in paths.items():
-                if time < latest:
-                    try:
-                        shutil.copy(path,destination)
-                    except:
-                        # Fail to copy file, just exit and print error message
-                        print ('Unable to copy file. Exiting...')
-                        return 
-            
-            # remove the newest pair from the list.             
-            del paths[latest]
-            
-            # Then deleted the files that were copied
-            for time, path in paths.items():
-                if os.path.exists(path):
-                    os.remove(path)
-        else:
-            print('Destination is not valid. Exiting...')
+# Execute this at the end of the day        
+def directory_cleanup(source, destination):
+    
+    if os.path.exists(source) == False:
+        print ('path to Source Directory is invalid')
+        return
+    if os.path.exists(destination) == False:
+        print ('path to Destination Directory is invalid')
+        
+    # interate through the source directory
+    for root, dirs, files in os.walk(source):
+        
+       # interate through the files 
+        for file in files:
 
-def job():
-    print ("Hello")
+            # create the path to the destination directory
+            path = os.path.join(destination,file)
+
+            # if file exists in destination directory
+            if os.path.exists(path):
+                # delete the file in the source directory
+                src_path = os.path.join(source,file)
+                os.remove(src_path)
+    print ('Clean Up Completed')        
+        
+def job(string):
+    print (string)
 
 if __name__ == "__main__":
     sched = Scheduler()
     sched.start()
-    sched.add_interval_job(job, seconds=5)
-    #sched.add_interval_job(job_function, hours=2, start_date='2010-10-10 09:30')
+    #sched.add_interval_job(job, seconds=5, args =['hello',])
+    sched.add_interval_job(move_CAN_log, seconds = 5, args = [src,dest,])
+    time.sleep(3)
+    sched.add_interval_job(directory_cleanup, seconds = 5, args = [src,dest,])
 
-    #move_CAN_log(src,dest)
+
