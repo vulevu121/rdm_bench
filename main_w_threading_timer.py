@@ -49,7 +49,6 @@ Tx_Rx_Timestamp_offset = None
 duration           =  20
 file_name          = None
 form            = None
-#path_to_storage     = '/home/pi/rdm_bench/RDM_logs'
 path_to_storage     = '/mnt/Sdrive'
 
 #logging.basicConfig(level=logging.DEBUG,format='(%(threadName)-9s) %(message)s',)
@@ -72,9 +71,9 @@ class ExampleApp(QMainWindow, Ui_MainWindow):
         # Create RDM object
         self.rdm = RDM()
         # WUP Control
+        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(21,GPIO.OUT)
-        GPIO.setwarnings(False)
 
         # Event handlers
         self.startStopBtn.clicked.connect       (lambda:self.start_CAN_thread())
@@ -687,8 +686,10 @@ def main():
 
     # Mount S Drive
     if os.path.ismount(path_to_storage) == False:
+        #call('sudo umount -a', shell=True)
         call('sudo mount -t cifs -o username=RDM_Bench,password="AqAErT4AJ@&Rq6KQ",sec=ntlmsspi //fafs02/Engineering/Khuong\ Nguyen/Raspberry\ Pi /mnt/Sdrive', shell=True)
-    
+        #call('sudo mount -t cifs -o username=RDM_Bench,password="AqAErT4AJ@&Rq6KQ",sec=ntlmsspi //fafs02/Engineering/Khuong\ Nguyen/K1\ 2.0\ RDM\ Test\ Bench\ CAN\ log /mnt/Sdrive', shell=True)    
+
     ## Thread Rlock for thread safety for
     ## read/write status to GUI
     global lock
