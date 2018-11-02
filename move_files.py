@@ -15,7 +15,7 @@ def move_CAN_log(source,destination):
     latest = 0
     paths = {}
 
-    # if there are more than 1 files in this folder
+    # if there are more than 1 files in this folder s
     if file_count > 1:
         # interate through the directory
         for root, dirs, files in os.walk(source):
