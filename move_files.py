@@ -1,16 +1,12 @@
 import os, shutil
 import datetime, time 
-import sched
+from apscheduler.scheduler import Scheduler
 
 file = 'C:/Users/knguyen/Desktop/2.0 Test Bench/2.0 RDM bench/Note.txt'
 src = 'C:/Users/knguyen/Desktop/2.0 Test Bench/2.0 RDM bench/new/temp'
 dest =  'C:/Users/knguyen/Desktop/2.0 Test Bench/2.0 RDM bench/new/curr'
 
 
-
-#t = os.path.getmtime(file)
-#date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(t))
-#print(date)
 
 def move_CAN_log(source,destination):
     root, dirs, files = next(os.walk(source))
@@ -41,8 +37,8 @@ def move_CAN_log(source,destination):
                         shutil.copy(path,destination)
                     except:
                         # Fail to copy file, just exit and print error message
-                        print ('Unable to copy to S drive. Exiting...')
-                        break
+                        print ('Unable to copy file. Exiting...')
+                        return 
             
             # remove the newest pair from the list.             
             del paths[latest]
@@ -54,5 +50,13 @@ def move_CAN_log(source,destination):
         else:
             print('Destination is not valid. Exiting...')
 
+def job():
+    print ("Hello")
+
 if __name__ == "__main__":
-    move_CAN_log(src,dest)
+    sched = apscheduler.schedulers()
+    sched.start()
+    sched.add_interval_job(job, seconds=5)
+    #sched.add_interval_job(job_function, hours=2, start_date='2010-10-10 09:30')
+
+    #move_CAN_log(src,dest)
