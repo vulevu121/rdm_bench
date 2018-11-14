@@ -80,9 +80,8 @@ def job(string):
 if __name__ == "__main__":
     sched = Scheduler()
     sched.start()
-    #sched.add_interval_job(job, seconds=5, args =['hello',])
     sched.add_interval_job(move_CAN_log, minutes = 5, args = [src,dest,])
-    #time.sleep(5)
+    time.sleep(5)
     sched.add_interval_job(directory_cleanup, minutes = 5, args = [src,dest,])
 
 ##    for root, dirs, files in os.walk(src):
